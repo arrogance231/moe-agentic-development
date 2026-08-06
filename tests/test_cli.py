@@ -36,7 +36,7 @@ def _setup_skills(tmp_path: Path) -> Path:
 
 @pytest.fixture()
 def runner() -> CliRunner:
-    return CliRunner(mix_stderr=False)
+    return CliRunner()
 
 
 class TestDeployCommand:
@@ -109,7 +109,7 @@ class TestInfoCommand:
         result = runner.invoke(cli, ["info", "demo-skill", "--skills-dir", str(skills_dir)])
         assert result.exit_code == 0, result.output
         assert "demo-skill" in result.output
-        assert "demo skill for CLI testing" in result.output.lower()
+        assert "A demo skill for CLI testing" in result.output
 
     def test_info_not_found(self, runner: CliRunner, tmp_path: Path) -> None:
         skills_dir = _setup_skills(tmp_path)

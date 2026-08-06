@@ -1,5 +1,6 @@
 pyproject.toml
 src/moe_agentic/__init__.py
+src/moe_agentic/cli.py
 src/moe_agentic/deploy.py
 src/moe_agentic/exceptions.py
 src/moe_agentic/loader.py
@@ -10,4 +11,7 @@ src/moe_agentic.egg-info/SOURCES.txt
 src/moe_agentic.egg-info/dependency_links.txt
 src/moe_agentic.egg-info/requires.txt
 src/moe_agentic.egg-info/top_level.txt
+tests/test_cli.py
+tests/test_deploy.py
+tests/test_loader.py
 tests/test_skill_loader.py
