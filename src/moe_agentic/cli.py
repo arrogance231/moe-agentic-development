@@ -73,6 +73,12 @@ def cli() -> None:
     default=False,
     help="Overwrite existing files without confirmation.",
 )
+@click.option(
+    "--project-root",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Project root for project-local deploys (defaults to cwd).",
+)
 @_skills_dir_option
 def deploy(
     target: str,
@@ -80,6 +86,7 @@ def deploy(
     dry_run: bool,
     force: bool,
     skills_dir: Path,
+    project_root: Path | None,
 ) -> None:
     """Deploy skills to agent runtime directories.
 
@@ -106,6 +113,7 @@ def deploy(
 
     deployer = SkillDeployer(
         skills_dir=skills_dir,
+        project_root=project_root,
         console=console,
     )
     result = deployer.deploy(

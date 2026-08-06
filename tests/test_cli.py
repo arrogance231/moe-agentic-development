@@ -46,11 +46,15 @@ class TestDeployCommand:
             [
                 "deploy", "--target", "claude", "--force",
                 "--skills-dir", str(skills_dir),
+                "--project-root", str(tmp_path),
             ],
         )
         assert result.exit_code == 0, result.output
-        # Should have created the file in CWD-relative .claude/skills
-        # (we can't fully control CWD in test, so just check output)
+        # Skill must land under the explicit project root, not the repo CWD.
+        deployed = tmp_path / ".claude" / "skills" / "demo-skill" / "SKILL.md"
+        assert deployed.is_file(), f"expected deployed skill at {deployed}"
+        # The repo root must NOT gain a .claude/ dir from this test.
+        assert not (Path.cwd() / ".claude").exists()
         assert "deployed" in result.output.lower() or "Deployment" in result.output
 
     def test_deploy_dry_run(self, runner: CliRunner, tmp_path: Path) -> None:
