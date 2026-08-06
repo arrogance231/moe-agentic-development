@@ -14,7 +14,6 @@ from moe_agentic.exceptions import (
 )
 from moe_agentic.skill_loader import Skill, SkillLoader, SkillMetadata
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -219,7 +218,9 @@ class TestParseFrontmatter:
 
     def test_missing_description_field(self) -> None:
         content = "---\nname: only-name\n---\n"
-        with pytest.raises(SkillParseError, match="missing required field 'description'"):
+        with pytest.raises(
+            SkillParseError, match="missing required field 'description'"
+        ):
             SkillLoader.parse_frontmatter(content)
 
     def test_malformed_yaml(self) -> None:

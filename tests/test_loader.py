@@ -7,9 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from moe_agentic.loader import SkillLoadError, SkillLoader
+from moe_agentic.loader import SkillLoader, SkillLoadError
 from moe_agentic.models import validate_skill_name
-
 
 _VALID_SKILL_MD = textwrap.dedent("""\
     ---

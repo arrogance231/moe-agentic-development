@@ -10,7 +10,6 @@ from click.testing import CliRunner
 
 from moe_agentic.cli import cli
 
-
 _SKILL_MD = textwrap.dedent("""\
     ---
     name: demo-skill
@@ -44,7 +43,10 @@ class TestDeployCommand:
         skills_dir = _setup_skills(tmp_path)
         result = runner.invoke(
             cli,
-            ["deploy", "--target", "claude", "--force", "--skills-dir", str(skills_dir)],
+            [
+                "deploy", "--target", "claude", "--force",
+                "--skills-dir", str(skills_dir),
+            ],
         )
         assert result.exit_code == 0, result.output
         # Should have created the file in CWD-relative .claude/skills
@@ -55,7 +57,10 @@ class TestDeployCommand:
         skills_dir = _setup_skills(tmp_path)
         result = runner.invoke(
             cli,
-            ["deploy", "--target", "claude", "--dry-run", "--skills-dir", str(skills_dir)],
+            [
+                "deploy", "--target", "claude", "--dry-run",
+                "--skills-dir", str(skills_dir),
+            ],
         )
         assert result.exit_code == 0, result.output
         assert "DRY RUN" in result.output
@@ -106,13 +111,17 @@ class TestValidateCommand:
 class TestInfoCommand:
     def test_info_found(self, runner: CliRunner, tmp_path: Path) -> None:
         skills_dir = _setup_skills(tmp_path)
-        result = runner.invoke(cli, ["info", "demo-skill", "--skills-dir", str(skills_dir)])
+        result = runner.invoke(
+            cli, ["info", "demo-skill", "--skills-dir", str(skills_dir)]
+        )
         assert result.exit_code == 0, result.output
         assert "demo-skill" in result.output
         assert "A demo skill for CLI testing" in result.output
 
     def test_info_not_found(self, runner: CliRunner, tmp_path: Path) -> None:
         skills_dir = _setup_skills(tmp_path)
-        result = runner.invoke(cli, ["info", "nonexistent", "--skills-dir", str(skills_dir)])
+        result = runner.invoke(
+            cli, ["info", "nonexistent", "--skills-dir", str(skills_dir)]
+        )
         assert result.exit_code != 0
         assert "not found" in result.output.lower()

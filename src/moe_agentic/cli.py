@@ -1,4 +1,4 @@
-"""CLI for MoE Agentic Skills - deploy, list, validate, and inspect skills."""
+"""CLI for MoE Agentic Skills -- deploy, list, validate, and inspect skills."""
 
 from __future__ import annotations
 
@@ -10,8 +10,7 @@ from rich.panel import Panel
 from rich.table import Table
 
 from moe_agentic.deploy import DeployTarget, SkillDeployer
-from moe_agentic.loader import SkillLoader
-from moe_agentic.models import validate_skill_name
+from moe_agentic.skill_loader import SkillLoader, validate_skill_name
 
 console = Console()
 
@@ -20,8 +19,8 @@ console = Console()
 _DEFAULT_SKILLS_DIR = "skills"
 
 
-def _skills_dir_option(func):
-    """Shared --skills-dir option."""
+def _skills_dir_option(func):  # type: ignore[no-untyped-def]
+    """Shared --skills-dir option decorator."""
     return click.option(
         "--skills-dir",
         type=click.Path(exists=False, path_type=Path),
@@ -35,9 +34,9 @@ def _skills_dir_option(func):
 
 
 @click.group()
-@click.version_option(package_name="moe-agentic-skills")
+@click.version_option(version="0.1.0")
 def cli() -> None:
-    """MoE Agentic Skills - deploy and manage agent skills."""
+    """MoE Agentic Skills -- deploy and manage agent skills."""
 
 
 # -- deploy -----------------------------------------------------------------
@@ -47,7 +46,9 @@ def cli() -> None:
 @click.option(
     "--target",
     "-t",
-    type=click.Choice(["claude", "opencode", "agents", "all"], case_sensitive=False),
+    type=click.Choice(
+        ["claude", "opencode", "agents", "all"], case_sensitive=False
+    ),
     default="all",
     show_default=True,
     help="Deployment target runtime.",
@@ -131,7 +132,7 @@ def list_skills(skills_dir: Path) -> None:
         console.print(f"[red]Skills directory not found:[/] {skills_dir}")
         raise SystemExit(1)
 
-    loader = SkillLoader(skills_dir)
+    loader = SkillLoader(skills_dir=skills_dir)
     try:
         skills = loader.load_all()
     except Exception as exc:
@@ -147,7 +148,7 @@ def list_skills(skills_dir: Path) -> None:
     table.add_column("Description", style="white")
     table.add_column("Subdirs", style="dim")
 
-    for skill in skills:
+    for skill in skills.values():
         subdirs = ", ".join(skill.subdirectories) or "-"
         table.add_row(skill.name, skill.metadata.description, subdirs)
 
@@ -169,12 +170,11 @@ def validate(skills_dir: Path) -> None:
         console.print(f"[red]Skills directory not found:[/] {skills_dir}")
         raise SystemExit(1)
 
-    loader = SkillLoader(skills_dir)
+    loader = SkillLoader(skills_dir=skills_dir)
     issues = loader.validate_all()
 
-    # Also report skills that loaded cleanly
-    all_paths = loader.discover()
-    total = len(all_paths)
+    # Also count total discovered (including invalid names)
+    total = len(loader.discover_all())
     failed = len(issues)
     passed = total - failed
 
@@ -184,8 +184,10 @@ def validate(skills_dir: Path) -> None:
             for err in errors:
                 console.print(f"  [red]- {err}[/]")
 
-    console.print(f"\n[bold]{total}[/] skill(s) checked: "
-                  f"[green]{passed} passed[/], [red]{failed} failed[/]")
+    console.print(
+        f"\n[bold]{total}[/] skill(s) checked: "
+        f"[green]{passed} passed[/], [red]{failed} failed[/]"
+    )
 
     if issues:
         raise SystemExit(1)
@@ -208,19 +210,24 @@ def info(skill_name: str, skills_dir: Path) -> None:
         console.print(f"[red]Skills directory not found:[/] {skills_dir}")
         raise SystemExit(1)
 
-    loader = SkillLoader(skills_dir)
+    loader = SkillLoader(skills_dir=skills_dir)
     skill = loader.load_by_name(skill_name)
 
     if skill is None:
         console.print(f"[red]Skill not found:[/] {skill_name}")
-        available = [p.parent.name for p in loader.discover()]
-        if available:
+        all_skills = loader.load_all()
+        if all_skills:
+            available = [s.name for s in all_skills.values()]
             console.print(f"[dim]Available: {', '.join(available)}[/]")
         raise SystemExit(1)
 
     # Name validation
     name_errors = validate_skill_name(skill.name)
-    valid_badge = "[green]\u2714 valid[/]" if not name_errors else "[red]\u2718 invalid[/]"
+    valid_badge = (
+        "[green]\u2714 valid[/]"
+        if not name_errors
+        else "[red]\u2718 invalid[/]"
+    )
 
     # Build info panel
     lines = [
@@ -228,17 +235,26 @@ def info(skill_name: str, skills_dir: Path) -> None:
         f"[bold]Description:[/] {skill.metadata.description}",
     ]
     if skill.metadata.argument_hint:
-        lines.append(f"[bold]Argument:[/]    {skill.metadata.argument_hint}")
+        lines.append(
+            f"[bold]Argument:[/]    {skill.metadata.argument_hint}"
+        )
     if skill.metadata.license:
         lines.append(f"[bold]License:[/]     {skill.metadata.license}")
     if skill.metadata.compatibility:
-        lines.append(f"[bold]Compat:[/]      {', '.join(skill.metadata.compatibility)}")
+        lines.append(
+            f"[bold]Compat:[/]      "
+            f"{', '.join(skill.metadata.compatibility)}"
+        )
 
     lines.append(f"[bold]Source:[/]      {skill.source_dir}")
-    lines.append(f"[bold]Subdirs:[/]     {', '.join(skill.subdirectories) or 'none'}")
+    lines.append(
+        f"[bold]Subdirs:[/]     {', '.join(skill.subdirectories) or 'none'}"
+    )
 
     # Body preview (first 5 non-empty lines)
-    body_lines = [l for l in skill.body.strip().splitlines() if l.strip()][:5]
+    body_lines = [
+        bl for bl in skill.body.strip().splitlines() if bl.strip()
+    ][:5]
     if body_lines:
         lines.append("")
         lines.append("[bold]Instructions preview:[/]")

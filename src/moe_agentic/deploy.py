@@ -1,8 +1,14 @@
-"""Skill deployment to agent runtime directories."""
+"""Skill deployment to agent runtime directories.
+
+Deploys skills from a source directory to Claude Code, OpenCode,
+and generic .agents/ runtime directories. Supports project-local
+and user-global installation scopes with atomic overwrites.
+"""
 
 from __future__ import annotations
 
 import shutil
+import tempfile
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -11,8 +17,7 @@ from typing import Sequence
 from rich.console import Console
 from rich.table import Table
 
-from moe_agentic.loader import SkillLoader
-from moe_agentic.models import Skill
+from moe_agentic.skill_loader import Skill, SkillLoader
 
 
 class DeployTarget(Enum):
@@ -94,13 +99,22 @@ def resolve_skills_dir(
 
 @dataclass
 class DeployAction:
-    """Record of a single deployment action."""
+    """Record of a single deployment action.
+
+    Attributes:
+        skill_name: Name of the skill being deployed.
+        target: The deployment target runtime.
+        source: Source path of the file/directory.
+        destination: Destination path of the file/directory.
+        action: One of 'copy', 'mkdir', 'skip', 'overwrite'.
+        is_directory: True if the action involves a directory.
+    """
 
     skill_name: str
     target: DeployTarget
     source: Path
     destination: Path
-    action: str  # "copy", "mkdir", "skip", "overwrite"
+    action: str
     is_directory: bool = False
 
     def __str__(self) -> str:
@@ -111,7 +125,13 @@ class DeployAction:
 
 @dataclass
 class DeployResult:
-    """Aggregate result of a deployment run."""
+    """Aggregate result of a deployment run.
+
+    Attributes:
+        actions: List of deployment actions taken.
+        errors: List of error messages.
+        dry_run: True if this was a dry-run (no files written).
+    """
 
     actions: list[DeployAction] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
@@ -140,6 +160,7 @@ class SkillDeployer:
 
     Supports Claude Code, OpenCode, and generic .agents/ runtimes.
     Handles project-local and user-global installation scopes.
+    Uses atomic copy-to-temp-then-rename to prevent data loss on overwrite.
 
     Example::
 
@@ -171,7 +192,7 @@ class SkillDeployer:
         self.skills_dir = skills_dir
         self.project_root = project_root or Path.cwd()
         self.console = console or Console()
-        self._loader = SkillLoader(skills_dir)
+        self._loader = SkillLoader(skills_dir=skills_dir)
 
     # -- public API ---------------------------------------------------------
 
@@ -191,7 +212,7 @@ class SkillDeployer:
             global_install: Deploy to user-global directories.
             dry_run: Preview actions without writing.
             force: Overwrite existing files without prompting.
-            skill_names: Optional filter - deploy only these skills.
+            skill_names: Optional filter -- deploy only these skills.
 
         Returns:
             DeployResult with actions taken and any errors.
@@ -203,7 +224,7 @@ class SkillDeployer:
 
         # Load skills
         try:
-            skills = self._loader.load_all()
+            skills = list(self._loader.load_all().values())
         except Exception as exc:
             result.errors.append(f"Failed to load skills: {exc}")
             return result
@@ -218,7 +239,9 @@ class SkillDeployer:
             skills = [s for s in skills if s.name in name_set]
             missing = name_set - {s.name for s in skills}
             if missing:
-                result.errors.append(f"Skills not found: {', '.join(sorted(missing))}")
+                result.errors.append(
+                    f"Skills not found: {', '.join(sorted(missing))}"
+                )
                 return result
 
         # Deploy each skill to each target
@@ -284,7 +307,9 @@ class SkillDeployer:
                 )
                 return
             except OSError as exc:
-                result.errors.append(f"OS error creating {skill_dest}: {exc}")
+                result.errors.append(
+                    f"OS error creating {skill_dest}: {exc}"
+                )
                 return
 
         # Copy SKILL.md
@@ -324,7 +349,10 @@ class SkillDeployer:
         force: bool,
         result: DeployResult,
     ) -> None:
-        """Copy a single file, respecting force/dry-run flags.
+        """Copy a single file with atomic overwrite.
+
+        Uses copy-to-temp-then-rename to prevent data loss.  If the
+        destination exists and *force* is ``False``, the copy is skipped.
 
         Args:
             src: Source file path.
@@ -359,13 +387,28 @@ class SkillDeployer:
         if not dry_run:
             try:
                 dst.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(src, dst)
+                # Atomic overwrite: copy to temp file in same dir, then rename
+                fd, tmp_path = tempfile.mkstemp(
+                    dir=dst.parent, suffix=".tmp"
+                )
+                try:
+                    import os
+
+                    os.close(fd)
+                    shutil.copy2(src, tmp_path)
+                    Path(tmp_path).replace(dst)
+                except BaseException:
+                    # Clean up temp file on any failure
+                    Path(tmp_path).unlink(missing_ok=True)
+                    raise
             except PermissionError as exc:
                 result.errors.append(
                     f"Permission denied copying {src} -> {dst}: {exc}"
                 )
             except OSError as exc:
-                result.errors.append(f"OS error copying {src} -> {dst}: {exc}")
+                result.errors.append(
+                    f"OS error copying {src} -> {dst}: {exc}"
+                )
 
     def _copy_directory(
         self,
@@ -378,7 +421,10 @@ class SkillDeployer:
         force: bool,
         result: DeployResult,
     ) -> None:
-        """Recursively copy a directory, respecting force/dry-run flags.
+        """Recursively copy a directory with atomic overwrite.
+
+        When overwriting, copies to a temp directory first, then removes
+        the old directory and renames the temp into place.
 
         Args:
             src: Source directory path.
@@ -414,17 +460,27 @@ class SkillDeployer:
 
         if not dry_run:
             try:
+                # Atomic directory overwrite: copy to temp, swap
+                tmp_dst = dst.with_name(dst.name + ".tmp")
+                if tmp_dst.exists():
+                    shutil.rmtree(tmp_dst)
+                shutil.copytree(src, tmp_dst)
                 if dst.exists():
                     shutil.rmtree(dst)
-                shutil.copytree(src, dst)
+                tmp_dst.rename(dst)
             except PermissionError as exc:
                 result.errors.append(
                     f"Permission denied copying dir {src} -> {dst}: {exc}"
                 )
+                # Clean up partial temp
+                if tmp_dst.exists():
+                    shutil.rmtree(tmp_dst, ignore_errors=True)
             except OSError as exc:
                 result.errors.append(
                     f"OS error copying dir {src} -> {dst}: {exc}"
                 )
+                if tmp_dst.exists():
+                    shutil.rmtree(tmp_dst, ignore_errors=True)
 
     def _print_summary(self, result: DeployResult) -> None:
         """Print a rich summary of the deployment result.
@@ -433,7 +489,9 @@ class SkillDeployer:
             result: The deployment result to summarize.
         """
         if result.dry_run:
-            self.console.print("\n[bold yellow]DRY RUN[/] - no files were modified.\n")
+            self.console.print(
+                "\n[bold yellow]DRY RUN[/] - no files were modified.\n"
+            )
 
         if result.actions:
             table = Table(title="Deployment Actions", show_lines=False)
@@ -466,5 +524,6 @@ class SkillDeployer:
             deployed = result.skills_deployed
             label = "would be deployed" if result.dry_run else "deployed"
             self.console.print(
-                f"\n[bold green]\u2714[/] {len(deployed)} skill(s) {label} successfully."
+                f"\n[bold green]\u2714[/] {len(deployed)} skill(s) {label}"
+                " successfully."
             )

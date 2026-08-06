@@ -1,13 +1,43 @@
+# Python
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*$py.class
+*.so
 *.egg-info/
+*.egg
+.eggs/
 dist/
 build/
-.eggs/
-*.egg
-.pytest_cache/
-.mypy_cache/
+
+# Virtual environments
 .venv/
 venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Type checking / linting
+.mypy_cache/
+.ruff_cache/
+
+# Temporary
 tmp/
+*.log
+
+# Agent runtime deploy targets and tool state
+.pi/
+.claude/
+.opencode/
+.agents/

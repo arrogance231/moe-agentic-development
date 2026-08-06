@@ -5,12 +5,13 @@ from __future__ import annotations
 import textwrap
 from pathlib import Path
 
-import pytest
 from rich.console import Console
 
-from moe_agentic.deploy import DeployResult, DeployTarget, SkillDeployer, resolve_skills_dir
-from moe_agentic.models import Skill
-
+from moe_agentic.deploy import (
+    DeployTarget,
+    SkillDeployer,
+    resolve_skills_dir,
+)
 
 # -- Fixtures ---------------------------------------------------------------
 
@@ -135,7 +136,9 @@ class TestSkillDeployer:
         assert result.success
 
         for target_dir in (".claude", ".opencode", ".agents"):
-            assert (tmp_path / target_dir / "skills" / "test-skill" / "SKILL.md").is_file()
+            assert (
+                tmp_path / target_dir / "skills" / "test-skill" / "SKILL.md"
+            ).is_file()
 
     def test_dry_run_creates_no_files(self, tmp_path: Path) -> None:
         skills_dir = _make_skill_tree(tmp_path)
