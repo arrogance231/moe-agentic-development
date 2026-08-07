@@ -14,11 +14,26 @@ agent runtime that reads frontmatter-driven skill directories can use them.
 
 ## Research question
 
-> Do domain-specific skills measurably improve MoE engineering performance vs a
-> general LLM?
+A modern agent already has web search and a large amount of MoE literature in
+its weights. Beating an agent that has *no* access to MoE knowledge would only
+measure access to information, so that is not the question this repository asks.
+The baseline is search-enabled:
 
-The repository ships a benchmark harness designed to answer this question with
-controlled, paired agent experiments — see [BENCHMARK.md](BENCHMARK.md).
+> Given an agent that can already retrieve MoE knowledge on demand, does
+> packaging that domain as procedural skills produce measurably better,
+> cheaper, and more reproducible MoE engineering work than retrieval alone?
+
+The claim is that retrieval returns *declarative* knowledge — statements of fact,
+often conflicting — while the hard part of MoE engineering is *procedural*:
+which knob to move first, what to hold fixed, which default to commit to when
+the literature disagrees. Search also re-pays its cost on every run, returns
+different sources on different days, and ships no executable verification. The
+benchmark tests each of those as a separate hypothesis (H1–H5) against a
+search-enabled control.
+
+The repository ships a benchmark harness with a four-arm design — bare model,
+search-only, skills-only, and skills+search — see [BENCHMARK.md](BENCHMARK.md)
+for the design, hypotheses, and threats to validity.
 
 ## Architecture
 
@@ -97,10 +112,12 @@ Claude Code · OpenCode · Custom agent
 
 ## Benchmarks
 
-The benchmark harness measures whether the MoE skills measurably improve agent
-performance on MoE engineering tasks, using a paired baseline-vs-treatment
-design. See [BENCHMARK.md](BENCHMARK.md) for the methodology, tasks, and
-metrics.
+The benchmark harness measures whether the MoE skills improve agent performance
+over a **search-enabled** baseline, using a four-arm design (bare / search /
+skills / skills+search) paired by task and seed. It scores quality, cost (tokens,
+tool calls, wall-clock), and reliability (run-to-run variance, numeric and
+internal-consistency error rates). See [BENCHMARK.md](BENCHMARK.md) for the
+design, hypotheses, tasks, metrics, and threats to validity.
 
 ## Documentation
 

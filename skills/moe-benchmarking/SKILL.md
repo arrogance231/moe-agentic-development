@@ -1,6 +1,6 @@
 ---
 name: moe-benchmarking
-description: Design and run reproducible agentic-benchmark experiments comparing a baseline LLM against the same LLM augmented with MoE engineering skills. Defines tasks, metrics, scoring rubrics, and statistical designs; evaluates architecture design, training setup, debugging, and optimization performance.
+description: Design and run reproducible agentic-benchmark experiments comparing a search-enabled baseline LLM against the same LLM augmented with MoE engineering skills. Defines the four-arm design (bare, search, skills, skills+search), tasks, quality/cost/reliability metrics, scoring rubrics, and statistical designs; evaluates architecture design, training setup, debugging, and optimization performance.
 license: Apache-2.0
 compatibility: [claude-code, opencode, generic]
 metadata:
@@ -24,9 +24,10 @@ influenced by reviewer expectations.
 Use this skill when asked to:
 
 - Measure whether MoE domain skills improve agent performance on MoE engineering
-  tasks (architecture design, training setup, debugging, optimization).
-- Design an experiment protocol that compares a baseline LLM against the same
-  LLM with the MoE skill suite loaded.
+  tasks (architecture design, training setup, debugging, optimization) **over a
+  search-enabled baseline** — not over an information-starved one.
+- Design an experiment protocol that compares a retrieval-capable baseline LLM
+  against the same LLM with the MoE skill suite loaded.
 - Score agent outputs against pre-registered rubrics and run the statistical
   analysis (paired comparison, effect size, confidence intervals).
 
@@ -35,8 +36,11 @@ Use this skill when asked to:
 Before running any benchmark you need, and should elicit if not provided:
 
 - **Research question** — the specific claim to be tested.
-- **Baseline/treatment definition** — SAME model, SAME hardware, SAME task set;
-  the only difference is whether MoE skills are loaded.
+- **Arm definitions** — SAME model, SAME hardware, SAME task set, SAME seeds;
+  arms differ only in whether retrieval is registered as a tool and whether MoE
+  skills are loaded (see "Experimental arms" below).
+- **Retrieval configuration** — which search/doc-retrieval backend the
+  search-enabled arms use, and the per-run tool-call cap applied equally to them.
 - **Task set** — the MoE engineering tasks selected from the Task library below.
 - **Evaluation budget** — number of runs, GPU-hours, and wall-clock time.
 
@@ -49,13 +53,53 @@ Before running any benchmark you need, and should elicit if not provided:
 
 ## Workflow
 
-1. Define the research question and hypotheses (H0/H1).
-2. Select tasks from the Task library (section below).
-3. Define baseline and treatment: SAME model, SAME hardware, SAME task set — skills loaded vs not loaded.
-4. Define metrics per task and scoring rubrics.
-5. Define and execute the run protocol (n repetitions, ordering, seeding) — save all outputs under `benchmarks/baseline/` and `benchmarks/with-skills/`.
-6. Statistical analysis: paired comparison, effect size, mean ± 95% CI.
-7. Write the report into `benchmarks/results/`.
+1. Define the research question and hypotheses (H0 plus the mechanism hypotheses H1-H5).
+2. Select tasks from the Task library (section below), including at least one task that requires arbitrating conflicting guidance and one that requires extrapolating past published recipes — those discriminate skills from retrieval.
+3. Define the arms: SAME model, SAME hardware, SAME task set, SAME seeds — arms differ only in retrieval access and skills loaded.
+4. Define metrics per task: quality rubrics, cost instrumentation, and reliability measures.
+5. Run a headroom check — if the search-enabled arm already saturates a rubric, that task cannot detect an effect; fix or drop it before the full wave.
+6. Define and execute the run protocol (n repetitions, ordering, seeding, query logging) — save all outputs and search-query logs under `benchmarks/baseline/` (A0, A1) and `benchmarks/with-skills/` (A2, A3), one subdirectory per arm.
+7. Statistical analysis: paired comparison on the primary endpoint, secondaries with multiplicity correction, effect size, mean ± 95% CI.
+8. Write the report into `benchmarks/results/`, including the retrieval-only gain (A1 - A0).
+
+## Experimental arms
+
+The baseline is **search-enabled**. Comparing against an agent denied all
+information access measures access to information, not the value of skills, and
+inflates the effect.
+
+| Arm | Retrieval | Skills | Role |
+|-----|-----------|--------|------|
+| A0 | No | No | Floor; intrinsic task difficulty |
+| A1 | Yes | No | The real control |
+| A2 | No | Yes | Skills isolated from retrieval; air-gapped-cluster case |
+| A3 | Yes | Yes | Deployed configuration |
+
+Primary comparison is **A3 vs A1**. Always also report **A1 - A0**, the
+retrieval-only gain, so readers can see how much of the effect search alone
+buys.
+
+Confound controls:
+
+- Disable retrieval at the harness level for A0/A2 — never by telling the model
+  not to search.
+- Apply the same tool-call cap and the same retrieval backend to A1 and A3.
+- Log every search query, returned URL, and retrieved snippet; a run without its
+  query log is not reproducible and is excluded.
+- Cache or snapshot retrieval responses where the backend allows replay;
+  otherwise record the run date and state cross-date comparison as a limitation.
+- Skill text must never instruct the agent to search, or A2 and A3 stop being
+  separable.
+
+## Hypotheses
+
+| ID | Hypothesis | Comparison | Metric |
+|----|-----------|-----------|--------|
+| H1 | Skills improve procedural task quality beyond retrieval | A3 > A1 | diagnosis accuracy, rubric total |
+| H2 | Skills reduce run-to-run variance | Var(A3) < Var(A1) | score SD across seeds |
+| H3 | Skills reduce cost at equal-or-better quality | A3 < A1 | tool calls, tokens, wall-clock |
+| H4 | Skills reduce internally inconsistent configurations | A3 < A1 | internal-inconsistency rate |
+| H5 | Skills reduce numeric errors in artifacts | A3 < A1 | numeric-consistency error rate |
 
 ## Task library
 
@@ -119,6 +163,39 @@ Before running any benchmark you need, and should elicit if not provided:
   formulas (e.g. throughput improvement ratio); launch success remains a manual
   binary check.
 
+### Task 5: Conflicting-guidance resolution
+
+- **Task id / name:** `task5` — Conflicting-guidance resolution
+- **Prompt:** "Choose the capacity factor, auxiliary-loss coefficient, and top-k
+  for this hardware budget, and justify each choice against the disagreement in
+  the published literature."
+- **Inputs:** a hardware budget and a target model size.
+- **Outputs:** a decision document (`task5_runM.md`) stating each value, the
+  conflicting positions it was chosen against, and the conditions under which
+  the choice should be revisited.
+- **Metrics:** internal consistency, justification quality, whether stated
+  deviation conditions are present.
+- **Scoring rubric:** internal consistency is checked against the pre-registered
+  incompatible-pair list (deterministic); justification is rubric-scored 0-5.
+- **Why this task exists:** retrieval surfaces all the conflicting positions and
+  arbitrates none of them. This is where a committed, defended default should
+  separate the skills arm from the search arm.
+
+### Task 6: Constrained-hardware design
+
+- **Task id / name:** `task6` — Constrained-hardware design
+- **Prompt:** "Design an MoE model under this constraint" — a constraint no
+  published recipe matches directly (e.g. limited interconnect bandwidth, a
+  fixed expert-parallel degree).
+- **Inputs:** the constraint, plus a target dense-equivalent size.
+- **Outputs:** an architecture document (`task6_runM.md`).
+- **Metrics:** correctness (parameter math), constraint satisfaction,
+  expert-utilization awareness.
+- **Scoring rubric:** constraint satisfaction is a deterministic check against
+  the stated numeric constraint; the rest reuses the Task 1 criteria.
+- **Why this task exists:** it forces extrapolation past any single published
+  recipe, so a retrieved recipe cannot be copied wholesale.
+
 ## Metrics definitions and scoring rubrics
 
 Scoring is automated via the evaluator scripts wherever possible. Both scripts
@@ -144,18 +221,54 @@ sub-element. Details per criterion:
 Rubrics are fixed before scoring begins (pre-registration) and are never
 re-tuned to fit results.
 
+### Cost metrics (recorded on every run, every arm)
+
+- **Tool calls** — total, and search calls specifically.
+- **Total tokens** — prompt + completion, including retrieved content pulled
+  into context. Retrieval that must be re-paid on every run shows up here.
+- **Wall-clock to first valid artifact** — time to an output passing the task's
+  validity check, independent of its rubric score.
+
+### Reliability metrics (across seeds within an arm)
+
+- **Score SD** per task per arm — the H2 endpoint.
+- **Numeric-consistency error rate** — fraction of artifacts whose stated
+  numbers do not close under the task's own formulas (total parameters vs
+  expert count × expert size; memory estimate vs stated batch geometry).
+  Checked mechanically, never by reading the prose.
+- **Internal-inconsistency rate** — fraction of artifacts combining mutually
+  incompatible recommendations (e.g. top-1 routing paired with a capacity factor
+  justified for top-2), checked against a pre-registered incompatible-pair list.
+
 ## Statistical design
 
-- **Sample size:** n runs per condition per task — minimum 5; more with budget.
-- **Design:** paired comparison — baseline and treatment run on the SAME tasks
-  with the SAME seeds, so each pair differs only in skills loaded.
+- **Sample size:** n runs per arm per task — minimum 5; more with budget. Four
+  arms × six tasks × n=5 is 120 runs.
+- **Design:** paired across arms by (task, seed); the unit of analysis is the
+  per-pair difference.
+- **Primary endpoint:** A3 vs A1 on task quality — one pre-registered test.
+- **Multiplicity:** every other comparison is secondary, reported with a Holm
+  correction over the pre-registered secondary family, and never presented as
+  confirmatory.
 - **Effect size:** Cohen's d on the paired differences.
-- **Reporting:** mean ± 95% CI for each metric per condition.
-- **Pre-registration:** rubrics and thresholds are fixed before any scoring.
+- **Variance endpoint:** SD ratio between arms with bootstrap CIs — do not use a
+  normal-theory variance ratio test on rubric scores.
+- **Reporting:** mean ± 95% CI per metric per arm, plus the paired difference
+  and its CI, plus the retrieval-only gain (A1 - A0).
+- **Pre-registration:** hypotheses, rubrics, thresholds, the incompatible-pair
+  list, and exclusion rules are fixed before any scoring.
 
 ## Anti-patterns
 
-- Comparing different models (baseline vs treatment must be the SAME model).
+- **Denying the baseline web search.** The single most effect-inflating mistake
+  available here: it measures information access, not skills. The control arm
+  gets retrieval.
+- **Disabling search by prompt instruction** rather than by unregistering the
+  tool — the model may search anyway, or may behave differently because it was
+  told not to. Contaminates the arm either way.
+- Running search-enabled arms without logging queries (irreproducible).
+- Reporting the skill effect without reporting the retrieval-only gain (A1 - A0).
+- Comparing different models (all arms must be the SAME model).
 - Comparing different hardware (same GPUs, same software stack).
 - Unblinded human scoring (score outputs without knowing which condition they
   came from; automate with `evaluators/` where possible).
@@ -170,21 +283,31 @@ re-tuned to fit results.
    task set, metrics, rubrics, run protocol, and statistical analysis plan.
 2. **Results table template:**
 
-| Task | Metric | Baseline mean ± CI | Treatment mean ± CI | Delta | Effect size (Cohen's d) |
-|------|--------|--------------------|---------------------|-------|--------------------------|
-| task1 | correctness (total /25) |  |  |  |  |
-| task2 | successful launch |  |  |  |  |
-| task3 | accuracy (0-1) |  |  |  |  |
-| task4 | throughput (tok/s) |  |  |  |  |
+| Task | Metric | A0 bare | A1 search | A2 skills | A3 skills+search | A3-A1 | Cohen's d |
+|------|--------|---------|-----------|-----------|------------------|-------|-----------|
+| task1 | correctness (total /25) |  |  |  |  |  |  |
+| task2 | successful launch |  |  |  |  |  |  |
+| task3 | accuracy (0-1) |  |  |  |  |  |  |
+| task4 | throughput (tok/s) |  |  |  |  |  |  |
+| task5 | internal consistency |  |  |  |  |  |  |
+| task6 | constraint satisfaction |  |  |  |  |  |  |
+| all | score SD (H2) |  |  |  |  |  |  |
+| all | total tokens (H3) |  |  |  |  |  |  |
+| all | numeric-error rate (H5) |  |  |  |  |  |  |
 
 3. **Analysis plan** — how to interpret the results, what "significant" means,
-   and how failures are reported.
+   and how failures are reported. A tie on quality against the search-enabled
+   arm, with lower variance and lower cost, is a legitimate positive result and
+   should be reported as exactly that — not dressed up as a quality win.
 
 ## Evaluation criteria
 
-- **Reproducibility:** exact commands, seeds, and environment recorded for every
-  run.
-- **Controlled comparison:** baseline and treatment differ ONLY in skills loaded.
+- **Reproducibility:** exact commands, seeds, environment, and search-query logs
+  recorded for every run.
+- **Strong baseline:** the control arm has retrieval; the study never claims
+  credit for information the baseline was simply denied.
+- **Controlled comparison:** arms differ ONLY in retrieval access and skills
+  loaded.
 - **Honest reporting:** include failures (launch failures, OOMs, invalid
   outputs) in the results table and analysis.
 
@@ -198,6 +321,7 @@ re-tuned to fit results.
   evaluation.
 - `examples/benchmark-protocol.md` — a complete 4-task benchmark protocol to
   adapt.
-- `benchmarks/baseline/` — baseline run outputs (agent WITHOUT MoE skills).
-- `benchmarks/with-skills/` — treatment run outputs (agent WITH MoE skills).
+- `benchmarks/baseline/` — arms A0 (bare) and A1 (search-enabled control), one
+  subdirectory per arm, each with its search-query logs.
+- `benchmarks/with-skills/` — arms A2 (skills, offline) and A3 (skills+search).
 - `benchmarks/results/` — aggregated results tables and analysis reports.
