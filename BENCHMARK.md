@@ -271,6 +271,15 @@ Owned by the `moe-benchmarking` skill, which holds the rubrics and evaluators:
   specific to the harness and model version; report the environment and treat
   cross-version comparisons as invalid.
 
+## Compute
+
+All training, profiling, and benchmark runs execute on AMD GPU compute provided
+free of charge by the [AMD Developer Program](https://developer.amd.com/) —
+without it this study could not be run at all. Because "same hardware" is a
+precondition of the design, every run must record its exact GPU model, node
+topology, and ROCm version; results from different hardware or a different ROCm
+version are not comparable and must not be pooled.
+
 ## Running it
 
 The run protocol, scoring, and analysis are executed by the `moe-benchmarking`
