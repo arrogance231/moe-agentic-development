@@ -274,7 +274,7 @@ Owned by the `moe-benchmarking` skill, which holds the rubrics and evaluators:
 ## Compute
 
 All training, profiling, and benchmark runs execute on AMD GPU compute provided
-free of charge by the [AMD Developer Program](https://developer.amd.com/) —
+free of charge by the [AMD AI Developer Program](https://developer.amd.com/) —
 without it this study could not be run at all. Because "same hardware" is a
 precondition of the design, every run must record its exact GPU model, node
 topology, and ROCm version; results from different hardware or a different ROCm

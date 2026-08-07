@@ -2,6 +2,10 @@
 
 Agentic skills for Mixture-of-Experts engineering.
 
+GPU compute for all training and benchmark runs is provided by the
+**[AMD AI Developer Program](https://developer.amd.com/)** — see
+[Acknowledgments](#acknowledgments) and [CONTRIBUTORS.md](CONTRIBUTORS.md).
+
 ## What it is
 
 An agentic skill ecosystem for MoE engineering: five domain skills (architecture
@@ -146,18 +150,19 @@ See [ROADMAP.md](ROADMAP.md) for the per-item checklists.
 - [docs/architecture.md](docs/architecture.md) — framework architecture
 - [ROADMAP.md](ROADMAP.md) — project roadmap
 - [CONTRIBUTING.md](CONTRIBUTING.md) — how to contribute
+- [CONTRIBUTORS.md](CONTRIBUTORS.md) — people and organizations behind the project
 
 ## Acknowledgments
 
-**[AMD Developer Program](https://developer.amd.com/)** — for providing free
-access to AMD GPU compute. The benchmark design in this repository calls for a
+**[AMD AI Developer Program](https://developer.amd.com/)** — main contributor,
+for providing free access to AMD GPU compute. The benchmark design calls for a
 four-arm, six-task, n≥5 experiment — on the order of 120 agent runs plus the
 training and profiling work behind Tasks 2 and 4 — and none of it could be
 tested or trained without that hardware. Every empirical result published here
 runs on AMD GPUs through the program.
 
-This is an acknowledgment of compute support. The AMD Developer Program does not
-author, review, or endorse this work.
+This is an acknowledgment of compute support. The AMD AI Developer Program does
+not author, review, or endorse this work.
 
 ## License
 
