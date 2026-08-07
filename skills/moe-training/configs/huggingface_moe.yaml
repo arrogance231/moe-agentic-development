@@ -1,0 +1,49 @@
+# HuggingFace Transformers MoE model configuration
+#
+# Shared assumptions for this skill's example configs:
+#   - 7B-total-parameter MoE with ~1B dense-equivalent
+#     (total 7.0 B, expert-only 6.0 B, dense 1.0 B)
+#   - 64 experts, top-2 routing
+#   - 24 layers, d_model 2048, ffn_mult 4 (dense/shared FFN hidden 8192)
+#   - expert FFN hidden 32768 (= 4x the dense FFN hidden 8192)
+#   - vocab 32000, seq_len 2048
+#   - 8 x H100-80GB
+#
+# `model_type: mixtral` selects a Mixtral-style MoE layer in Transformers:
+# a router over `num_local_experts`, dispatching each token to
+# `num_experts_per_tok` experts. Every MoE-specific field is commented.
+
+model_type: mixtral
+
+# --- core shape -----------------------------------------------------------
+num_hidden_layers: 24
+hidden_size: 2048                    # d_model
+intermediate_size: 32768             # expert FFN hidden = 4x dense FFN 8192
+num_attention_heads: 32
+num_key_value_heads: 8               # grouped-query attention
+head_dim: 128                        # hidden_size / num_attention_heads
+hidden_act: swiglu                   # GLU activation for the expert FFN
+rms_norm_eps: 1.0e-5
+
+# --- MoE routing ----------------------------------------------------------
+num_local_experts: 64                # experts per MoE layer (total, all ranks)
+num_experts_per_tok: 2               # top-k: active experts per token
+router_aux_loss_coef: 0.01           # load-balancing aux loss weight (0.001-0.01)
+capacity_factor: 1.0                 # must match the architecture doc; 1.0 drops
+                                     # tokens under imbalance, 1.25 absorbs them
+router_jitter_noise: 0.0             # disable training-time noise; keep routing
+                                     # deterministic for the capacity factor above
+
+# --- vocabulary / sequence ------------------------------------------------
+vocab_size: 32000
+max_position_embeddings: 2048        # seq_len
+
+# --- training-time flags --------------------------------------------------
+tie_word_embeddings: false           # untied embeddings: adds a second 32000x2048
+                                     # embedding block to the parameter count
+use_cache: false                     # disable KV-cache graph for training
+attention_dropout: 0.0               # keep 0 in pretraining
+hidden_dropout: 0.0
+
+# --- dtype ----------------------------------------------------------------
+torch_dtype: bfloat16                # BF16 mixed precision (or fp32/auto at load)
