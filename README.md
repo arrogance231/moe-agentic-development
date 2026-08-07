@@ -119,6 +119,26 @@ tool calls, wall-clock), and reliability (run-to-run variance, numeric and
 internal-consistency error rates). See [BENCHMARK.md](BENCHMARK.md) for the
 design, hypotheses, tasks, metrics, and threats to validity.
 
+## Roadmap
+
+Current phase: **Phase 1 — Skill framework**.
+
+| Phase | Scope | Status |
+|-------|-------|--------|
+| **0. Research** | Literature review, skill-domain selection, SKILL.md format validation | Complete |
+| **1. Skill framework** | Loader + `moe-skills` CLI, five skills, skill spec, benchmark harness, four-arm research design | **Active** |
+| **2. Benchmark execution** | Headroom check, all four arms, statistical analysis, published results | Future |
+| **3. Adapters** | HF / DeepSpeed / Megatron config generation and validation | Future |
+| **4. Agent orchestration** | Orchestrator and experiment-manager agents | Future |
+| **5. Hardening & release** | CI, coverage, packaging, docs polish, v1.0 | Future |
+
+Phase 1 is complete except for the run-harness work the four-arm design
+requires: Tasks 5 and 6, cost instrumentation (tool calls, tokens, wall-clock),
+search-query logging and retrieval caching for the search-enabled arms, and an
+independent review of the rubrics for skill-rubric circularity.
+
+See [ROADMAP.md](ROADMAP.md) for the per-item checklists.
+
 ## Documentation
 
 - [docs/README.md](docs/README.md) — documentation index
