@@ -499,6 +499,106 @@
       "A3",
       "task5",
       5
+    ],
+    [
+      "A0",
+      "task6",
+      1
+    ],
+    [
+      "A0",
+      "task6",
+      2
+    ],
+    [
+      "A0",
+      "task6",
+      3
+    ],
+    [
+      "A0",
+      "task6",
+      4
+    ],
+    [
+      "A0",
+      "task6",
+      5
+    ],
+    [
+      "A1",
+      "task6",
+      1
+    ],
+    [
+      "A1",
+      "task6",
+      2
+    ],
+    [
+      "A1",
+      "task6",
+      3
+    ],
+    [
+      "A1",
+      "task6",
+      4
+    ],
+    [
+      "A1",
+      "task6",
+      5
+    ],
+    [
+      "A2",
+      "task6",
+      1
+    ],
+    [
+      "A2",
+      "task6",
+      2
+    ],
+    [
+      "A2",
+      "task6",
+      3
+    ],
+    [
+      "A2",
+      "task6",
+      4
+    ],
+    [
+      "A2",
+      "task6",
+      5
+    ],
+    [
+      "A3",
+      "task6",
+      1
+    ],
+    [
+      "A3",
+      "task6",
+      2
+    ],
+    [
+      "A3",
+      "task6",
+      3
+    ],
+    [
+      "A3",
+      "task6",
+      4
+    ],
+    [
+      "A3",
+      "task6",
+      5
     ]
   ],
   "failed": [
@@ -524,6 +624,12 @@
       "arm": "A1",
       "task": "task5",
       "seed": 3,
+      "tail": "        ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/moe-agentic-development/benchmarks/harness/run_harness.py\", line 109, in run\n    text_out = extract_text(stdout) or stdout\n               ~~~~~~~~~~~~^^^^^^^^\n  File \"/root/moe-agentic-development/benchmarks/harness/run_harness.py\", line 151, in extract_text\n    if not line or not line.startswith(\"{\"):\n                       ~~~~~~~~~~~~~~~^^^^^\nTypeError: startswith first arg must be bytes or a tuple of bytes, not str\n"
+    },
+    {
+      "arm": "A3",
+      "task": "task6",
+      "seed": 4,
       "tail": "        ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/moe-agentic-development/benchmarks/harness/run_harness.py\", line 109, in run\n    text_out = extract_text(stdout) or stdout\n               ~~~~~~~~~~~~^^^^^^^^\n  File \"/root/moe-agentic-development/benchmarks/harness/run_harness.py\", line 151, in extract_text\n    if not line or not line.startswith(\"{\"):\n                       ~~~~~~~~~~~~~~~^^^^^\nTypeError: startswith first arg must be bytes or a tuple of bytes, not str\n"
     }
   ]

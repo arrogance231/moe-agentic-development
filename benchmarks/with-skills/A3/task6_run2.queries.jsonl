@@ -1,0 +1,5 @@
+{"query": "Mixture of Experts expert parallel low bandwidth interconnect tokens per second all-to-all communication", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T09:50:29Z"}
+{"query": "Mixture of Experts all-to-all communication cost expert parallelism bandwidth tokens per second estimation", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T09:50:47Z"}
+{"query": "MoE training 25 Gbps Ethernet interconnect expert parallelism all-to-all bandwidth constrained design", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T09:51:05Z"}
+{"query": "Mixtral 8x7B 7B dense equivalent num_experts top_k architecture parameter count d_model 4096", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T09:51:25Z"}
+{"query": "25 Gbps Ethernet NCCL MoE training expert parallel bandwidth constraint throughput estimate", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T09:51:45Z"}
