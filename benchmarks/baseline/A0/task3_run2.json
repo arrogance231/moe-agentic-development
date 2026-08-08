@@ -1,0 +1,31 @@
+```json
+{
+  "identified_problems": [
+    "Extreme expert load imbalance (routing collapse): 3 of 32 experts absorb >80% of routed tokens",
+    "Gradient explosion immediately preceding the NaN, with no gradient clipping to bound it",
+    "Token dropping due to capacity_factor=1.0, which injects biased/noisy gradients and weakens the routing signal",
+    "Loss divergence to NaN at step 4200 after a healthy decreasing phase, characteristic of a weight-norm blow-up rather than a data or label issue"
+  ],
+  "root_causes": [
+    "The top-1 routing without any auxiliary load-balancing loss lets a few experts win most tokens; those overloaded experts accumulate disproportionately large gradients because they process the bulk of the loss, driving the gradient-norm spike.",
+    "No gradient clipping allows the spiking gradient norm to grow unchecked, so the optimizer (e.g., Adam/AdamW) takes an oversized update, exploding weights and producing NaN.",
+    "capacity_factor=1.0 drops overflow tokens from the saturated experts, creating a biased, high-variance gradient signal that destabilizes training and accelerates the collapse.",
+    "Once the imbalance entrenches itself, the dominant experts' weights grow faster (a feedback loop), pushing the loss landscape to the edge just before step 4200."
+  ],
+  "actions": [
+    "Enable gradient clipping: clip_by_global_norm(1.0) (or max_grad_norm=1.0) to cap the gradient-norm spike.",
+    "Add a load-balancing auxiliary loss (e.g., Switch Transformer's load-balancing loss with a small alpha ~0.01, or router z-loss) to penalize the 3-expert domination.",
+    "Raise capacity_factor to 1.25–2.0 to reduce token dropping and remove the biased-gradient source.",
+    "Optionally reduce the learning rate or strengthen LR warmup/schedule since the imbalance-induced spikes are optimizer-driven.",
+    "Add monitoring/alerting for expert load imbalance ratio and gradient norm so the collapse is caught before NaN.",
+    "If instability persists, consider top-2 routing or per-expert gradient/weight norm capping as a secondary mitigation."
+  ],
+  "evidence": [
+    "loss went to NaN at step 4200 after several hundred steps of normal decreasing loss — indicates an instability onset, not a broken loss computation",
+    "gradient norm spiked sharply in the 50 steps preceding the NaN — the direct precursor to the weight blow-up, exacerbated by no gradient clipping",
+    "top-1 routing with capacity_factor=1.0 — provides no built-in balancing signal and drops tokens, worsening the imbalance feedback loop",
+    "no gradient clipping configured — allows the observed spike to translate into an unbounded weight update",
+    "expert load logs: 3 of 32 experts receiving >80% of routed tokens — confirms routing collapse, the ultimate cause of the concentrated gradients and instability"
+  ]
+}
+```

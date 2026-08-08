@@ -1,0 +1,32 @@
+```json
+{
+  "identified_problems": [
+    "Router collapse / severe expert imbalance (3 of 32 experts capture >80% of tokens)",
+    "Gradient explosion (grad-norm spike in the 50 steps before the NaN)",
+    "NaN loss / training divergence at step 4200",
+    "Missing gradient clipping",
+    "Token drops from top-1 routing with capacity_factor=1.0 under imbalance"
+  ],
+  "root_causes": [
+    "Absent or too-weak load-balancing aux loss — the router deterministically favors a handful of experts, collapsing load onto 3 of 32 experts",
+    "No gradient clipping — the sharp gradient-norm spike propagated unchecked and overflowed the loss to NaN",
+    "Top-1 routing with capacity_factor=1.0 overloads the few favored experts and drops tokens from under-loaded experts, starving their gradients and further destabilizing the router, which correlates the collapse with the gradient explosion"
+  ],
+  "actions": [
+    "Add gradient clipping (norm 1.0) — the immediate fix for the NaN",
+    "Add/increase the router auxiliary load-balancing loss to ~0.01 (within 0.001–0.01) to counter the collapse",
+    "Raise the capacity factor from 1.0 to ~1.25 so under-loaded experts keep receiving tokens during imbalance",
+    "Add jitter noise to router logits at train time to stop deterministic favoring of a subset of experts",
+    "Lower the learning rate or extend warmup to stabilize router updates after collapse",
+    "Switch to BF16 (or FP32 master weights) if FP16 is in use, to remove overflow risk",
+    "Confirm the fix: train a short run with aux loss 0.01 and gradient clipping vs the current config at a fixed seed, and compare effective-expert count and loss finiteness at the same step count"
+  ],
+  "evidence": [
+    "Loss went to NaN at step 4200 after several hundred steps of normal decreasing loss",
+    "Gradient norm spiked sharply in the 50 steps preceding the NaN",
+    "Expert load logs show 3 of 32 experts receiving >80% of routed tokens in the steps before the spike",
+    "Top-1 routing with capacity_factor=1.0 is configured",
+    "No gradient clipping is configured"
+  ]
+}
+```

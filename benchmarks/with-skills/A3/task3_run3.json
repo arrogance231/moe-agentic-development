@@ -1,0 +1,29 @@
+```json
+{
+  "identified_problems": [
+    "Exploding loss / NaN at step 4200",
+    "Gradient explosion (gradient norm spiked sharply in the 50 steps preceding the NaN)",
+    "Router collapse / severe expert imbalance (3 of 32 experts receiving >80% of routed tokens)",
+    "Token starvation of under-loaded experts at capacity_factor=1.0, reinforcing the imbalance"
+  ],
+  "root_causes": [
+    "Router collapse: with top-1 routing and weak/absent load-balancing aux loss, the router concentrates almost all tokens (and thus gradients) on 3 of 32 experts, creating a positive feedback loop that amplifies gradient magnitude.",
+    "No gradient clipping: the sharp gradient spike is unmitigated, so it escalates directly into an exploding-loss NaN.",
+    "capacity_factor=1.0 under imbalance: tokens bound for under-loaded experts are dropped, starving their gradients and making the imbalance worse instead of self-correcting."
+  ],
+  "actions": [
+    "Add gradient clipping (norm 1.0) to bound the spike that precedes the NaN.",
+    "Add or strengthen the load-balancing auxiliary loss (e.g. 0.001 → 0.01) to counter router collapse under top-1 routing.",
+    "Raise capacity_factor to 1.25 so under-loaded experts keep receiving tokens and stop being starved.",
+    "Lower the learning rate or extend warmup to stabilize the router after collapse.",
+    "Consider switching from top-1 to top-2 routing to reduce collapse tendency and improve quality."
+  ],
+  "evidence": [
+    "Loss went to NaN at step 4200 after several hundred steps of normal decreasing loss (signature of a late gradient explosion rather than a bad initialization).",
+    "Gradient norm spiked sharply in the 50 steps preceding the NaN (direct gradient-explosion signal, unchecked because no gradient clipping is configured).",
+    "No gradient clipping configured (no safety net for the spike).",
+    "Expert load logs show 3 of 32 experts receiving >80% of routed tokens before the spike (router collapse / extreme imbalance, consistent with top-1 routing and no effective aux loss).",
+    "top-1 routing with capacity_factor=1.0 (high collapse risk; tokens dropped from the 29 under-loaded experts starve their gradients and worsen the imbalance)."
+  ]
+}
+```

@@ -1,0 +1,32 @@
+```json
+{
+  "identified_problems": [
+    "Gradient explosion ending in NaN — gradient norm spiked over the 50 steps before step 4200, then the loss went NaN",
+    "Router collapse / severe expert imbalance — 3 of 32 experts carry >80% of routed tokens before the spike",
+    "Token starvation of under-loaded experts — capacity_factor=1.0 drops tokens under imbalance, starving their gradients and deepening the collapse",
+    "Missing safety net — no gradient clipping, so the gradient-norm spike propagated to overflow (NaN)"
+  ],
+  "root_causes": [
+    "Aux load-balancing loss absent or too weak — the router collapsed to ~3 active experts (evidence: 3/32 experts >80% of tokens), consistent with the router-collapse workflow",
+    "capacity_factor=1.0 combined with the imbalance drops tokens from under-loaded experts, removing their gradient signal and reinforcing the collapse",
+    "top-1 routing concentrates all token load on single experts, amplifying the imbalance vs top-2",
+    "No gradient clipping — the destabilized router produced a gradient-norm spike that overflowed into NaN at step 4200"
+  ],
+  "actions": [
+    "Add gradient clipping (norm 1.0) — the immediate fix for the NaN path",
+    "Raise capacity_factor to 1.25 so under-loaded experts keep receiving tokens",
+    "Add or strengthen the aux load-balancing loss (scale 0.001–0.01) to spread routing across all 32 experts",
+    "Lower the LR (or extend warmup) to stabilize router updates",
+    "Add router-logit jitter at train time to break deterministic favoring of the collapsed experts",
+    "Confirm with ablations at fixed seed: aux loss 0.01 vs 0 (effective experts should stay >= 0.5*n), and clipping on vs off (loss stays finite)"
+  ],
+  "evidence": [
+    "Loss went to NaN at step 4200 after several hundred steps of normal decreasing loss",
+    "Gradient norm spiked sharply in the 50 steps preceding the NaN",
+    "Expert load logs show 3 of 32 experts receiving >80% of routed tokens in the steps before the spike",
+    "The run uses top-1 routing",
+    "The run uses capacity_factor=1.0",
+    "No gradient clipping is configured"
+  ]
+}
+```

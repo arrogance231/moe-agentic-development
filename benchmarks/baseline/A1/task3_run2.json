@@ -1,0 +1,32 @@
+```json
+{
+  "identified_problems": [
+    "Loss divergence: loss went to NaN at step 4200 after a long stable decreasing phase",
+    "Catastrophic gradient instability: gradient norm spiked sharply over the 50 steps before the NaN",
+    "Severe expert load imbalance / routing collapse: only 3 of 32 experts received >80% of routed tokens",
+    "Token overflow/dropping under top-1 routing with capacity_factor=1.0 (no capacity buffer)",
+    "Unbounded optimization: no gradient clipping, so the growing gradient norm was never capped"
+  ],
+  "root_causes": [
+    "Top-1 hard routing is greedy and self-reinforcing ('rich-get-richer'): once a few experts win more tokens, they train faster and keep winning, causing a load-imbalance feedback loop (evidenced by 3/32 experts capturing >80% of tokens).",
+    "The overloaded experts accumulate disproportionately large gradients while the starved experts get little signal, producing the sharp gradient-norm spike in the 50 steps before the failure.",
+    "capacity_factor=1.0 provides no headroom, so overflow tokens are dropped; dropped tokens create non-differentiable, high-variance loss behavior and can also break gradient flow through routing, amplifying instability.",
+    "With no gradient clipping, the sustained spike in gradient norm (over ~50 steps) compounds until an optimizer step produces an exploding update, driving weights (or logits feeding softmax/normalization) to a value that overflows to NaN."
+  ],
+  "actions": [
+    "Enable global gradient norm clipping (e.g., clip_by_global_norm with max_norm ~1.0) to bound the spike before it compounds.",
+    "Add an auxiliary load-balancing loss (Switch/GShard style, e.g., alpha=0.01) to penalize the imbalance and prevent 3 experts from capturing most tokens.",
+    "Increase capacity_factor from 1.0 to ~1.25-1.5 (or use a no-drop policy) so overflow tokens are not silently dropped.",
+    "Consider switching from top-1 to top-2 routing (GShard-style) to improve expert utilization and reduce imbalance pressure.",
+    "Lower the peak learning rate and/or extend warmup, and consider a more stable optimizer setting (e.g., AdamW with a small epsilon floor) to ride out the load-imbalance phase.",
+    "Add a small epsilon to normalization layers inside the expert blocks to prevent divide-by-tiny-value blowups."
+  ],
+  "evidence": [
+    "Loss went to NaN at step 4200 after several hundred steps of normal decreasing loss (indicates a gradual drift rather than immediate misconfiguration).",
+    "Gradient norm spiked sharply in the 50 steps preceding the NaN (runaway gradients were already building before the loss diverged).",
+    "Expert load logs show 3 of 32 experts receiving >80% of routed tokens in the steps before the spike (routing collapse / severe imbalance).",
+    "The run uses top-1 routing with capacity_factor=1.0 (hard greedy routing, zero capacity buffer, token dropping on overflow).",
+    "No gradient clipping is configured (nothing capped the growing gradient norm)."
+  ]
+}
+```

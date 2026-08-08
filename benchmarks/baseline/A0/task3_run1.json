@@ -1,0 +1,32 @@
+```json
+{
+  "identified_problems": [
+    "Load imbalance / router collapse: 3 of 32 experts absorb >80% of routed tokens, starving the other 29 experts of gradient signal.",
+    "Training instability: gradient norm spiked sharply in the ~50 steps before step 4200, then loss diverged to NaN.",
+    "Unbounded gradient propagation: no gradient clipping was configured, so the spike propagated unchecked and corrupted the optimizer state.",
+    "Capacity bottleneck: capacity_factor=1.0 leaves zero slack, so overloaded experts drop tokens, causing discontinuous, near-arbitrary assignment that destabilizes the router."
+  ],
+  "root_causes": [
+    "Top-1 routing with argmax selection is non-differentiable at selection boundaries and creates a rich-get-richer feedback loop: experts already favored receive more tokens, their gradients dominate, and unused experts never recover, reinforcing imbalance until collapse.",
+    "Under load imbalance, the gating softmax saturates toward one-hot distributions; gradients through a near-one-hot gating network can grow explosively, explaining the gradient-norm spike.",
+    "With capacity_factor=1.0, transient imbalance translates directly into token dropping and abrupt routing decisions, injecting noise/discontinuity into gradients rather than being absorbed by slack capacity.",
+    "Absence of any load-balancing regularization (auxiliary loss) or router stabilization (z-loss) combined with no gradient clipping allowed the instability to compound over several hundred steps before NaN."
+  ],
+  "actions": [
+    "Restore the training run from a checkpoint taken well before divergence (e.g., step ~4100 or earlier, before the gradient spike began).",
+    "Enable global-norm gradient clipping (e.g., max_norm=1.0) to bound spikes and prevent NaN.",
+    "Add an auxiliary load-balancing loss (e.g., Switch/GShard style load-balancing loss) to penalize the imbalanced routing and break the rich-get-richer loop.",
+    "Increase capacity_factor above 1.0 (e.g., 1.2-2.0) or use overflow-aware capacity handling to reduce token dropping.",
+    "Add router z-loss (ST-MoE) to penalize large gate logits and stabilize the gating network.",
+    "Consider lowering the router learning rate or applying warmup, and/or decoupling the router optimizer (e.g., AdamW with a smaller LR) from expert parameters.",
+    "Add monitoring and early-stopping signals: track expert utilization entropy and gate logit magnitude per step so collapse can be caught before it turns into a spike."
+  ],
+  "evidence": [
+    "Loss went to NaN at step 4200 after several hundred steps of normal decreasing loss (stable progress followed by abrupt divergence).",
+    "Gradient norm spiked sharply in the 50 steps preceding the NaN (warning sign of gating-softmax saturation / explosive router gradients).",
+    "3 of 32 experts received >80% of routed tokens in the steps before the spike (confirms severe load imbalance driving the collapse).",
+    "Top-1 routing with capacity_factor=1.0 (selection is non-differentiable and no slack capacity to absorb imbalance).",
+    "No gradient clipping configured (no mechanism to contain the gradient-norm spike)."
+  ]
+}
+```

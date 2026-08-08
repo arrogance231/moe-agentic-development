@@ -1,0 +1,31 @@
+```json
+{
+  "identified_problems": [
+    "Router collapse / severe expert imbalance: 3 of 32 experts receive >80% of routed tokens, so the effective expert count collapses toward ~3, not 32.",
+    "Gradient explosion: gradient norm spiked sharply over the 50 steps preceding the NaN, with no gradient clipping configured to bound it.",
+    "Loss divergence to NaN at step 4200 after a normal decreasing phase, consistent with an unbounded gradient spike cascading into numerical overflow.",
+    "Token dropping under capacity_factor=1.0: over-loaded experts overflow, dropped tokens starve under-loaded experts of gradients, amplifying instability.",
+    "Top-1 routing compounds collapse: single-expert assignment removes knowledge blending and makes the router more sensitive to the dominating experts."
+  ],
+  "root_causes": [
+    "Router collapse driven by weak or absent load-balancing aux loss combined with top-1 routing (3/32 experts dominate).",
+    "Gradient explosion with no gradient clipping: the unclipped norm spike over 50 steps is the direct mechanism that produced the NaN.",
+    "Capacity factor 1.0 under imbalance causes token drops and noisy/starved gradients for under-loaded experts.",
+    "Possible precision overflow (FP16) if training is not in BF16/FP32-master; the gradient spike is the trigger."
+  ],
+  "actions": [
+    "Add gradient clipping with norm 1.0 (highest priority) to bound the spike that produced the NaN.",
+    "Add or strengthen the load-balancing aux loss (0.001 -> 0.01) to stop router collapse and spread tokens across experts.",
+    "Raise capacity_factor from 1.0 to 1.25 to stop dropping tokens under the current imbalance.",
+    "Verify mixed precision is BF16 or FP32-master weights to rule out FP16 overflow.",
+    "Stabilize the router: lower LR / extend warmup, and consider router-logit jitter or moving to top-2 routing to reduce collapse."
+  ],
+  "evidence": [
+    "Loss went NaN at step 4200 after several hundred steps of normal decreasing loss.",
+    "Gradient norm spiked sharply in the 50 steps preceding the NaN.",
+    "No gradient clipping is configured.",
+    "3 of 32 experts received >80% of routed tokens in the steps before the spike.",
+    "Run uses top-1 routing with capacity_factor=1.0."
+  ]
+}
+```
