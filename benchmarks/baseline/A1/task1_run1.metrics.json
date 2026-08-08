@@ -1,0 +1,12 @@
+{
+  "arm": "A1",
+  "task": "task1",
+  "seed": 1,
+  "wall_clock_sec": 80.13,
+  "return_code": 0,
+  "tool_calls_total": 0,
+  "search_calls": 0,
+  "search_enabled_for_arm": true,
+  "output_bytes": 5257,
+  "model": "opencode/deepseek-v4-flash-free"
+}
