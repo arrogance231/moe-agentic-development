@@ -26,3 +26,23 @@
 2026-08-08T06:36:28Z — arm=A1 task=task1 seed=1 rc=0 wall_clock=53.49s tool_calls=0 search_calls=0 output_bytes=5947 tokens_in=143 tokens_out=1714 tokens_total=9489 cost=0.0
 2026-08-08T06:38:01Z — arm=A1 task=task1 seed=2 rc=0 wall_clock=92.68s tool_calls=5 search_calls=2 output_bytes=7490 tokens_in=1718 tokens_out=2794 tokens_total=45803 cost=0.0
 2026-08-08T06:38:54Z — Headroom check (A1, tasks 1-2, n=2) complete post-fix. task1: seed1=21/25 PASS, seed2=25/25 PASS (score_architecture.py). task2: seed1 and seed2 both schema-valid with all required keys present (13973 and 6999 total tokens respectively). VERDICT: ceiling-effect risk confirmed on task1 (scores at/near rubric max with only n=2) — proceeding with full wave per BENCHMARK.md design (tasks 5/6 exist to discriminate skills where 1-4 saturate), but task1/task2 flagged as lower-power endpoints in summary.md per pre-registered methodology.md guidance, not a post-hoc reweighting. Full results in benchmarks/results/run-20260808-0559/headroom-check.md.
+2026-08-08T06:42:09Z — arm=A0 task=task1 seed=1 rc=0 wall_clock=52.19s tool_calls=0 search_calls=0 output_bytes=5236 tokens_in=1846 tokens_out=1594 tokens_total=9752 cost=0.0
+2026-08-08T06:42:57Z — arm=A0 task=task1 seed=2 rc=0 wall_clock=48.45s tool_calls=0 search_calls=0 output_bytes=5563 tokens_in=54 tokens_out=1526 tokens_total=9203 cost=0.0
+2026-08-08T06:43:52Z — arm=A0 task=task1 seed=3 rc=0 wall_clock=54.68s tool_calls=2 search_calls=0 output_bytes=7323 tokens_in=4561 tokens_out=2271 tokens_total=26513 cost=0.0
+2026-08-08T06:44:37Z — arm=A0 task=task1 seed=4 rc=0 wall_clock=44.62s tool_calls=1 search_calls=0 output_bytes=5862 tokens_in=185 tokens_out=1777 tokens_total=15416 cost=0.0
+2026-08-08T06:45:27Z — arm=A0 task=task1 seed=5 rc=0 wall_clock=50.52s tool_calls=0 search_calls=0 output_bytes=5607 tokens_in=54 tokens_out=1635 tokens_total=9620 cost=0.0
+2026-08-08T06:47:53Z — arm=A1 task=task1 seed=1 rc=0 wall_clock=145.84s tool_calls=0 search_calls=0 output_bytes=8014 tokens_in=15 tokens_out=2445 tokens_total=21529 cost=0.0
+2026-08-08T06:49:38Z — arm=A1 task=task1 seed=2 rc=0 wall_clock=104.85s tool_calls=0 search_calls=0 output_bytes=6844 tokens_in=15 tokens_out=2044 tokens_total=15889 cost=0.0
+2026-08-08T06:50:26Z — arm=A1 task=task1 seed=3 rc=0 wall_clock=47.44s tool_calls=1 search_calls=0 output_bytes=5435 tokens_in=179 tokens_out=1685 tokens_total=16405 cost=0.0
+2026-08-08T06:52:14Z — arm=A1 task=task1 seed=4 rc=0 wall_clock=108.03s tool_calls=2 search_calls=1 output_bytes=5293 tokens_in=8445 tokens_out=1652 tokens_total=35492 cost=0.0
+2026-08-08T06:53:12Z — arm=A1 task=task1 seed=5 rc=0 wall_clock=58.12s tool_calls=0 search_calls=0 output_bytes=6353 tokens_in=15 tokens_out=1780 tokens_total=10440 cost=0.0
+2026-08-08T06:54:10Z — arm=A2 task=task1 seed=1 rc=0 wall_clock=57.85s tool_calls=4 search_calls=0 output_bytes=6222 tokens_in=12309 tokens_out=2545 tokens_total=68016 cost=0.0
+2026-08-08T06:55:26Z — arm=A2 task=task1 seed=2 rc=0 wall_clock=76.01s tool_calls=5 search_calls=0 output_bytes=6648 tokens_in=1316 tokens_out=2909 tokens_total=100013 cost=0.0
+2026-08-08T06:56:28Z — arm=A2 task=task1 seed=3 rc=0 wall_clock=62.16s tool_calls=2 search_calls=0 output_bytes=4878 tokens_in=628 tokens_out=1742 tokens_total=35433 cost=0.0
+2026-08-08T06:57:27Z — arm=A2 task=task1 seed=4 rc=0 wall_clock=58.4s tool_calls=1 search_calls=0 output_bytes=4359 tokens_in=240 tokens_out=1569 tokens_total=35106 cost=0.0
+2026-08-08T06:58:34Z — arm=A2 task=task1 seed=5 rc=0 wall_clock=67.41s tool_calls=1 search_calls=0 output_bytes=4868 tokens_in=535 tokens_out=1698 tokens_total=36388 cost=0.0
+2026-08-08T07:00:35Z — arm=A3 task=task1 seed=1 rc=0 wall_clock=120.58s tool_calls=4 search_calls=3 output_bytes=5700 tokens_in=13020 tokens_out=2123 tokens_total=86249 cost=0.0
+2026-08-08T07:02:50Z — arm=A3 task=task1 seed=2 rc=0 wall_clock=135.19s tool_calls=2 search_calls=0 output_bytes=7636 tokens_in=676 tokens_out=2688 tokens_total=45612 cost=0.0
+2026-08-08T07:04:07Z — arm=A3 task=task1 seed=3 rc=0 wall_clock=77.47s tool_calls=4 search_calls=2 output_bytes=6279 tokens_in=6047 tokens_out=2165 tokens_total=57258 cost=0.0
+2026-08-08T07:06:34Z — arm=A3 task=task1 seed=4 rc=0 wall_clock=146.83s tool_calls=3 search_calls=1 output_bytes=5688 tokens_in=12744 tokens_out=2020 tokens_total=85085 cost=0.0
+2026-08-08T07:08:38Z — arm=A3 task=task1 seed=5 rc=0 wall_clock=123.36s tool_calls=2 search_calls=0 output_bytes=6617 tokens_in=4762 tokens_out=2324 tokens_total=65087 cost=0.0

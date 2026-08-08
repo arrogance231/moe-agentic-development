@@ -1,73 +1,115 @@
-# 1B Dense-Equivalent MoE — Architecture Document
+# 1B Dense-Equivalent MoE — Architecture Design Document
 
 ## 1. Overview
 
-A **Mixtral-style token-choice MoE** decoder-only transformer sized so that **active (dense-equivalent) parameters per token ≈ 1.03B**. All shared layers (embeddings, attention, norms, routers) are dense; only the FFN block is replaced by a sparse set of experts. Each token is routed to its top-2 experts; the rest of the expert parameters stay idle for that token.
+We design a **≈1.0B total-parameter sparse MoE** intended as a **"1B dense-equivalent"** model: it matches the storage/serving footprint of a ~1B-parameter dense LLM while activating only **~0.48B parameters per token**, roughly halving inference/training FLOPs versus a same-size dense baseline. All 14 FFN blocks are MoE (attention stays dense), giving 8 expert FFNs per layer of which 2 are active per token.
 
-| Design constant | Value |
+**Interpretation note.** "Dense-equivalent" is taken as *total parameter footprint ≈ 1B* (the common model-card reading). Per-token compute is lower (~0.48B active ⇒ ~0.95 GFLOP/token, ≈ half a 1B dense model at equal `d_model`/depth), which is the whole point of the design: keep a 1B-model memory budget, spend ~half the FLOPs, and land quality between a 1B dense and a 0.5B dense model at similar wall-clock cost.
+
+| Config knob | Value |
 |---|---|
-| Hidden size `H` | 2,048 |
-| Layers `L` | 22 |
-| Vocabulary `V` (tied embeddings) | 50,000 |
-| Num experts `E` | 16 |
-| Active experts `top_k` | 2 |
-| Expert FFN intermediate `I` (SwiGLU) | 2,048 |
-| Capacity factor `CF` | 1.25 (train) / 1.0 (inference) |
-| Aux loss | load-balancing (Switch-style), `α = 0.01` (+ z-loss `1e-4`) |
-
-**Key figures:** `num_experts = 16`, `top_k = 2`, total parameters ≈ **4.90B**, active per token ≈ **1.03B** (dense-equivalent ≈ **1B**).
+| `d_model` | 2,048 (16 heads × 128) |
+| `num_layers` | 14 (all-MoE FFN) |
+| `vocab_size` | 32,000 (tied in/out embeddings) |
+| Expert FFN | SwiGLU, intermediate 1,024 |
+| **num_experts (E)** | **8** |
+| **top_k (K)** | **2** |
+| **Routing** | learned, soft (top-2 of softmax), token-choice |
+| **Capacity factor** | **1.25** |
+| **Auxiliary loss** | Switch/GShard load-balance, α = **0.01** (opt. router z-loss 1e-3) |
 
 ## 2. Parameters
 
-Per-expert FFN is SwiGLU (`gate + up + down`, 3 matrices of `H×I`). Parameter math:
+### 2.1 Headline figures
 
-- Embeddings (tied): `50,000 × 2,048` = **102,400,000**
-- Attention per layer: `QKV 3×2048² + O 2048²` = `12,582,912 + 4,194,304` = `16,777,216`; ×22 = **369,098,752**
-- Router per layer: `2,048 × 16` = `32,768`; ×22 = **720,896**
-- LayerNorm (2/layer): `8,192 × 22 + 2,048` = **182,272**
-- Expert FFN per expert: `3 × 2,048 × 2,048` = `12,582,912`; ×16 experts ×22 layers = **4,429,185,024**
-- **Total (all weights):** `102,400,000 + 369,098,752 + 720,896 + 182,272 + 4,429,185,024` = **4,901,586,944 ≈ 4.90B**
-
-**Active per token:** shared (`472,401,920`) + `top_k × expert` = `2 × 12,582,912 × 22` = `553,648,128` → **≈ 1.03B** (~1B dense-equivalent).
-
-| Component | Params (digits) | Active/token |
+| Figure | Count | Digit |
 |---|---|---|
-| Embeddings (tied) | 102,400,000 | 102,400,000 |
-| Attention (22 layers) | 369,098,752 | 369,098,752 |
-| Router (22 layers) | 720,896 | 720,896 |
-| LayerNorm | 182,272 | 182,272 |
-| Expert FFNs (16 × 22) | 4,429,185,024 | 553,648,128 (2 experts) |
-| **Total** | **4,901,586,944 (≈4.90B)** | **1,026,050,048 (≈1.03B)** |
-| **num_experts / top_k** | **16 / 2** | — |
+| **Total parameters** | **1,005,289,472** | **≈ 1.005B** |
+| Active per token | 476,577,792 | ≈ 0.477B |
+| **num_experts** | 8 | — |
+| **top_k** | 2 | — |
+| Expert params (each) | 6,291,456 | ≈ 6.29M |
+| FLOPs / token (est.) | ≈ 0.95 GFLOP | ≈ ½ of dense-1B |
 
-Only **12.5%** of expert capacity is used per token (2/16), roughly halving FFN compute vs. a dense 1B (dense FFN would be `3·2048·8192` per layer).
+### 2.2 Explicit math
 
-## 3. Routing choice
+Constants: `d² = 2,048² = 4,194,304`.
 
-**Top-2, learned, soft (token-choice), gated via softmax** — the Mixtral design.
+```
+Embedding (tied in/out):
+  32,000 × 2,048                     =   65,536,000   (65.54M)
 
-- **top-2 over top-1:** two experts give a richer mixture, better gradient flow into multiple experts, and more robust performance. Top-1 (Switch) halves expert compute and simplifies load balance but relies on a single expert per token and trains slower per step at equal width.
-- **Learned over static:** router is a trained `Linear(H, E)` — no hand-crafted assignment rules; adapts to data.
-- **Soft over hard:** expert outputs are weighted by softmax gate probabilities (`softmax(top-2 logits)`), making routing differentiable and gradients flow into both experts. No hard (0/1) selection, no straight-through estimator needed.
-- **Token-choice over expert-choice:** each token independently picks its top-2 experts. Simpler, matches Switch/Mixtral, and pairs cleanly with a capacity factor that bounds worst-case work per expert.
+Attention / layer (Wq, Wk, Wv, Wo):
+  4 × 2,048²                          =   16,777,216   (16.78M)
 
-**Load balance:** capacity factor `CF = 1.25` during training (`⌈top_k · N_tokens / E⌉ · CF` tokens per expert; dropped tokens masked) and `CF = 1.0` at inference. Plus a **Switch-style load-balancing aux loss** on router logits (`α = 0.01`) that minimizes the KL between empirical expert load and uniform, encouraging balanced utilization without hard top-1 constraints. A small **z-loss** (`1e-4`, ST-MoE) keeps router logits from growing unbounded and avoids instability.
+Router / layer (linear d_model → E):
+  2,048 × 8                           =       16,384   (0.02M)
 
-## 4. Training implications
+One expert (SwiGLU: gate+up+down = 3 mats):
+  3 × 2,048 × 1,024                   =    6,291,456   (6.29M)
 
-- **Batch / sequence:** with 50k vocab and H=2048, use ~15B–50B tokens at bf16; route at the *token* granularity with a minimum per-expert batch to avoid noisy routing updates.
-- **Parallelism:** expert parallelism (each of 16 experts on one device or sharded) + all-to-all token dispatch per layer; at this scale the compute/communication ratio is tight — overlapping all-to-all with attention/FFN is mandatory.
-- **Router dynamics:** expect load drift early; warm-up the router LR and rely on the aux loss to prevent collapse. Monitor per-expert token counts and top-k selection frequency each step.
-- **Regularization:** dropout on expert FFNs is **not** recommended (hurts expert specialization); instead rely on capacity-factor token dropping + aux loss.
-- **Checkpointing/memory:** expert params (≈4.4B) are distributed; the dense-equivalent optimizer state is that of a ~1B model per rank, so memory is manageable relative to a true 4.9B dense model.
-- **Layers:** every layer has its own router + 16 experts; no interleaving of dense/sparse layers needed at 22 layers.
+Experts / layer:
+  8 × 6,291,456                       =   50,331,648   (50.33M)
+
+MoE layer total:
+  16,777,216 + 16,384 + 50,331,648    =   67,125,248   (67.13M)
+
+14 layers:
+  14 × 67,125,248                     =  939,753,472   (939.75M)
+
+TOTAL = 939,753,472 + 65,536,000      = 1,005,289,472  ≈ 1.005B
+
+ACTIVE / token:
+  embedding           65,536,000
+  14 × (attn 16,777,216 + 2 experts × 6,291,456)
+                       = 14 × 29,360,128 = 411,041,792
+  ACTIVE = 476,577,792 ≈ 0.477B
+```
+
+### 2.3 Full parameter table
+
+| Component | Count | Params each | Total | Active / token |
+|---|---|---|---|---|
+| Embedding (tied) | 1 | 65,536,000 | 65,536,000 | 65,536,000 |
+| Attention / layer | 14 | 16,777,216 | 234,881,024 | 16,777,216 |
+| Router / layer | 14 | 16,384 | 229,376 | ≈ 16,384 |
+| Experts / layer | 14 | 50,331,648 | 704,643,072 | 2 × 6,291,456 = 12,582,912 |
+| **Total** | — | — | **1,005,289,472** | **476,577,792** |
+
+## 3. Routing Choice
+
+**Decision: learned, soft, token-choice, top-2 of 8.** Not top-1, not hard/argmax, not fixed/hashed.
+
+**Why top-2 (not top-1).** Top-1 (Switch) halves expert capacity and gives sparser gradient flow, which slows optimization and over-trains a few experts. Top-2 doubles per-token capacity (2×6.29M = 12.58M active FFN per layer), smooths gradients across two experts, and is the best-documented sweet spot (GShard, Mixtral). Top-4+ improves utilization slightly but multiplies all-to-all traffic and imbalance for marginal quality gain at 1B scale.
+
+**Why learned (not hashed/fixed).** Learned routing lets experts specialize (syntax, math, factual clusters); fixed hashing cannot specialize and forfeits the parameter-efficiency argument.
+
+**Why soft (not hard).** The router emits softmax probabilities over all 8 experts; we take the top-2 by score and renormalize. Forward: `output = Σ_{k∈top2} ŵ_k · E_k(x)`, `ŵ_k = softmax(logits)_k / Σ_{j∈top2} softmax(logits)_j`. Gradients flow only to the 2 selected experts (token-choice soft routing), keeping the discrete pick trainable without noisy-top-k sampling at this scale.
+
+**Capacity factor (CF) = 1.25.** Per-expert token budget = `CF × (T_tokens / E)` per layer = `1.25 × 2T/8` under top-2 load. The 25% headroom absorbs router jitter; overflowed tokens are **dropped** (zeroed) during training — acceptable at this scale given the aux loss keeps load near-uniform. CF=1.0 is too brittle; CF≥1.5 wastes memory on idle expert slots.
+
+**Auxiliary load-balancing loss = Switch/GShard, α = 0.01:**
+`L_aux = α × E × Σ_e (f_e · P_e)`, where `f_e` = fraction of tokens dispatched to expert `e` and `P_e` = mean router probability for `e` (computed over the top-2 picks). Added to the LM loss **training-only**, never used at inference. Optionally add DeepSeek-V2 router z-loss `1e-3 × mean(logsumexp(router_logits)²)` to stabilize router scale.
+
+## 4. Training Implications
+
+- **Compute.** ~0.95 GFLOP/token ⇒ at fixed batch, roughly **2× throughput vs a 1B dense** baseline and ~30-40% fewer optimizer/GEMV FLOPs, but MoE pays higher memory-bandwidth and communication cost per FLOP, so the practical speedup is ~1.5-2× on ≥4 GPUs.
+- **Memory.** 1.005B params ≈ 4.0 GB in fp32 / 2.0 GB in bf16 with AdamW states + gradients ⇒ needs multi-GPU. Experts dominate (704M of 1,005M), so use **expert parallelism (EP)**: shard the 8 experts per layer across devices; keep attention tensor-parallel/dense (Mixtral-style hybrid EP+TP).
+- **Communication.** Token-choice top-2 requires an all-to-all dispatch/combine per MoE layer per microbatch; budget ~15-25% of step time and overlap it with attention compute.
+- **Optimization.** Standard AdamW, bf16 mixed precision, no dropout inside experts, small-constant router init, and LR warmup identical to a dense 1B model. Effective batch ≥ 512 tokens/layer/step helps router statistics stabilize.
+- **Balancing discipline.** Watch `f_e` per layer; expect near-uniform distribution if α=0.01 holds. Since overflow drops tokens, keep CF=1.25 and raise to 1.5 only if p99 expert load saturates capacity.
+- **Convergence.** Expect MoE to reach a given loss in fewer tokens than dense (parameter efficiency); quality should land **above a 0.5B dense and near/above a 1B dense at equal total params**, measured with standard perplexity + downstream evals.
 
 ## 5. Risks
 
-- **Load imbalance / dead experts:** if the router collapses onto few experts, effective capacity drops below dense-equivalent and aux loss fights the objective. Mitigated by α tuning and `CF`.
-- **Token dropping:** at `CF=1.25` some tokens get dropped during training (loss spike if too aggressive); raising `CF` reduces drops but increases wasted compute.
-- **Communication overhead:** all-to-all at only 1B active compute means communication can dominate; small MoEs often show *worse* tokens/sec than dense 1B unless dispatch is heavily optimized. This is the #1 hardware risk at this size.
-- **Router instability:** logits can grow large → softmax saturation; z-loss + logit clipping mitigates.
-- **Evaluation sensitivity:** inference must use the same routing (and `CF=1.0`) as training; switchy behavior can cause eval variance.
-- **Aux-loss interference:** the balance term can override expert specialization if α is too large; tune against downstream quality, not just balance.
-- **Data-hungriness:** 16 experts need enough tokens per expert to specialize; on small corpora the extra parameters give diminishing returns.
+| Risk | Severity | Mitigation |
+|---|---|---|
+| **Router collapse / dead experts** (early or on LR spikes) | High | α=0.01 aux loss, small router init, monitor `f_e`, LR warmup, load-balance loss annealed only after convergence |
+| **Capacity overflow / dropped tokens** under tail imbalance | Medium | CF=1.25 headroom, drop-tokens (acceptable at 1B), raise CF or switch to expert-choice routing if p99 saturates |
+| **Expert over-specialization / forgetting** during continued training | Medium | Regularized aux loss, periodic expert utilization audit; keep experts small (6.3M) so reuse is cheap |
+| **Communication bottleneck (all-to-all)** at scale | Medium | EP sharding, overlap dispatch with attention, reduce K or increase E only with measured comm/comp ratio |
+| **Fine-tuning instability** (MoE is more fragile than dense to SFT/LoRA) | Medium | Prefer LoRA/QLoRA on experts, low LR, freeze router or keep aux loss during tuning |
+| **Depth at d_model=2,048** (14 layers is shallower than a typical 1B dense) | Low | If quality lags, add 2 layers (raises total ~9% to ~1.09B) rather than widening experts |
+| **Data-starved regimes** (route learning overfits small corpora) | Low | Longer warmup, higher dropout only in attention; scale α up early |
+
+**Bottom line:** 1.005B total params (1B dense-equivalent footprint), 8 experts, top-2, learned soft token-choice routing, CF=1.25, aux loss α=0.01 — a conservative, well-trodden recipe that trades ~½ compute per token for expert capacity with bounded routing risk.

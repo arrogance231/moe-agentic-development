@@ -1,106 +1,84 @@
-I'll do a quick check on current MoE conventions (2025-2026 SOTA) to ground the routing/capacity-factor choices, then produce the doc.
-# MoE-1B-DE: A 1B Dense-Equivalent Mixture-of-Experts Architecture
+# MoE-1B: A 1B Dense-Equivalent MoE Architecture
 
 ## Overview
 
-`MoE-1B-DE` is a decoder-only transformer in which every FFN layer is replaced by a sparsely-gated Mixture-of-Experts (MoE). The design point is **"1B dense-equivalent"**: the per-token FLOPs and activated parameters match a ~1B dense transformer, while the *stored* parameter count is ~3.7B (4.1× sparsity ratio). We follow the Mixtral-style recipe (learned top-2 softmax gating) and use **fine-grained experts** (`expert_ffn_dim = d_model`), the same small-expert convention DeepSeek-V2/V3 popularized, which maximizes expert count for a given budget and improves load-balancing headroom.
+**"1B dense-equivalent" is defined here as active parameters (and per-token FLOPs) ≈ 1B**, i.e. inference compute matching a ~1B-parameter dense decoder-only transformer. This is the community meaning of the term (cf. Mixtral 8x7B: 47B total / 13B active ≈ "7B-equivalent").
 
-The model is dense-equivalent, not dense-replicating: each token touches only the router, the two selected experts, and attention — never the full expert pool.
+The design is a 12-layer decoder-only transformer with an all-FFN mixture-of-experts: `d_model = 2048`, **8 experts per layer**, **top-2 routing**. This yields **3.49B total parameters and ~1.01B active parameters per token** (3.46:1 sparsity ratio). By construction the per-token FFN compute (805M MACs) exactly matches that of a 1B dense model, which is why it is "dense-equivalent" rather than just "a 3.5B MoE".
 
 | Hyperparameter | Value |
 |---|---|
-| `d_model` (hidden) | 2048 |
-| `num_layers` | 24 |
-| `num_heads` / `head_dim` | 16 / 128 |
-| `vocab_size` | 50,000 |
-| `expert_ffn_dim` | 2048 (= `d_model`, fine-grained) |
-| **num_experts `E`** | **16** |
-| **active experts `top_k`** | **2** |
-| routing | learned, softmax, deterministic top-2 |
-| **capacity factor `CF`** | **1.25** |
-| **auxiliary loss** | Switch-style load-balancing (`α = 0.01`) + ST-MoE router z-loss (`β = 0.001`) |
-| embedding / output head | tied (counted once) |
+| Layers `N` | 12 |
+| `d_model` | 2,048 |
+| Attention heads / head_dim | 32 / 64 |
+| Expert FFN hidden `d_ff` | 8,192 (4× `d_model`) |
+| **num_experts `E`** | **8** (per layer) |
+| **top_k** | **2** |
+| Vocab (shared in/out embedding) | 32,768 |
+| **Capacity factor (CF)** | **1.25** (per-expert cap = ⌈CF·k·T/E⌉) |
+| Auxiliary loss | Switch load-balancing, α = 0.01 + router z-loss, β = 1e-4 |
+| **Total parameters** | **3,489,955,840 ≈ 3.49B** |
+| **Active (dense-equivalent) params** | **1,006,632,960 ≈ 1.01B** |
 
-## Parameters
+### Parameter math (explicit)
 
-Parameter math, per module. All values in millions (M).
+Per expert FFN (up-proj + down-proj):
 
-**Embedding** (tied, counted once):
 ```
-E_emb = vocab × d = 50,000 × 2,048 = 102.4M
-```
-
-**Per-layer attention** (Q, K, V, O — one 2048×2048 projection each):
-```
-E_attn = 4 · d² = 4 · 2,048² = 16.78M
+W_up:   d_model × d_ff      = 2048 × 8192  = 16,777,216
+W_down: d_ff   × d_model    = 8192 × 2048  = 16,777,216
+per expert                    = 2 × 2048 × 8192     = 33,554,432  (33.6M)
+per layer   (E=8)            = 8 × 33,554,432       = 268,435,456 (268.4M)
+all experts (N=12)           = 12 × 268,435,456     = 3,221,225,472 (3.22B)
 ```
 
-**Per-layer router** (d × E gate logits):
-```
-E_router = d · E = 2,048 × 16 = 0.03M
-```
+Attention (Q,K,V,O), embeddings, router, norm:
 
-**Per-layer experts** (each expert = gate/up 2048×2048 + down 2048×2048):
 ```
-E_expert   = 2 · d · ffn_dim = 2 · 2,048 · 2,048 = 8.39M
-E_experts  = E · E_expert = 16 · 8.39M = 134.22M
-```
+attention per layer = 4 × d_model²           = 4 × 2048²      = 16,777,216 (16.8M)
+  × N=12                                     = 201,326,592     (201.3M)
+embeddings          = 32,768 × 2048          = 67,108,864      (67.1M)
+router per layer    = 2048 × 8 = 16,384; ×12 = 196,608         (0.2M)
+LayerNorms          = 24 × 2048 × 2          = 98,304          (0.1M)
 
-**Totals:**
-```
-Stored  = 102.4M + 24 · (16.78M + 0.03M + 134.22M) = 3,727M  ≈ 3.73B  (total)
-Active  = 102.4M + 24 · (16.78M + 0.03M + 2·8.39M) = 908.5M  ≈ 0.91B  (per token)
-Sparsity ratio = 3.73B / 0.91B ≈ 4.1×
-Forward FLOPs/token ≈ 2 · 0.91B ≈ 1.8 GFLOPs  (≈ a 1B dense model's compute)
+TOTAL = 3,221,225,472 + 201,326,592 + 67,108,864 + 196,608 + 98,304
+      = 3,489,955,840 ≈ 3.49B
 ```
 
-| Component | Params (M) | Per-token active (M) |
-|---|---|---|
-| Embedding (tied) | 102.4 | 102.4 |
-| Attention ×24 | 402.7 | 402.7 |
-| Router ×24 | 0.8 | 0.8 |
-| Experts ×24 (16 per layer) | 3,221.3 | 402.7 (only 2 of 16/layer) |
-| **Total** | **3,727 ≈ 3.73B** | **908.5 ≈ 0.91B (≈1B dense-eq.)** |
+Active params per token:
 
-## Routing Choice
-
-**Strategy: learned, deterministic top-2.** For each token, a single trainable gate matrix `W_r ∈ R^{d×E}` produces logits; softmax gives expert probabilities; the two highest-probability experts are selected and the token is split proportionally to those probabilities (Mixtral/GShard convention).
-
-Justification against alternatives:
-- **top-1 vs top-2**: top-1 (Switch, DeepSeek) is maximally sparse but puts every token on one expert — high variance, harder load-balancing, and no redundancy. top-2 costs only 2× the expert FLOPs while smoothing the optimization landscape and giving the load-balancer slack; it is the dominant choice in modern MoEs (Mixtral, Qwen3-MoE, DeepSeek).
-- **learned vs fixed/random (hash) routing**: a learned gate adapts to data and is required for expert specialization; hash routing is cheaper but cannot specialize.
-- **soft vs hard routing**: true soft routing (attend to *all* experts) eliminates sparsity and the FLOP savings; the whole point is *not* to touch the other 14 experts. Hence: soft *probabilities*, hard *selection*.
-
-**Expert count & size (16 experts × 8.39M)**: fine-grained experts (DeepSeek-V2/V3 style) give more routing granularity per FLOP than a few large experts (e.g., Mixtral's 8×~4.4B FFNs), which both reduces per-expert gradient noise and raises `E`, making the load-balancing loss easier to satisfy.
-
-**Capacity factor (CF = 1.25)**: each expert holds a fixed buffer of
 ```
-capacity = ⌈(T · top_k · CF) / E⌉
+per layer = attention + top-2 experts = 16,777,216 + 2 × 33,554,432 = 83,886,080
+× N=12    = 1,006,632,960 ≈ 1.01B   (FFN-only active = 805,306,368 ≈ 805M MACs/token,
+                                      equal to a ~1B dense model's FFN compute)
 ```
-tokens per batch, where `T` = tokens in the batch. The 1.25× headroom absorbs routing imbalance (tokens routed *above* capacity are dropped) with 25% memory waste. CF=1.0 (Mixtral) risks frequent drops; CF≥2.0 wastes memory and flattens the sparsity benefit. 1.25 is the standard sweet spot.
 
-**Auxiliary loss**: two terms added to the LM loss.
-1. **Load-balancing (Switch-style)**, coefficient `α = 0.01`:
-   `L_bal = E · Σ_e f_e · P_e`, where `f_e` is the fraction of tokens routed to expert `e` and `P_e` the mean router probability for `e`. Minimizing `L_bal` drives uniform expert utilization. (`α` in the standard 0.01–0.1 range.)
-2. **Router z-loss** (`β = 0.001`): `L_z = Σ log²(Σ exp(logits))` (ST-MoE), which discourages huge logits and eliminates the loss spikes z-loss-free balancing (DeepSeek-V3's bias trick) was designed around — simpler at this scale.
+## Routing choice
 
-## Training Implications
+**Strategy: learned softmax top-2.** The router is a single trained linear layer `d_model → E`; logits → softmax over the 8 experts; the top-2 are activated and outputs combined as `Σ p_e · expert_e(x)` re-normalized by `p_1 + p_2`. Routing is **learned** (gradients flow through both router and expert weights), **soft** (probability-weighted, not hard one-hot), and **sparse top-2** (not full soft routing).
 
-- **Compute vs memory decoupling**: optimizer/activation memory is set by the **3.73B stored** params (BF16 + Adam states ≈ 29.6 GB/step for the full model), while throughput is set by the **0.91B active** — you get ~1B-model FLOPs but pay ~4× the dense memory. Intended; enables 1B-quality at 1B-compute cost.
-- **Expert parallelism**: with 16 experts/layer, shard experts across GPUs (e.g., 2–4 experts/device) with data-parallel attention; tokens are dispatched via all-to-all, then reduced. At 3.7B this fits on a small node (e.g., 8×40GB), so a single all-to-all per MoE layer.
-- **Per-expert batch is small**: average `E/2 = 8` experts handle each token, so each expert sees ~1/8 of the data-parallel batch. Mitigate with larger global batch size and a small expert-dropout.
-- **Load-balancing is a training-time knob**: tune `α` (0.005–0.05) and watch the drop rate; if token-dropping exceeds ~0.5%, raise `α` or `CF`. Lower `α` late in training for better specialization (ST-MoE anneal).
-- **Router stability**: z-loss plus standard warmup; router logits grow fast, so monitor z-loss and cap logits if needed.
+**Why top-2 over top-1:** top-1 routing is cheap but under-utilizes experts and degrades into routing collapse (a few experts absorb all traffic) without aggressive balancing. Top-2 doubles representation quality via ensembling, roughly doubles expert utilization, and its 2× FFN cost is still only 25% of a dense FFN — the standard choice at this scale (Mixtral, DeepSeek-V2/V3, Qwen-MoE all use top-2).
+
+**Why not full soft (all experts weighted):** weighting all E experts costs E× FFN compute and destroys the sparsity/FLOPs advantage — that would just be a dense 3.5B model. Top-2 preserves the 1B dense-equivalent compute budget.
+
+**Capacity factor:** per-expert buffer = ⌈CF·k·T/E⌉ = ⌈1.25 × 2T/8⌉ = ⌈0.3125·T⌉ tokens for a batch of T tokens. Note the `k` multiplier: top-2 needs 2T total expert slots, so CF must be scaled by k (CF=1.25 on top of the 2× ideal load). Tokens exceeding capacity are dropped and their loss masked; at CF=1.25 the expected drop rate is <~2%.
+
+**Auxiliary loss:** (1) Switch-style load-balancing `α · E · Σₑ fₑ·Pₑ`, α=0.01, where `fₑ` = fraction of tokens routed to expert e and `Pₑ` = mean router probability — discourages routing collapse. (2) Router z-loss `β/T · Σ log(Σₑ e^{zₑ})²`, β=1e-4 — keeps router logits at stable scale (ST-MoE).
+
+## Training implications
+
+- **Load balance is the dominant concern.** Imbalance → idle expert slots (padded compute) or dropped tokens. The aux loss pulls toward uniform dispatch; the capacity factor trades dropped tokens against buffer padding. α and CF must be tuned jointly.
+- **Expert parallelism (EP).** All-to-all token dispatch (2 tokens/expert sent per layer), expert-local matmuls, all-to-all combine. Communication per layer is ~2× hidden dimension per token; with 8 experts and small d_model, keep all-to-all on the critical path cheap via high-bandwidth intra-node links.
+- **Batch-size floor.** 8 experts × top-2 means expert batches shrink to ~T/4; throughput efficiency needs large T per step, so bigger batches / longer sequences than a dense 1B model.
+- **Training cost vs data.** FLOPs/token ≈ 2 × active ≈ 2 GFLOPs (compute-equivalent to 1B dense), but optimizer memory + gradient sync scale with 3.49B total params → ~10.5B slots (params + Adam's 2× moments) of host memory, with experts sharded across devices.
+- **Stability.** Router z-loss + standard gradient clipping; typically keep router learning rate low; mask dropped-token losses to avoid noisy gradients.
+- **Data requirement.** Total-parameter/active-parameter ratio 3.5:1 means more total parameters to fit with the same compute budget — expect MoE to need ≥ as much data as the 1B dense baseline for equivalent quality (compute-efficiency over parameter-efficiency).
 
 ## Risks
 
-- **Load imbalance / token dropping**: the #1 failure mode — a few experts hoard tokens, others starve, and overflow tokens get dropped, degrading quality. Mitigation: `L_bal`, `CF=1.25`, per-expert dropout.
-- **Router collapse**: the gate converges to always pick the same 2–3 experts, erasing the MoE benefit. Mitigation: z-loss, `α`, and monitoring `f_e` entropy.
-- **Communication overhead**: all-to-all dispatch can dominate at small batch sizes; on multi-node runs, comms may exceed the compute savings if tokens/batch are too small.
-- **Fine-tuning instability**: sparse models fine-tune less stably than dense (ST-MoE) — expect loss spikes; use lower LR, more warmup, and expert dropout during SFT.
-- **Expert memory blowup**: capacity buffers scale with `E·CF`; 16 experts at CF 1.25 means ~1.4× raw expert storage in activations — must be factored into memory planning.
-- **Serving complexity**: top-2 routing needs expert-parallel inference and KV/rank coordination; quantizing all 16 experts (vs 2 active) is required for practical serving.
-
----
-
-**Summary of mandated specs**: `E = 16` experts, `top_k = 2` active, learned softmax top-2 routing, `capacity_factor = 1.25`, auxiliary load-balancing loss (`α = 0.01`) + z-loss (`β = 0.001`); total params **3.73B**, active **0.91B ≈ 1B dense-equivalent**.
+- **Routing collapse / expert starvation:** few experts dominate. Mitigated by top-2, α=0.01 aux loss, and monitoring the min/max per-expert utilization each step.
+- **Capacity overflow → dropped tokens:** bursty routing on adversarial or long-tail data can exceed the 0.3125·T buffer; silent token loss degrades quality. Monitor drop rate; raise CF (or drop the k-multiplier, or raise k) if it exceeds ~2%.
+- **Communication-bound training:** all-to-all on the critical path can cap utilization below the theoretical 4× FLOPs saving if EP placement is poor.
+- **Serving complexity:** 3.49B of weights must live in memory; you only win if inference exploits sparsity (expert offloading, EP, MoE-aware kernels); a naive dense runner pays 3.5× the 1B baseline's bandwidth.
+- **Benchmark comparability:** "1B dense-equivalent" must be reported as **active** params; comparing 3.49B total against a dense 1B baseline on latency, throughput, and memory will be misleading without this caveat.
+- **Instability from large expert learning rates** and degraded fine-tuning behavior (aux loss must be kept on during fine-tuning to prevent re-collapse).
