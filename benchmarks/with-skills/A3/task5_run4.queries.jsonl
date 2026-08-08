@@ -1,0 +1,3 @@
+{"query": "MoE capacity factor top-2 GShard 2.0 Switch Transformer top-1 1.0 auxiliary loss coefficient 0.01", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T09:01:43Z"}
+{"query": "Mixtral top-2 routing no token dropping DeepSeek-V2 auxiliary loss 0.001 expert balance", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T09:01:43Z"}
+{"query": "hello", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T09:02:01Z"}

@@ -1,0 +1,7 @@
+{"query": "Mixture of Experts capacity factor top-k auxiliary loss coefficient literature", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T08:54:03Z"}
+{"query": "Mixtral 8x7B capacity factor routing top-2 auxiliary loss", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T08:54:03Z"}
+{"query": "Switch Transformer capacity factor 1.0 auxiliary loss coefficient 0.01", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T08:54:21Z"}
+{"query": "DeepSeek-V2 MoE aux loss coefficient 0.01 top-2 capacity factor", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T08:54:45Z"}
+{"query": "ST-MoE ST-MoE-32B router z-loss capacity factor 1.0 aux loss 0.01 training stability", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T08:55:05Z"}
+{"query": "ST-MoE capacity factor ablation higher capacity better quality training router z-loss", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T08:55:32Z"}
+{"query": "ST-MoE training stability capacity factor 1.0 router z-loss 0.001 auxiliary loss 0.01 Zoph", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T08:55:50Z"}

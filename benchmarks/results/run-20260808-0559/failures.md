@@ -46,3 +46,17 @@ TypeError: startswith first arg must be bytes or a tuple of bytes, not str
 
 ```
 2026-08-08T08:10:54Z — RETRY SUCCEEDED for arm=A3 task=task4 seed=2.
+
+2026-08-08T08:34:40Z — WAVE DRIVER: arm=A1 task=task5 seed=3 failed (rc/timeout). Retrying once.
+```
+        ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/moe-agentic-development/benchmarks/harness/run_harness.py", line 109, in run
+    text_out = extract_text(stdout) or stdout
+               ~~~~~~~~~~~~^^^^^^^^
+  File "/root/moe-agentic-development/benchmarks/harness/run_harness.py", line 151, in extract_text
+    if not line or not line.startswith("{"):
+                       ~~~~~~~~~~~~~~~^^^^^
+TypeError: startswith first arg must be bytes or a tuple of bytes, not str
+
+```
+2026-08-08T08:37:24Z — RETRY SUCCEEDED for arm=A1 task=task5 seed=3.

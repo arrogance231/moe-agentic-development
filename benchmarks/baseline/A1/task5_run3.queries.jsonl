@@ -1,0 +1,4 @@
+{"query": "Switch Transformer top-1 routing capacity factor auxiliary loss coefficient 0.01", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T08:35:25Z"}
+{"query": "Mixtral 8x7B top-2 routing capacity factor router_aux_loss_coef 0.01", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T08:35:25Z"}
+{"query": "GShard MoE top-2 capacity factor 2.0 token dropping auxiliary loss", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T08:35:25Z"}
+{"query": "MoE expert parallel all-to-all communication overhead standard interconnect non-NVLink capacity factor buffer size", "error": "<urlopen error timed out>", "results": [], "ts": "2026-08-08T08:35:26Z"}
