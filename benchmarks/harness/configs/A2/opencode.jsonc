@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "tools": {"bash": false, "webfetch": false, "edit": false, "write": false, "task": false, "patch": false},
+  "tools": {"bash": false, "webfetch": false, "edit": false, "write": false, "task": false, "patch": false, "read": false, "grep": false, "glob": false, "list": false},
   "permission": {"bash": "deny", "edit": "deny", "webfetch": "deny"},
   "mcp": {
     "moe-bench-search": {

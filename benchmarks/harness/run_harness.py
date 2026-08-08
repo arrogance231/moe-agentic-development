@@ -114,6 +114,7 @@ def run(arm, task_id, seed, run_id, out_root):
         f.write(text_out)
 
     tool_calls, search_calls = count_tool_calls(stdout, query_log)
+    tokens = extract_tokens(stdout)
     metrics = {
         "arm": arm,
         "task": task_id,
@@ -125,6 +126,13 @@ def run(arm, task_id, seed, run_id, out_root):
         "search_enabled_for_arm": search_enabled,
         "output_bytes": len(text_out),
         "model": MODEL,
+        "tokens_input": tokens["input"],
+        "tokens_output": tokens["output"],
+        "tokens_reasoning": tokens["reasoning"],
+        "tokens_cache_read": tokens["cache_read"],
+        "tokens_cache_write": tokens["cache_write"],
+        "tokens_total": tokens["total"],
+        "cost": tokens["cost"],
     }
     metrics_file = os.path.join(out_dir_abs, f"{task_id}_run{seed}.metrics.json")
     with open(metrics_file, "w") as f:
@@ -166,6 +174,34 @@ def find_texts(obj):
     return out
 
 
+def extract_tokens(stdout):
+    """Sum token usage across all step_finish/step-finish events in the
+    opencode --format json event stream. Each step's `part.tokens` has
+    input/output/reasoning/cache{read,write} and `part.cost`."""
+    totals = {"input": 0, "output": 0, "reasoning": 0,
+              "cache_read": 0, "cache_write": 0, "total": 0, "cost": 0.0}
+    for line in stdout.splitlines():
+        line = line.strip()
+        if not line or not line.startswith("{"):
+            continue
+        try:
+            evt = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if evt.get("type") not in ("step_finish", "step-finish"):
+            continue
+        part = evt.get("part", {})
+        tok = part.get("tokens", {})
+        totals["input"] += tok.get("input", 0)
+        totals["output"] += tok.get("output", 0)
+        totals["reasoning"] += tok.get("reasoning", 0)
+        totals["cache_read"] += tok.get("cache", {}).get("read", 0)
+        totals["cache_write"] += tok.get("cache", {}).get("write", 0)
+        totals["total"] += tok.get("total", 0)
+        totals["cost"] += part.get("cost", 0) or 0
+    return totals
+
+
 def count_tool_calls(stdout, query_log):
     total = 0
     for line in stdout.splitlines():
@@ -200,7 +236,9 @@ def log_run(run_id, arm, task_id, seed, metrics):
         f.write(
             f"{ts} — arm={arm} task={task_id} seed={seed} rc={metrics['return_code']} "
             f"wall_clock={metrics['wall_clock_sec']}s tool_calls={metrics['tool_calls_total']} "
-            f"search_calls={metrics['search_calls']} output_bytes={metrics['output_bytes']}\n"
+            f"search_calls={metrics['search_calls']} output_bytes={metrics['output_bytes']} "
+            f"tokens_in={metrics['tokens_input']} tokens_out={metrics['tokens_output']} "
+            f"tokens_total={metrics['tokens_total']} cost={metrics['cost']}\n"
         )
 
 
