@@ -9,4 +9,5 @@ Index of the MoE Agentic Development documentation.
 | [README.md](../README.md) | Project overview, architecture diagram, quickstart, and skills table |
 | [ROADMAP.md](../ROADMAP.md) | Project phases, status, and milestone checkboxes |
 | [BENCHMARK.md](../BENCHMARK.md) | Benchmark methodology: research question, tasks, metrics, and statistical design |
+| [docs/whitepaper-handoff.md](whitepaper-handoff.md) | Required per-run artifacts (env, logs, failures, results, visualizations) so a run can be handed off for whitepaper writing |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | How to contribute a skill and the PR process |
