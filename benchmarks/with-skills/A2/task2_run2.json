@@ -1,0 +1,44 @@
+Here's my design, following the `moe-architecture` and `moe-training` workflows (math below recomputes the skill formulas by hand — I don't have shell access to run the calculators, so every figure is derived explicitly).
+
+## Architecture design (1B dense-equivalent MoE)
+
+**Baseline:** `d_model=2048`, 16 layers, `ffn_mult=4` (ffn_dim 8192), vocab 32000, seq_len 2048 → **dense = 1.14B params**, 7.10 GFLOPs/token.
+
+**MoE choice:** 32 experts (mid-range of typical 16–64, keeps per-GPU memory tractable on 8 GPUs), **top-2** (training-quality default), **capacity_factor 1.25** (absorbs routing imbalance), aux loss **0.01**.
+
+| Component | Dense | MoE | Activated |
+| --- | --- | --- | --- |
+| Attention (16 layers) | 268.4M | 268.4M | 268.4M |
+| Expert FFNs | 805.3M | 25.77B | 1.61B |
+| Embedding | 65.5M | 65.5M | 65.5M |
+| **Total** | **1.139B** | **26.10B** | **1.945B** |
+
+- Param ratio = 26.10/1.139 ≈ **22.9×**; FLOPs = 6×1.945B + 268M = **11.94 GFLOPs/token** ≈ **1.68× dense**.
+
+## Training configuration
+
+Hardware assumed: 8× H100-80GB, NVLink intra-node. Parallelism: DP×TP×PP×EP = 1×1×1×8 = 8 GPUs; EP=8 divides 32 experts → 4 experts/rank.
+
+```json
+{
+  "framework": "deepspeed",
+  "architecture": {
+    "num_experts": 32,
+    "top_k": 2,
+    "hidden_size": 2048,
+    "num_layers": 16,
+    "capacity_factor": 1.25
+  },
+  "parallelism": {
+    "data_parallel": 1,
+    "expert_parallel": 8,
+    "tensor_parallel": 1
+  },
+  "batch_size": 131072,
+  "estimated_memory_gb": 65,
+  "estimated_tokens_per_sec": 265000,
+  "launch_notes": "DeepSpeed MoE on 8x H100-80GB (NVLink), BF16. Launch: deepspeed --num_gpus 8 train_moe.py --deepspeed_config ds_moe.json. Architecture: 1.14B dense-equivalent -> 26.1B total MoE params, 1.94B activated (ratio 22.9x), 11.94 GFLOPs/token (1.68x dense). Routing: top-2 gate, router_aux_loss_coef=0.01, capacity_factor=1.25, moe_token_dropping=false. Batch geometry: micro_batch=4, seq_len=2048, grad_accum=16, DP=1 -> global batch 131,072 tokens/step; 4096 tokens/expert/rank per micro-batch (well above the 8-64 utilization floor). Memory/GPU ~65GB (params 7.1 + grads 7.1 + AdamW-mixed 42.6 + checkpointed activations ~3 + buffers/overhead ~5) on 80GB -> ~19% headroom; if OOM, drop capacity factor to 1.0 or micro_batch to 2. All-to-all: one 8-way dispatch per MoE layer (16/step); EP=8 bounds volume. tokens/sec is a rough MFU-40% estimate: 0.40 x (8 x 989.5 TFLOPS) / 11.94 GFLOPs/token ~= 265K tokens/sec global. Parallelism consistency: DP*TP*PP*EP = 8, EP divides num_experts (32/8=4). Enabled: gradient checkpointing, ZeRO stage 1 for the replicated dense/embedding weights."
+}
+```
+
+Key risk, per the skills: 26.1B total params makes optimizer state the dominant memory term (~43GB/GPU at EP=8) — hence EP=8 and the headroom note. If you'd prefer lower memory risk over expert capacity, drop `num_experts` to 16 (~13.2B total, ~36GB/GPU) with the same top-2/1.25 settings.

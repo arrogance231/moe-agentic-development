@@ -1,0 +1,31 @@
+Design: **1B dense-equivalent MoE**, 16 experts, top-2, capacity factor 1.25, on 8× A100-80GB.
+
+**Architecture math** (d_model=2048, num_layers=14, ffn_mult=4 → ffn_dim=8192, vocab=32000, seq_len=2048):
+- Dense baseline: `14·(4·2048² + 3·2048·8192 + 2·2048) + 32000·2048` = **1.005B params**
+- MoE total: `14·(4·2048² + 2·2048 + 16·3·2048·8192) + 32000·2048` = **11.57B params**
+- Activated: `14·(4·2048² + 2·2048 + 2·3·2048·8192) + 32000·2048` = **1.71B params** (ratio 11.5)
+- FLOPs/token = `6·1.71e9 + 4·14·2048·2048` = **10.5 GFLOPs**
+
+Parallelism DP=2 × EP=4 × TP=1 = 8 GPUs, EP divides 16 experts (4/rank). Micro-batch 4 → **4096 tokens/expert/GPU** (well above the 8–64 floor). Per-GPU memory: dense 300M·16B/2 = 2.4GB + experts 11.27B·16B/4 = 45.1GB + activations ~2.35GB (recompute) + ~10% + 1.5GB ≈ **56GB** → 30% headroom on 80GB. Throughput ≈ 31% MFU on 8×A100 ≈ **75k tokens/s**.
+
+```json
+{
+  "framework": "deepspeed",
+  "architecture": {
+    "num_experts": 16,
+    "top_k": 2,
+    "hidden_size": 2048,
+    "num_layers": 14,
+    "capacity_factor": 1.25
+  },
+  "parallelism": {
+    "data_parallel": 2,
+    "expert_parallel": 4,
+    "tensor_parallel": 1
+  },
+  "batch_size": 512,
+  "estimated_memory_gb": 56,
+  "estimated_tokens_per_sec": 75000,
+  "launch_notes": "Megatron-DeepSpeed MoE on 8x A100-80GB. Model: vocab=32000, seq_len=2048, ffn_dim=8192 (ffn_mult=4), MoE layers use top-2 routing over 16 experts, router_aux_loss_coef=0.01, capacity_factor=1.25, router jitter 0.02. Parallelism: DP=2 x EP=4 x TP=1 x PP=1 (=8 GPUs, EP divides 16). Batch: micro_batch=4 seqs, grad_accum=64, global batch=4*64*2=512 seqs (~1.05M tokens/step). DeepSpeed: zero_optimization stage 2 (dense params/grads/optim sharded across DP=2), experts sharded via ep_size=4, bf16, gradient clipping norm=1.0, gradient_checkpointing on. Dense baseline 1.00B / MoE total 11.57B / activated 1.71B; 10.5 GFLOPs/token. Memory 56/80GB (30% headroom): dense 2.4GB + experts 45.1GB + activations 2.35GB + overhead. Throughput ~75k tok/s at ~31% MFU. Launch: deepspeed --num_gpus=8 train.py --model-config config.json --zero-stage 2 --expert-parallel-size 4 --num-experts 16 --top-k 2 --capacity-factor 1.25 --micro-batch-size 4 --grad-accum 64 --tokens-per-sample 2048 --bf16. Validate: DP*TP*PP*EP=8, EP|16, memory fits 80GB, aux loss in 0.001-0.01; raise EP to 8 or enable expert offload if OOM."
+}
+```

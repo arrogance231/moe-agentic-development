@@ -1,0 +1,46 @@
+I'll design a 1B dense-equivalent MoE and emit the launchable JSON config. Architecture: 8 experts top-2, hidden 2048, 24 layers, with per-expert FFN width 2704 — giving ~2.6B total / ~1.0B activated params, so the dense-equivalent is 1B.
+
+```json
+{
+  "framework": "Megatron-DeepSpeed",
+  "architecture": {
+    "num_experts": 8,
+    "top_k": 2,
+    "hidden_size": 2048,
+    "num_layers": 24,
+    "capacity_factor": 1.25,
+    "expert_ffn_hidden_size": 2704,
+    "num_attention_heads": 32,
+    "seq_len": 4096,
+    "vocab_size": 32000,
+    "dtype": "bf16",
+    "router": "softmax-top-k",
+    "total_params_b": 2.6,
+    "activated_params_b": 1.0
+  },
+  "parallelism": {
+    "data_parallel": 32,
+    "expert_parallel": 8,
+    "tensor_parallel": 1,
+    "sequence_parallel": false,
+    "world_size_gpus": 256
+  },
+  "batch_size": {
+    "micro_batch_per_gpu": 8,
+    "gradient_accumulation_steps": 2,
+    "global_batch_samples": 512,
+    "global_batch_tokens": 2097152
+  },
+  "estimated_memory_gb": 30,
+  "estimated_tokens_per_sec": 18000000,
+  "launch_notes": "8 experts sharded 1-per-GPU via EP=8 (top-2 all-to-all), so each rank holds ~734M params (468M non-expert + 266M expert slice): 1.47GB BF16 weights + 8.8GB AdamW fp32 states + grads + recomputed activations + A2A buffers ~ 30GB on an 80GB H100. 256 H100-80GB, 40% MFU -> 18M tok/s (~70K tok/s/GPU). Requires token-dispatched MoE (T5-style switch layer, no top-k replacement). Non-EP layers use Megatron TP=1 (no tensor sharding at this scale). Set --moe-router-load-balancing-type aux-loss, c=1.25 with top-2 so cap only binds on hot routing (avg 2.5 tokens/expert vs 2 ideal). Router z-loss = 0.001, lr 1e-4 cosine, warmup 2000 steps, grad clip 1.0. Drop config at configs/A1/ and launch via megatron_deepspeed_pretrain.sh with --num-experts 8 --moe-expert-parallel-size 8 --num-moe-token-drop 0. Active tokens: 4096 x 8 micro-batch x 32 DP -> 1M tokens/step per optimizer phase."
+}
+```
+
+Rationale for the choices:
+- **8 experts / top-2 / c=1.25** — the Mixtral-style sweet spot: top-2 keeps routing quality and model capacity, c=1.25 allows ~25% load slack for token clustering without heavy dropping.
+- **H=2048, L=24, ffn=2704** — 1.0B activated params (embeddings 65M + attention 403M + 24×(2×11.1M) experts) = 1B dense-equivalent; 2.6B total stored params is the expected ~2.6× overhead of 8-expert top-2.
+- **EP=8, TP=1, DP=32** — one expert per GPU makes all-to-all a pure 8-rank exchange; at 2.6B params TP is unnecessary, so DP absorbs all 256 GPUs for throughput.
+- **Memory ~30GB / 80GB** — leaves room for larger micro-batches or sequence-length scaling without KV-cache or recompute pressure.
+
+Note: I could not read the existing files under `configs/A1/` (no filesystem tools in this session), so if the harness enforces an exact schema or units, tell me and I'll reformat to match.

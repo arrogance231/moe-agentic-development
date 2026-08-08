@@ -1,0 +1,46 @@
+I'll design the MoE architecture (1B dense-equivalent) and derive a launchable training config from it, validating all numbers against the skill formulas.
+
+**Architecture design (1B dense-equivalent MoE)**
+
+Chosen spec: `hidden_size=1536, num_layers=24, ffn_mult=4` (expert FFN = dense FFN width), `vocab=32000`, `seq_len=2048`, **16 experts, top-k=2, capacity factor 1.25**, aux loss 0.01, bf16.
+
+| Metric | Value | Derivation (calculator formulas) |
+| --- | --- | --- |
+| Dense baseline | **0.955B** | `24·(4·1536² + 3·1536·6144 + 2·1536) + 32000·1536` |
+| MoE total params | **11.15B** | `24·(4·1536² + 2·1536 + 16·3·1536·6144) + 32000·1536` |
+| Activated params | **1.63B** | `24·(4·1536² + 2·1536 + 2·3·1536·6144) + 32000·1536` |
+| Param ratio | **11.7×** | `11.15B / 0.955B` |
+| FLOPs/token (train) | **10.1 GFLOP** | `6·1.63e9 + 4·24·1536·2048` |
+
+Routing justification: **Top-2** (default training sweet spot, quality over Top-1); **16 experts** (typical range; total params and all-to-all stay within an 8×80GB EP=8 budget); **CF 1.25** (absorbs routing imbalance without heavy drops); **aux loss 0.01** (strong enough to prevent router collapse at this scale).
+
+**Memory (per GPU, EP=8, micro-batch 4, recompute on):** attention 226.6M + embedding 49.2M + experts `24·2·28.3M=1.36B` = 1.635B params/GPU → bf16 params 3.3 GB + grads 3.3 GB + AdamW mixed `×12` 19.6 GB + activations `24·4·2048·1536·20/2 ≈ 3.0 GB` + ~10%+1.5 GB overhead ≈ **34 GB** (58% headroom on 80 GB).
+
+**Throughput:** 8×H100-80GB ≈ 7.9 PFLOP/s peak; at ~30% MFU (MoE + all-to-all overhead) → `0.30·7.9e15 / 10.1e9 ≈ 235k` tokens/sec. Tokens-per-expert floor: `4·2048·2/(16/8) = 8192` ≫ 8–64. Global batch: `4·128·1 = 512` seqs = 1.05M tokens/step → ~4.5 s/step.
+
+```json
+{
+  "framework": "Megatron-LM",
+  "architecture": {
+    "num_experts": 16,
+    "top_k": 2,
+    "hidden_size": 1536,
+    "num_layers": 24,
+    "capacity_factor": 1.25
+  },
+  "parallelism": {
+    "data_parallel": 1,
+    "expert_parallel": 8,
+    "tensor_parallel": 1
+  },
+  "batch_size": {
+    "micro_batch": 4,
+    "grad_accumulation": 128,
+    "global_batch": 512,
+    "seq_len": 2048
+  },
+  "estimated_memory_gb": 34,
+  "estimated_tokens_per_sec": 235000,
+  "launch_notes": "8x H100-80GB. DP*TP*EP = 8 GPUs; EP=8 divides num_experts=16 (2 experts/rank). BF16 with fp32 master (Megatron --bf16); --seq-length 2048 --micro-batch-size 4 --gradient-accumulation-steps 128 --num-experts 16 --moe-router-top-k 2 --moe-router-load-balancing-type aux_loss --moe-aux-loss-coeff 0.01 --expert-parallel-size 8 --tensor-parallel-size 1 --pipeline-model-parallel-size 1 --recompute-activations (recompute-method uniform). All-to-all runs once per MoE layer (24 total). Optional --moe-token-dispatcher-type alltoall. Checkpoint every 2000 steps as Megatron iter_XXXXXX (do not mix with HF safetensors on resume). Sanity: config syntax via 'python -m json.tool'; tokens-per-expert floor satisfied (8192/expert); estimated per-GPU memory 34 GB vs 80 GB (>=20% headroom)."
+}
+```

@@ -1,0 +1,53 @@
+Here's a design for a 1B dense-equivalent MoE (8 experts, top-2 ⇒ ~1B active / ~2.1B total params, matching dense-1B FLOPs with a ~2× parameter overhead, Mixtral-style routing).
+
+```json
+{
+  "framework": "DeepSpeed-MoE (Megatron-LM backend, ZeRO-2 + expert parallelism)",
+  "architecture": {
+    "hidden_size": 2048,
+    "num_layers": 24,
+    "num_attention_heads": 16,
+    "head_dim": 128,
+    "intermediate_size": 2048,
+    "num_experts": 8,
+    "top_k": 2,
+    "capacity_factor": 1.25,
+    "dropout": 0.0,
+    "position_embedding": "rope",
+    "router": "softmax top-k, load-balancing auxiliary loss (0.001)",
+    "vocab_size": 50272,
+    "seq_len": 4096,
+    "active_params_est": "~0.9B",
+    "total_params_est": "~2.1B"
+  },
+  "parallelism": {
+    "world_size": 8,
+    "data_parallel": 2,
+    "expert_parallel": 4,
+    "tensor_parallel": 1,
+    "pipeline_parallel": 1,
+    "gate_recompute": true,
+    "drop_tokens": false
+  },
+  "batch_size": {
+    "micro_batch": 2,
+    "per_gpu": 2,
+    "global": 32,
+    "effective_batch_tokens": 131072
+  },
+  "training": {
+    "optimizer": "AdamW (fp32 states, ZeRO-2)",
+    "lr": 3e-4,
+    "lr_schedule": "cosine with 2000-step warmup",
+    "weight_decay": 0.1,
+    "bf16": true,
+    "grad_clip": 1.0,
+    "seq_len": 4096
+  },
+  "estimated_memory_gb": 24,
+  "estimated_tokens_per_sec": 45000,
+  "launch_notes": "Run with `deepspeed --num_gpus=8 train.py --deepspeed_config ds_moe.json`. EP=4 with 8 experts places 2 experts per GPU (1 replica across ranks), DP=2 for optimizer-state sharding and load balancing. Configure `deepspeed_moe_top_k=2`, `capacity_factor=1.25` (25% slack absorbs router imbalance; if dropout tokens >1% raise to 1.5). Use `disable_moe_aux_loss`=false so the load-balancing loss prevents expert collapse. bf16 + ZeRO-2 keeps memory ~24 GB/GPU on 8×A100 80GB; raise capacity factor or reduce micro_batch if memory-bound. Estimated throughput 45k tok/s assumes A100-80GB, ~35k tok/s on H100 if EP-bound router sync dominates."
+}
+```
+
+Key tradeoffs: top-2/8 with capacity 1.25 gives ~2× total parameters for ~1× dense-1B compute — the standard cost/quality sweet spot. EP=4 (2 experts/rank) with DP=2 keeps router all-to-all cheap while sharding the ~17 GB of Adam states.

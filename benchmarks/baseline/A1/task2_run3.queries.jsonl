@@ -1,0 +1,10 @@
+{"query": "Mixture of Experts 1B dense-equivalent model num_experts top_k capacity factor Megatron config", "results": [], "ts": "2026-08-08T07:13:36Z"}
+{"query": "MoE switch transformer dense equivalent param count calculation 8 experts top-2", "results": [], "ts": "2026-08-08T07:13:37Z"}
+{"query": "Mixture-of-Experts 1B active parameters top-2 64 experts capacity factor training config", "results": [], "ts": "2026-08-08T07:13:38Z"}
+{"query": "Megatron-LM MoE training launch command example num-experts expert-model-parallel-size", "results": [], "ts": "2026-08-08T07:14:21Z"}
+{"query": "1B parameters MoE model architecture num experts top-2 capacity factor training throughput tokens per second", "results": [], "ts": "2026-08-08T07:14:25Z"}
+{"query": "H100 MoE 1B parameters training tokens per second expert parallel throughput benchmark", "results": [], "ts": "2026-08-08T07:14:45Z"}
+{"query": "Megatron-LM pretrain_gpt.py --moe-expert-capacity-factor 1.25 --moe-pad-expert-input-to-capacity", "results": [], "ts": "2026-08-08T07:14:49Z"}
+{"query": "\"moe-router-load-balancing-type\" \"aux_loss\" \"micro-batch\" H100 throughput tokens/sec MoE", "results": [], "ts": "2026-08-08T07:14:49Z"}
+{"query": "MoE model num_experts 8 top_k 2 capacity_factor 1.25 hidden_size 2048 num_layers 12 1B parameters", "results": [], "ts": "2026-08-08T07:14:51Z"}
+{"query": "1B MoE model 8 experts top-2 hidden 2048 layers throughput tokens/sec estimate", "results": [], "ts": "2026-08-08T07:14:53Z"}

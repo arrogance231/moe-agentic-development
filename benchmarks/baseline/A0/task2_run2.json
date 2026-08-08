@@ -1,0 +1,37 @@
+Since this session has no file tools, I'll output the configuration inline. Design rationale: ~1B active params ("dense-equivalent") via top-2/8 experts over a 24-layer, H=2048 model (~2.2B total), capacity factor 1.25, 8× expert + 2× tensor parallel, BF16, Adam, aux load-balancing loss.
+
+```json
+{
+  "framework": "Megatron-LM (v0.10+, native MoE via --num-experts / --expert-model-parallel-size)",
+  "architecture": {
+    "num_experts": 8,
+    "top_k": 2,
+    "hidden_size": 2048,
+    "num_layers": 24,
+    "capacity_factor": 1.25,
+    "intermediate_size_per_expert": 2048,
+    "num_attention_heads": 16,
+    "seq_len": 2048,
+    "vocab_size": 100000,
+    "router": "top-2 softmax gating + aux load-balancing loss (coeff 0.01)",
+    "active_params_approx": "1.0B",
+    "total_params_approx": "2.2B"
+  },
+  "parallelism": {
+    "data_parallel": 8,
+    "expert_parallel": 8,
+    "tensor_parallel": 2,
+    "pipeline_parallel": 1,
+    "total_gpus": 128
+  },
+  "batch_size": {
+    "global_batch_sequences": 1024,
+    "global_batch_tokens": 2097152,
+    "micro_batch_size": 2,
+    "gradient_accumulation_steps": 64
+  },
+  "estimated_memory_gb": 38,
+  "estimated_tokens_per_sec": 3800000,
+  "launch_notes": "Aggregate throughput across 128x H100-80GB (NVLink+InfiniBand). Capacity factor 1.25 vs top-2 → ~0.94 effective batch fill; alltoall token dispatcher (Megatron --moe-token-dispatcher-type alltoall). Run: python pretrain_gpt.py --num-layers 24 --hidden-size 2048 --ffn-hidden-size 2048 --num-attention-heads 16 --seq-length 2048 --max-position-embeddings 2048 --num-experts 8 --moe-router-top-k 2 --moe-router-load-balancing aux_loss --moe-aux-loss-coeff 0.01 --moe-expert-capacity-factor 1.25 --expert-model-parallel-size 8 --tensor-model-parallel-size 2 --micro-batch-size 2 --global-batch-size 1024 --bf16 --optimizer adam --lr 3e-4 --min-lr 3e-5 --lr-decay-style cosine --lr-warmup-iters 2000 --recompute-activations --use-flash-attn --data-path <tok>.bin --tokenizer-type GPT2BPETokenizer --save <ckpt> --save-interval 1000 --log-interval 10. Memory estimate = peak/GPU (BF16 model ~0.3GB, Adam states ~3.3GB sharded over DP, activations with checkpointing ~12-24GB, comm buffers); safe headroom for load-imbalance spikes at capacity 1.25."
+}
+```

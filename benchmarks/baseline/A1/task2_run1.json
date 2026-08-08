@@ -1,26 +1,41 @@
 ```json
 {
-  "framework": "Megatron-LM (main) + Transformer Engine, launched via torchrun on 8×H100-80GB",
+  "framework": "Megatron-DeepSpeed (Megatron-LM GPT-2 pretrainer + DeepSpeed MoE, launchable via torchrun/deepspeed)",
   "architecture": {
-    "num_experts": 8,
+    "num_experts": 16,
     "top_k": 2,
-    "hidden_size": 1536,
-    "num_layers": 18,
-    "capacity_factor": 1.25
+    "hidden_size": 2048,
+    "num_layers": 24,
+    "capacity_factor": 1.25,
+    "expert_ffn_hidden_size": 4096,
+    "num_attention_heads": 32,
+    "head_dim": 64,
+    "seq_length": 2048,
+    "vocab_size": 32768,
+    "activation": "SiLU (swiglu)",
+    "tied_embeddings": true,
+    "moe_on_all_layers": true,
+    "params_total_approx": "6.9B",
+    "params_active_per_token_approx": "1.2B"
   },
   "parallelism": {
-    "data_parallel": 8,
-    "expert_parallel": 8,
-    "tensor_parallel": 1
+    "data_parallel": 2,
+    "expert_parallel": 16,
+    "tensor_parallel": 1,
+    "pipeline_parallel": 1,
+    "total_gpus": 32,
+    "gpus_per_node": 8
   },
   "batch_size": {
-    "global_batch_tokens": 131072,
-    "global_batch_samples": 64,
-    "micro_batch_per_gpu_samples": 8,
-    "seq_len": 2048
+    "global_batch_size": 512,
+    "tokens_per_global_step": 1048576,
+    "micro_batch_size": 8,
+    "gradient_accumulation_steps": 32
   },
-  "estimated_memory_gb": 22,
-  "estimated_tokens_per_sec": 100000,
-  "launch_notes": "Design rationale: expert FFN hidden = 4×hidden = 6144; per layer active params = attention (4·1536²≈9.4M) + 2/8 routed experts (2·2·1536·6144≈37.7M) ≈ 47M × 18 layers ≈ 848M + ~77M embedding ⇒ ~0.93B active ('1B dense-equivalent'), ~2.96B total. EP=8 shards all 8 experts across GPUs (1 expert/GPU/layer), so all 8 GPUs must be in the expert-parallel group — hence TP=1, EP=DP=8 (all-to-all on every routed layer). Capacity factor 1.25 with no token drop at k=2/8 until 1.25× avg load is exceeded. Launch (Megatron flags): --num-experts 8 --moe-router-topk 2 --moe-train-capacity-factor 1.25 --moe-eval-capacity-factor 1.25 --expert-parallel-size 8 --tensor-model-parallel-size 1 --data-parallel-size 8 --num-layers 18 --hidden-size 1536 --ffn-hidden-size 6144 --seq-length 2048 --micro-batch-size 8 --global-batch-size 64 --bf16 --use-flash-attn. Per-GPU state: ~9 GB weights/Adam/optimizer (EP cuts expert-opt memory 8×) + ~10 GB activations (flash-attn + activation checkpointing) ⇒ ~22 GB/GPU ≈ 28% of 80 GB, leaving headroom to raise micro-batch. Tokens/s est. at ~40% MFU: 8×H100 bf16 (~7.9 PFLOPS peak, all-to-all overhead) / (6×0.85e9 FLOPs per token) ≈ 100k; expect 80–150k in practice."
+  "estimated_memory_gb": 38,
+  "estimated_tokens_per_sec": 1000000,
+  "launch_notes": "1B dense-equivalent: ~1.2B active params/token (attention 4*h^2=16.8M + top-2 of 16 experts @ 16.8M each per layer, 24 layers), 6.9B total. Expert count 16 and EP=16 give 1 expert/GPU; TP=1 keeps all-to-all disjoint from attention TP; cap factor 1.25 = capacity = tokens*topk*1.25/16, balances load-balance loss vs padding overhead; min capacity 4. Use --moe-token-dispatcher-type alltoall (flex/DeepEP if available) for top-2, --moe-router-load-balancing-type aux_loss with coeff 1e-2, --moe-grouped-gemm, --moe-permute-fusion. On 32x H100 80GB: ~38GB/GPU peak fits in 80GB (params/grads/Opt states ~14GB + checkpointed activations ~10GB + comm buffers); ~1.0M tok/s aggregate (~31k/GPU) at ~35% MFU; expect roughly 3x slower on A100-80GB. Launch: torchrun --nnodes=4 --nproc_per_node=8 pretrain_gpt.py --tensor-model-parallel-size 1 --pipeline-model-parallel-size 1 --num-layers 24 --hidden-size 2048 --num-attention-heads 32 --seq-length 2048 --max-position-embeddings 2048 --vocab-size 32768 --num-experts 16 --moe-expert-parallel-size 16 --topk 2 --moe-train-capacity-factor 1.25 --moe-eval-capacity-factor 1.25 --moe-min-capacity 4 --moe-loss-coeff 0.01 --swiglu --micro-batch-size 8 --global-batch-size 512 --bf16 --use-flash-attn --optimizer adam --lr 3e-4 --min-lr 3e-5 --lr-decay-style cosine --weight-decay 0.1 --clip-grad 1.0 --split 98,2,0 --data-path /data/dataset --deepspeed --deepspeed_config ds_config.json, where ds_config.json sets train_batch_size=512, train_micro_batch_size_per_gpu=8, gradient_accumulation_steps=32, fp16/bf16 auto, zero_optimization stage 1."
 }
 ```
+
+Key choices: 16 experts × top-2 with 4096-wide expert FFNs over 24 layers of width 2048 gives ~1.2B active params/token (the "1B dense-equivalent" compute class) with ~6.9B total. EP=16 (1 expert/GPU) on 32 GPUs keeps DP=2 and eliminates expert-replication, while TP=1 avoids over-sharding the small attention blocks.

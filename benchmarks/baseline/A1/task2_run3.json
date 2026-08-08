@@ -1,0 +1,50 @@
+Let me check the working directory for any existing config conventions.
+I have enough grounding. Let me check the working directory structure for existing conventions.
+Let me check the working directory for existing conventions before writing the config.
+Based on my research (Megatron-Core MoE docs, Mixtral config, MoE capacity-factor guidance), here is the design and launchable config.
+
+**Design rationale (stated explicitly):** Mixtral-style top-2 routing with 8 experts, 1.25 capacity factor (HF-recommended starting point for top-2), and narrow SwiGLU experts (`moe_ffn = hidden = 2048`) over 8 layers. Total = **1.02B params** (≈1B dense-equivalent), ~352M active/token (~2.9× cheaper FLOPs than a dense 1B). EP=8 = num_experts puts exactly 1 expert per GPU, eliminating local token permutation (Megatron's documented EP8×TP1 recommendation).
+
+```json
+{
+  "framework": "megatron",
+  "architecture": {
+    "num_experts": 8,
+    "top_k": 2,
+    "hidden_size": 2048,
+    "num_layers": 8,
+    "capacity_factor": 1.25,
+    "moe_ffn_hidden_size": 2048,
+    "num_attention_heads": 32,
+    "num_kv_heads": 8,
+    "head_dim": 64,
+    "vocab_size": 32768,
+    "seq_length": 2048,
+    "max_position_embeddings": 8192,
+    "activation": "swiglu",
+    "total_params": 1023600000,
+    "active_params_per_token": 352000000,
+    "router": "top-k softmax, aux_loss",
+    "token_dropping": "pad-to-capacity, capacity = (tokens_per_rank * top_k * capacity_factor) / num_experts = 20480 tokens/expert"
+  },
+  "parallelism": {
+    "data_parallel": 1,
+    "expert_parallel": 8,
+    "tensor_parallel": 1,
+    "pipeline_parallel": 1,
+    "world_size": 8,
+    "gpu_type": "H100-80GB SXM5 (NVLink, 1 node)"
+  },
+  "batch_size": {
+    "micro_batch": 32,
+    "gradient_accumulation": 16,
+    "global_batch_sequences": 512,
+    "tokens_per_step": 1048576
+  },
+  "estimated_memory_gb": 12,
+  "estimated_tokens_per_sec": 500000,
+  "launch_notes": "Memory is per-GPU (bf16 + full activation recompute + distributed optimizer; ~12GB << 80GB, headroom for FP8 or longer seq). Throughput is aggregate across 8xH100 (~62k tok/s/GPU, +-30%: expect 300-700k depending on comm overlap; alltoall over NVLink). Launch command (Megatron-LM / MCore, 8xH100): torchrun --nnodes=1 --nproc_per_node=8 pretrain_gpt.py --use-mcore-models --transformer-impl transformer_engine --tensor-model-parallel-size 1 --pipeline-model-parallel-size 1 --expert-model-parallel-size 8 --num-layers 8 --hidden-size 2048 --ffn-hidden-size 2048 --moe-ffn-hidden-size 2048 --num-attention-heads 32 --group-query-attention --num-query-groups 8 --swiglu --normalization RMSNorm --position-embedding-type rope --seq-length 2048 --max-position-embeddings 8192 --micro-batch-size 32 --global-batch-size 512 --num-experts 8 --moe-router-topk 2 --moe-expert-capacity-factor 1.25 --moe-pad-expert-input-to-capacity --moe-router-load-balancing-type aux_loss --moe-aux-loss-coeff 1e-2 --moe-token-dispatcher-type alltoall --moe-grouped-gemm --moe-permute-fusion --recompute-activations --recompute-method uniform --bf16 --use-distributed-optimizer --overlap-grad-reduce --overlap-param-gather --lr 3e-4 --min-lr 3e-5 --lr-warmup-iters 2000 --lr-decay-iters 143000 --lr-decay-style cosine --weight-decay 0.1 --clip-grad 1.0 --tokenizer-type GPT2BPETokenizer --vocab-file <vocab.json> --merge-file <merges.txt> --data-path <dataset_text_document> --split 949,50,1 --train-iters 143000 --log-interval 100 --save-interval 5000 --eval-interval 2000 --eval-iters 10 --save <ckpt_dir> --load <ckpt_dir> --tensorboard-dir <tb_dir>"
+}
+```
+
+Key consistency checks: world_size = DP×EP×TP×PP = 8; global batch = 32×16 = 512 seqs = 1,048,576 tokens/step; capacity factor + pad-to-capacity enables CUDA-graph capture of MoE layers; 143k iters ≈ 150B tokens for a 1B-class model.

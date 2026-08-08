@@ -1,0 +1,30 @@
+Designing a 1B dense-equivalent MoE (24 layers, d_model=1536, FFN 4×, vocab 32k → 0.955B dense) sized to fit 8×A100-80GB: 32 experts, top-2 gives 1.63B activated params (1.7× dense compute) while EP=8 shards the 21.7B expert params to ~43.5 GB/GPU. All numbers below follow the `moe_calculator.py` / `memory_estimator.py` formulas.
+
+```json
+{
+  "framework": "deepspeed_moe",
+  "architecture": {
+    "num_experts": 32,
+    "top_k": 2,
+    "hidden_size": 1536,
+    "num_layers": 24,
+    "capacity_factor": 1.0
+  },
+  "parallelism": {
+    "data_parallel": 1,
+    "expert_parallel": 8,
+    "tensor_parallel": 1
+  },
+  "batch_size": {
+    "micro_batch": 4,
+    "grad_accumulation_steps": 128,
+    "global_batch_tokens": 1048576,
+    "seq_len": 2048
+  },
+  "estimated_memory_gb": 61,
+  "estimated_tokens_per_sec": 64000,
+  "launch_notes": "DeepSpeed MoE on 8x A100-80GB (NVLink), bf16 + fp32-master AdamW. Dense-equivalent baseline 0.955B params (attention 226M + layernorm 0.07M + embedding 49M). MoE total 22.02B (23.1x dense), activated 1.63B -> 10.11 GFLOPs/token (1.68x dense compute). Memory/GPU: experts sharded by EP=8 -> 43.5GB, dense replicated -> 4.4GB, activations ~6GB (no checkpointing), overhead+buffers -> ~61GB total, 24% headroom. Routing: Top-2 (quality over Top-1), capacity_factor 1.0, router_aux_loss_coef 0.01, logit jitter 0.01. Per-GPU tokens/expert per micro-batch = 4*2048*2/(32/8)=4096 (floor 8-64). Throughput ~64k tok/s at ~26% MFU (all-to-all + capacity padding overhead). Launch: deepspeed --num_gpus=8 train.py --deepspeed ds_moe.json --expert-parallel-size 8 --bf16. Validate: DP*TP*EP = 8 = GPU count, EP=8 divides num_experts=32, capacity_factor matches arch doc, tokens/expert >= 8, config parses via python -m json.tool."
+}
+```
+
+Design rationale: 32 experts sits in the 16–64 production band; top-2 at cf=1.0 is the standard training default (aux loss 0.01 prevents routing collapse). 64 experts would push expert-param memory to ~87 GB/GPU even at EP=8, violating the ≥20% headroom rule — 32 is the largest count that fits the hardware.

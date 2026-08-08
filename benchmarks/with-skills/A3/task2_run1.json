@@ -1,0 +1,48 @@
+Below is the design plus the launchable training config, following the `moe-architecture` and `moe-training` procedures (all counts recomputed by hand from the skill formulas).
+
+## Design summary
+
+**1B dense-equivalent MoE** — the MoE replaces a 1B dense model in compute-per-token: **activated params ≈ 1.005B**.
+
+- `hidden_size=2048`, `num_layers=8`, `ffn_mult=4` (→ FFN 8192), `vocab=32000`
+- `num_experts=16`, `top_k=2` (Top-2 is the training default: better quality than Top-1 at modest all-to-all cost)
+- `capacity_factor=1.25` (absorbs routing imbalance without drops; aux loss 0.01 keeps the router balanced)
+- Totals: dense baseline 602M / **MoE 6.64B** / **activated 1.005B** (ratio ≈ 11×)
+- FLOPs/token ≈ 6.16 GFLOP (`6×activated + 4×L×d×seq_len` at seq_len 2048)
+
+**Memory / parallelism (8× A100-40GB, NVLink):** EP=8 (2 experts/rank) so `DP·TP·PP·EP = 1·1·1·8 = 8`, EP divides 16. Per-GPU params = 1.005B (dense 200M replicated + 6.44B experts /8) → bf16 2.0 GB + grads 2.0 GB + AdamW 12.1 GB + activations 2.7 GB (checkpointed) + 3.1 GB overhead ≈ **22 GB, 45% headroom**. Tokens/expert/GPU/micro-batch = 16,384 ≫ the 8-token utilization floor.
+
+**Throughput:** 8×312 TFLOPS × ~35% MFU ÷ 6.16 GFLOP/token ≈ **~140k tokens/sec**.
+
+## Training configuration (JSON)
+
+```json
+{
+  "framework": "deepspeed",
+  "architecture": {
+    "num_experts": 16,
+    "top_k": 2,
+    "hidden_size": 2048,
+    "num_layers": 8,
+    "capacity_factor": 1.25,
+    "ffn_dim": 8192,
+    "vocab_size": 32000
+  },
+  "parallelism": {
+    "data_parallel": 1,
+    "expert_parallel": 8,
+    "tensor_parallel": 1
+  },
+  "batch_size": {
+    "micro_batch_sequences": 8,
+    "gradient_accumulation_steps": 16,
+    "global_batch_sequences": 128,
+    "global_batch_tokens": 262144
+  },
+  "estimated_memory_gb": 22,
+  "estimated_tokens_per_sec": 140000,
+  "launch_notes": "Assumes 8x A100-40GB with NVLink. DeepSpeed MoE: dense weights ZeRO-2, experts sharded with ep_size=8 (2 experts per rank), one all-to-all per MoE layer over 8 ranks. BF16 training, fp32 master weights (AdamW), gradient clipping norm 1.0, router_aux_loss_coef 0.01, gradient checkpointing on (activations ~2.7GB). Example: deepspeed --num_gpus 8 train_moe.py --model-config moe_1b_16e.json --deepspeed_config ds_ep8.json --micro-batch 8 --grad-accum 16 --seq-len 2048. Capacity factor 1.25 vs architecture doc must match; token drops should be near zero with aux loss 0.01. Memory is per-GPU; ~22GB leaves >20% headroom on 40GB. Tokens/sec is a rough estimate at ~35% MFU (all-to-all + capacity padding overhead); measure with throughput_profiler.py and expect 120-150k."
+}
+```
+
+Key design choices vs the skills: Top-2 (training-quality sweet spot), capacity factor 1.25 (drops tokens under imbalance otherwise — the failure mode most relevant at this scale), and EP=8 as the only layout that fits 6.64B total params on 40GB GPUs.
