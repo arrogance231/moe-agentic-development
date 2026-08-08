@@ -1,0 +1,54 @@
+```json
+{
+  "identified_problems": [
+    "Router collapse / expert imbalance: 3 of 32 experts receiving >80% of routed tokens",
+    "Gradient explosion: gradient norm spiked sharply in the 50 steps preceding the NaN",
+    "Numerical divergence: loss went to NaN at step 4200 after a healthy decreasing phase",
+    "No safeguard against gradient explosion: gradient clipping not configured",
+    "Token dropping under imbalance: capacity_factor=1.0 drops tokens from under-loaded experts, starving their gradients and reinforcing collapse",
+    "Top-1 routing amplifies the collapse: single-expert dispatch halves activated expert capacity and removes knowledge blending"
+  ],
+  "root_causes": [
+    {
+      "rank": 1,
+      "cause": "Aux load-balancing loss too low or absent — the router collapsed, with 3/32 experts taking >80% of tokens, leaving 29 experts effectively starved",
+      "evidence": "expert load logs showing 3 of 32 experts receiving >80% of routed tokens"
+    },
+    {
+      "rank": 2,
+      "cause": "Missing gradient clipping combined with a routing burst — the collapsed router concentrates gradients on a few experts, the gradient norm spikes, and the optimizer step diverges to NaN",
+      "evidence": "sharp gradient-norm spike in the 50 steps before NaN; no gradient clipping configured"
+    },
+    {
+      "rank": 3,
+      "cause": "capacity_factor=1.0 with no overflow headroom — under the imbalance, tokens destined for under-loaded experts are dropped, cutting their gradients and locking in the collapse",
+      "evidence": "capacity_factor=1.0; 3/32 experts overloaded (overflow to capacity)"
+    },
+    {
+      "rank": 4,
+      "cause": "Top-1 routing with a collapsed router — one expert per token makes each routed expert carry a large fraction of loss gradient, escalating the norm spike; top-2 would dilute it",
+      "evidence": "top-1 routing configured"
+    },
+    {
+      "rank": 5,
+      "cause": "Learning rate too high / warmup too short, destabilizing the router and contributing to the gradient spike",
+      "evidence": "gradient norm spike is a classic high-LR / poor-warmup signature"
+    }
+  ],
+  "actions": [
+    "Add gradient clipping (norm 1.0) to stop the gradient spike from diverging the optimizer — highest-priority safety fix",
+    "Raise the load-balancing aux loss scale from 0.001 to 0.01 to counteract the router collapse and push effective expert count back toward 32",
+    "Increase capacity_factor from 1.0 to 1.25 so under-loaded experts keep receiving (and getting gradient from) tokens instead of dropping them",
+    "Lower the learning rate and/or extend warmup to stabilize router updates",
+    "Add router-logit jitter at train time to break deterministic favoring of the same 3 experts",
+    "Consider switching to top-2 routing, which halves per-expert gradient concentration and recovers the knowledge blending lost by top-1"
+  ],
+  "evidence": [
+    "Loss went to NaN at step 4200 after several hundred steps of normal decreasing loss",
+    "Gradient norm spiked sharply in the 50 steps preceding the NaN",
+    "Expert load logs show 3 of 32 experts receiving >80% of routed tokens in the steps before the spike",
+    "Top-1 routing is configured with capacity_factor=1.0",
+    "No gradient clipping is configured"
+  ]
+}
+```

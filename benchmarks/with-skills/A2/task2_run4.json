@@ -1,0 +1,41 @@
+I don't have shell/file access in this session, so I'll design the architecture from the skill formulas and hand-validate every number (matching `tools/moe_calculator.py` and `tools/memory_estimator.py` semantics), then produce the config.
+## Design (1B dense-equivalent MoE)
+
+**d=1536, L=16, ffn_dim=6144 (mult 4), vocab=32k, E=16, top_k=2, cf=1.25**
+
+Validated with the skill formulas:
+- Dense baseline = 16·(4·1536² + 3·1536·6144 + 2·1536) + 32k·1536 = **653M**
+- Activated = 16·(9.44M + 3.07k + 2·28.31M) + 49.15M = **1.11B** (the ~1B dense-equivalent)
+- MoE total = 16·(9.44M + 3.07k + 16·28.31M) + 49.15M = **7.45B** (param_ratio 11.4×)
+- FLOPs/token = 6·1.11B + 4·16·1536·2048 = **6.84 GFLOPs** (1.66× dense)
+
+Memory per GPU (EP=8 shards experts, ZeRO optimizer, grad-checkpointing on): params 2.2GB + grads 2.2GB + optimizer 13.3GB + activations ~4.0GB + overhead ≈ **26GB** of 80GB (~68% headroom). Throughput ≈ 85k tok/s at ~25% MFU on 8×A100-80GB. Tokens/expert/GPU/micro-batch = 8·2048·2/2 = **16,384** (≫ 8–64 floor → no underutilization).
+
+```json
+{
+  "framework": "deepspeed_moe",
+  "architecture": {
+    "num_experts": 16,
+    "top_k": 2,
+    "hidden_size": 1536,
+    "num_layers": 16,
+    "capacity_factor": 1.25
+  },
+  "parallelism": {
+    "data_parallel": 1,
+    "expert_parallel": 8,
+    "tensor_parallel": 1
+  },
+  "batch_size": {
+    "micro_batch_per_gpu": 8,
+    "gradient_accumulation_steps": 64,
+    "global_batch_sequences": 512,
+    "global_batch_tokens": 1048576
+  },
+  "estimated_memory_gb": 26,
+  "estimated_tokens_per_sec": 85000,
+  "launch_notes": "1B dense-equivalent MoE: 1.11B activated / 7.45B total params (dense baseline 653M, ratio 11.4x). E=16 chosen over 64 to keep total params in the 7B range at ~1B active and fit 8x80GB comfortably; top-2 for training-quality expert blending (default MoE training choice); capacity factor 1.25 to absorb router imbalance (capacity 1.0 drops tokens); router aux loss 0.01, BF16 mixed precision. FLOPs/token 6.84G (1.66x dense). Parallelism: DP1 x TP1 x EP8 x PP1 = 8 GPUs; EP=8 divides 16 experts (2 experts/rank), all-to-all once per MoE layer; tokens/expert/GPU/micro-batch = 16,384 (well above the 8-64 floor). Memory/GPU ~26GB of 80GB (~68% headroom) with ZeRO sharded optimizer + gradient checkpointing. Launch: deepspeed train_moe.py --deepspeed ds_config.json --hidden-size 1536 --num-layers 16 --ffn-mult 4 --vocab 32000 --seq-len 2048 --num-experts 16 --top-k 2 --moe-router-load-balancing-type aux_loss --router-aux-loss-coef 0.01 --capacity-factor 1.25 --micro-batch 8 --grad-accum 64 --ep-size 8. Validate per-GPU memory with memory_estimator.py and tokens/sec with throughput_profiler.py before the full run."
+}
+```
+
+**Rationale for choices:** 16 experts keeps the memory-safe ~7B-total/1B-active profile (64 experts would balloon total params to ~27B and push per-GPU memory near the 80GB limit on 8 GPUs). Top-2 over Top-1 trades 2× dispatch cost for the quality floor the skill documents; cf=1.25 + aux loss 0.01 is the recommended load-balancing default. All counts follow the skill's calculator formulas and should be re-verified with `tools/moe_calculator.py` / `tools/memory_estimator.py` before launch.

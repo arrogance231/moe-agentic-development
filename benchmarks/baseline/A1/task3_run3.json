@@ -1,0 +1,30 @@
+```json
+{
+  "identified_problems": [
+    "Severe expert load imbalance (router collapse): 3 of 32 experts receive >80% of routed tokens",
+    "Exploding gradients: gradient norm spiked sharply in the 50 steps before the NaN",
+    "Unbounded optimizer updates: no gradient clipping configured, so the spike is applied directly to parameters",
+    "Loss instability culminating in NaN at step 4200 after a period of healthy decreasing loss"
+  ],
+  "root_causes": [
+    "Top-1 routing with no effective load-balancing mechanism lets a few experts win a positive-feedback loop: experts that receive more tokens train faster, become more useful to the router, and attract even more tokens, until the router collapses onto a handful of experts.",
+    "With capacity_factor=1.0 there is no slack: overloaded experts cannot shed tokens, and the massively over-subscribed experts accumulate very large per-step gradients.",
+    "The resulting gradient-norm spike, with no clipping and a fixed learning rate, produces an oversized parameter update that destabilizes weights and drives the loss to NaN.",
+    "Missing safety rails: neither gradient clipping nor an auxiliary router load-balancing loss was configured, so the collapse was allowed to run to divergence."
+  ],
+  "actions": [
+    "Add gradient norm clipping (e.g., clip by global norm with max_norm in [0.5, 1.0]) and keep it on for all future runs.",
+    "Add an auxiliary load-balancing loss to the router (e.g., Switch Transformer-style coefficient ~0.01) to discourage expert collapse.",
+    "Increase capacity_factor from 1.0 to at least 1.25-2.0 to reduce token dropping on overloaded experts.",
+    "Add router jitter noise / dropout during training to break the collapse feedback loop.",
+    "Reduce the learning rate or add/verify warmup as a secondary guard.",
+    "Add early-warning monitoring on expert utilization (fraction of tokens to top-k experts) and gradient norm so imbalance is caught before divergence."
+  ],
+  "evidence": [
+    "Loss went to NaN at step 4200 after several hundred steps of normal decreasing loss (sudden collapse of an otherwise healthy run)",
+    "Gradient norm spiked sharply in the 50 steps preceding the NaN (exploding gradients directly precede the divergence)",
+    "Top-1 routing with capacity_factor=1.0 and no gradient clipping configured (configuration lacks both balancing and clipping safeguards)",
+    "Expert load logs show 3 of 32 experts receiving >80% of routed tokens in the steps before the spike (router collapse is the underlying cause of the gradient explosion)"
+  ]
+}
+```

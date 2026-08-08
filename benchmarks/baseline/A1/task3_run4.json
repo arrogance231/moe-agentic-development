@@ -1,0 +1,32 @@
+```json
+{
+  "identified_problems": [
+    "Loss diverged to NaN at step 4200 after an extended period of healthy, decreasing loss",
+    "Gradient norm spiked sharply over the ~50 steps preceding the NaN, indicating unstable, exploding gradients",
+    "Severe expert load imbalance: 3 of 32 experts absorbed >80% of routed tokens, signaling router/expert collapse",
+    "No gradient clipping configured, so the gradient spike propagated unchecked until overflow",
+    "capacity_factor=1.0 allows token dropping on overloaded experts, introducing abrupt gradient discontinuities"
+  ],
+  "root_causes": [
+    "Router collapse: top-1 routing with no (or ineffective) load-balancing auxiliary loss lets the gating network funnel the majority of tokens into a small set of experts, starving the other ~29 experts and creating runaway positive feedback on the hot experts",
+    "Gradient explosion: the overloaded experts receive large, repeated gradients; their weights grow, their outputs become large, and the corresponding routing probabilities saturate, further concentrating load and magnifying gradients",
+    "Unbounded optimizer step: with no gradient clipping, the sharp norm spike (from a few hundred to overflowing magnitude) exceeds FP32 precision, corrupting weights to NaN in a single step",
+    "capacity_factor=1.0 exacerbates instability: dropped tokens cause the router to receive discontinuous, high-magnitude gradient signal, accelerating the collapse"
+  ],
+  "actions": [
+    "Add gradient clipping (e.g., clip_grad_norm=1.0) to bound the spike and prevent NaN",
+    "Introduce a load-balancing auxiliary loss (plus z-loss for router logit stability) so the router spreads tokens evenly across all 32 experts",
+    "Raise capacity_factor (e.g., 1.25–2.0) and/or switch to top-2 routing or expert-choice routing to reduce token dropping and stabilize gradients",
+    "Consider a lower learning rate or longer warmup to damp the pre-spike gradient growth",
+    "Add a finite-loss/NaN guard and restart from the last healthy checkpoint (just before the gradient spike began) after applying the fixes",
+    "Monitor per-expert token counts and gradient norm; alert if any expert exceeds a load threshold or norm spikes"
+  ],
+  "evidence": [
+    "Loss went to NaN at step 4200 after several hundred steps of normal decreasing loss",
+    "Gradient norm spiked sharply in the 50 steps preceding the NaN",
+    "Training uses top-1 routing with capacity_factor=1.0",
+    "No gradient clipping is configured",
+    "Expert load logs show 3 of 32 experts receiving >80% of routed tokens in the steps before the spike"
+  ]
+}
+```

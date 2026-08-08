@@ -1,0 +1,5546 @@
+[
+  {
+    "arm": "A0",
+    "task": "task1",
+    "seed": 1,
+    "metrics": {
+      "arm": "A0",
+      "task": "task1",
+      "seed": 1,
+      "wall_clock_sec": 52.19,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 5236,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 1846,
+      "tokens_output": 1594,
+      "tokens_reasoning": 4392,
+      "tokens_cache_read": 1920,
+      "tokens_cache_write": 0,
+      "tokens_total": 9752,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 5,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": true,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 1,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": false
+          }
+        }
+      },
+      "total": 21,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task1",
+    "seed": 2,
+    "metrics": {
+      "arm": "A0",
+      "task": "task1",
+      "seed": 2,
+      "wall_clock_sec": 48.45,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 5563,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 54,
+      "tokens_output": 1526,
+      "tokens_reasoning": 3911,
+      "tokens_cache_read": 3712,
+      "tokens_cache_write": 0,
+      "tokens_total": 9203,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 5,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": true,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 5,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": true
+          }
+        }
+      },
+      "total": 25,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task1",
+    "seed": 3,
+    "metrics": {
+      "arm": "A0",
+      "task": "task1",
+      "seed": 3,
+      "wall_clock_sec": 54.68,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 7323,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 4561,
+      "tokens_output": 2271,
+      "tokens_reasoning": 3809,
+      "tokens_cache_read": 15872,
+      "tokens_cache_write": 0,
+      "tokens_total": 26513,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 5,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": true,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 1,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": false
+          }
+        }
+      },
+      "total": 21,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task1",
+    "seed": 4,
+    "metrics": {
+      "arm": "A0",
+      "task": "task1",
+      "seed": 4,
+      "wall_clock_sec": 44.62,
+      "return_code": 0,
+      "tool_calls_total": 1,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 5862,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 185,
+      "tokens_output": 1777,
+      "tokens_reasoning": 3086,
+      "tokens_cache_read": 10368,
+      "tokens_cache_write": 0,
+      "tokens_total": 15416,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 3,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": false,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 1,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": false
+          }
+        }
+      },
+      "total": 19,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task1",
+    "seed": 5,
+    "metrics": {
+      "arm": "A0",
+      "task": "task1",
+      "seed": 5,
+      "wall_clock_sec": 50.52,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 5607,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 54,
+      "tokens_output": 1635,
+      "tokens_reasoning": 4219,
+      "tokens_cache_read": 3712,
+      "tokens_cache_write": 0,
+      "tokens_total": 9620,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 3,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": false,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 1,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": false
+          }
+        }
+      },
+      "total": 19,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task2",
+    "seed": 1,
+    "metrics": {
+      "arm": "A0",
+      "task": "task2",
+      "seed": 1,
+      "wall_clock_sec": 33.63,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 1840,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 5872,
+      "tokens_output": 727,
+      "tokens_reasoning": 2808,
+      "tokens_cache_read": 6144,
+      "tokens_cache_write": 0,
+      "tokens_total": 15551,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.0375,
+      "tokens_per_sec": 35000
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task2",
+    "seed": 2,
+    "metrics": {
+      "arm": "A0",
+      "task": "task2",
+      "seed": 2,
+      "wall_clock_sec": 52.74,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 2253,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 464,
+      "tokens_output": 899,
+      "tokens_reasoning": 4983,
+      "tokens_cache_read": 7424,
+      "tokens_cache_write": 0,
+      "tokens_total": 13770,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.0037109375,
+      "tokens_per_sec": 3800000
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task2",
+    "seed": 3,
+    "metrics": {
+      "arm": "A0",
+      "task": "task2",
+      "seed": 3,
+      "wall_clock_sec": 23.05,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 1992,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 463,
+      "tokens_output": 855,
+      "tokens_reasoning": 1303,
+      "tokens_cache_read": 7424,
+      "tokens_cache_write": 0,
+      "tokens_total": 10045,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.008203125,
+      "tokens_per_sec": 52000
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task2",
+    "seed": 4,
+    "metrics": {
+      "arm": "A0",
+      "task": "task2",
+      "seed": 4,
+      "wall_clock_sec": 35.91,
+      "return_code": 0,
+      "tool_calls_total": 1,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 1943,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 359,
+      "tokens_output": 776,
+      "tokens_reasoning": 3108,
+      "tokens_cache_read": 7424,
+      "tokens_cache_write": 0,
+      "tokens_total": 11667,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.015625,
+      "tokens_per_sec": 600000
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task2",
+    "seed": 5,
+    "metrics": {
+      "arm": "A0",
+      "task": "task2",
+      "seed": 5,
+      "wall_clock_sec": 27.34,
+      "return_code": 0,
+      "tool_calls_total": 1,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 2238,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 202,
+      "tokens_output": 830,
+      "tokens_reasoning": 1914,
+      "tokens_cache_read": 7552,
+      "tokens_cache_write": 0,
+      "tokens_total": 10498,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.0375,
+      "tokens_per_sec": 45000
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task3",
+    "seed": 1,
+    "metrics": {
+      "arm": "A0",
+      "task": "task3",
+      "seed": 1,
+      "wall_clock_sec": 16.44,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 3187,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 207,
+      "tokens_output": 693,
+      "tokens_reasoning": 744,
+      "tokens_cache_read": 3584,
+      "tokens_cache_write": 0,
+      "tokens_total": 5228,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.153,
+      "fix_match": 0.132,
+      "evidence_cited": 0.5,
+      "accuracy": 0.454
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task3",
+    "seed": 2,
+    "metrics": {
+      "arm": "A0",
+      "task": "task3",
+      "seed": 2,
+      "wall_clock_sec": 13.9,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 2849,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 79,
+      "tokens_output": 624,
+      "tokens_reasoning": 499,
+      "tokens_cache_read": 3712,
+      "tokens_cache_write": 0,
+      "tokens_total": 4914,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.173,
+      "fix_match": 0.135,
+      "evidence_cited": 0.5,
+      "accuracy": 0.461
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task3",
+    "seed": 3,
+    "metrics": {
+      "arm": "A0",
+      "task": "task3",
+      "seed": 3,
+      "wall_clock_sec": 13.64,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 2699,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 79,
+      "tokens_output": 586,
+      "tokens_reasoning": 602,
+      "tokens_cache_read": 3712,
+      "tokens_cache_write": 0,
+      "tokens_total": 4979,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.15,
+      "fix_match": 0.13,
+      "evidence_cited": 0.5,
+      "accuracy": 0.453
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task3",
+    "seed": 4,
+    "metrics": {
+      "arm": "A0",
+      "task": "task3",
+      "seed": 4,
+      "wall_clock_sec": 11.46,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 2294,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 79,
+      "tokens_output": 523,
+      "tokens_reasoning": 517,
+      "tokens_cache_read": 3712,
+      "tokens_cache_write": 0,
+      "tokens_total": 4831,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.221,
+      "fix_match": 0.137,
+      "evidence_cited": 0.5,
+      "accuracy": 0.475
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task3",
+    "seed": 5,
+    "metrics": {
+      "arm": "A0",
+      "task": "task3",
+      "seed": 5,
+      "wall_clock_sec": 11.81,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 2199,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 79,
+      "tokens_output": 507,
+      "tokens_reasoning": 497,
+      "tokens_cache_read": 3712,
+      "tokens_cache_write": 0,
+      "tokens_total": 4795,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.205,
+      "fix_match": 0.148,
+      "evidence_cited": 0.5,
+      "accuracy": 0.474
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task4",
+    "seed": 1,
+    "metrics": {
+      "arm": "A0",
+      "task": "task4",
+      "seed": 1,
+      "wall_clock_sec": 47.96,
+      "return_code": 0,
+      "tool_calls_total": 3,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 6000,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 9400,
+      "tokens_output": 1759,
+      "tokens_reasoning": 2674,
+      "tokens_cache_read": 13568,
+      "tokens_cache_write": 0,
+      "tokens_total": 27401,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 28000.0,
+      "throughput_delta_frac": 1.2580645161290323,
+      "claimed_after_util_pct": 87.0,
+      "util_delta_pct": 25.0
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task4",
+    "seed": 2,
+    "metrics": {
+      "arm": "A0",
+      "task": "task4",
+      "seed": 2,
+      "wall_clock_sec": 33.83,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 4057,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 371,
+      "tokens_output": 1185,
+      "tokens_reasoning": 2256,
+      "tokens_cache_read": 7424,
+      "tokens_cache_write": 0,
+      "tokens_total": 11236,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 20500.0,
+      "throughput_delta_frac": 0.6532258064516129,
+      "claimed_after_util_pct": 84.0,
+      "util_delta_pct": 22.0
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task4",
+    "seed": 3,
+    "metrics": {
+      "arm": "A0",
+      "task": "task4",
+      "seed": 3,
+      "wall_clock_sec": 32.36,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 3254,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 366,
+      "tokens_output": 987,
+      "tokens_reasoning": 1941,
+      "tokens_cache_read": 7424,
+      "tokens_cache_write": 0,
+      "tokens_total": 10718,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 21000.0,
+      "throughput_delta_frac": 0.6935483870967742,
+      "claimed_after_util_pct": 88.0,
+      "util_delta_pct": 26.0
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task4",
+    "seed": 4,
+    "metrics": {
+      "arm": "A0",
+      "task": "task4",
+      "seed": 4,
+      "wall_clock_sec": 34.24,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 4115,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 414,
+      "tokens_output": 1125,
+      "tokens_reasoning": 2028,
+      "tokens_cache_read": 7424,
+      "tokens_cache_write": 0,
+      "tokens_total": 10991,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": null,
+      "throughput_delta_frac": null,
+      "claimed_after_util_pct": 60.0,
+      "util_delta_pct": -2.0
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task4",
+    "seed": 5,
+    "metrics": {
+      "arm": "A0",
+      "task": "task4",
+      "seed": 5,
+      "wall_clock_sec": 35.91,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 3192,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 414,
+      "tokens_output": 983,
+      "tokens_reasoning": 2536,
+      "tokens_cache_read": 7424,
+      "tokens_cache_write": 0,
+      "tokens_total": 11357,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 31000.0,
+      "throughput_delta_frac": 1.5,
+      "claimed_after_util_pct": 89.0,
+      "util_delta_pct": 27.0
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task5",
+    "seed": 1,
+    "metrics": {
+      "arm": "A0",
+      "task": "task5",
+      "seed": 1,
+      "wall_clock_sec": 99.22,
+      "return_code": 0,
+      "tool_calls_total": 4,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 6197,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 21156,
+      "tokens_output": 2052,
+      "tokens_reasoning": 7547,
+      "tokens_cache_read": 16768,
+      "tokens_cache_write": 0,
+      "tokens_total": 47523,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language"
+      ],
+      "justification_quality": 5,
+      "revise_condition_present": true
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task5",
+    "seed": 2,
+    "metrics": {
+      "arm": "A0",
+      "task": "task5",
+      "seed": 2,
+      "wall_clock_sec": 176.24,
+      "return_code": 0,
+      "tool_calls_total": 6,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 11374,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 18368,
+      "tokens_output": 3610,
+      "tokens_reasoning": 13671,
+      "tokens_cache_read": 116096,
+      "tokens_cache_write": 0,
+      "tokens_total": 151745,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language"
+      ],
+      "justification_quality": 5,
+      "revise_condition_present": true
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task5",
+    "seed": 3,
+    "metrics": {
+      "arm": "A0",
+      "task": "task5",
+      "seed": 3,
+      "wall_clock_sec": 202.43,
+      "return_code": 0,
+      "tool_calls_total": 6,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 9652,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 16065,
+      "tokens_output": 3163,
+      "tokens_reasoning": 17776,
+      "tokens_cache_read": 55168,
+      "tokens_cache_write": 0,
+      "tokens_total": 92172,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language"
+      ],
+      "justification_quality": 4,
+      "revise_condition_present": false
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task5",
+    "seed": 4,
+    "metrics": {
+      "arm": "A0",
+      "task": "task5",
+      "seed": 4,
+      "wall_clock_sec": 129.77,
+      "return_code": 0,
+      "tool_calls_total": 4,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 8567,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 20261,
+      "tokens_output": 2693,
+      "tokens_reasoning": 9778,
+      "tokens_cache_read": 17024,
+      "tokens_cache_write": 0,
+      "tokens_total": 49756,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language",
+        "top2_with_top1_capacity_language"
+      ],
+      "justification_quality": 4,
+      "revise_condition_present": false
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task5",
+    "seed": 5,
+    "metrics": {
+      "arm": "A0",
+      "task": "task5",
+      "seed": 5,
+      "wall_clock_sec": 141.68,
+      "return_code": 0,
+      "tool_calls_total": 5,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 7240,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 25918,
+      "tokens_output": 2303,
+      "tokens_reasoning": 11331,
+      "tokens_cache_read": 42240,
+      "tokens_cache_write": 0,
+      "tokens_total": 81792,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language"
+      ],
+      "justification_quality": 5,
+      "revise_condition_present": true
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task6",
+    "seed": 1,
+    "metrics": {
+      "arm": "A0",
+      "task": "task6",
+      "seed": 1,
+      "wall_clock_sec": 143.85,
+      "return_code": 0,
+      "tool_calls_total": 1,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 5820,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 590,
+      "tokens_output": 1795,
+      "tokens_reasoning": 13011,
+      "tokens_cache_read": 7424,
+      "tokens_cache_write": 0,
+      "tokens_total": 22820,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 3,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": false,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": true,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 23,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task6",
+    "seed": 2,
+    "metrics": {
+      "arm": "A0",
+      "task": "task6",
+      "seed": 2,
+      "wall_clock_sec": 154.92,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 11567,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 13750,
+      "tokens_output": 3438,
+      "tokens_reasoning": 11667,
+      "tokens_cache_read": 19200,
+      "tokens_cache_write": 0,
+      "tokens_total": 48055,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 3,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": false,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": true,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 23,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task6",
+    "seed": 3,
+    "metrics": {
+      "arm": "A0",
+      "task": "task6",
+      "seed": 3,
+      "wall_clock_sec": 104.12,
+      "return_code": 0,
+      "tool_calls_total": 1,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 6981,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 327,
+      "tokens_output": 2028,
+      "tokens_reasoning": 8824,
+      "tokens_cache_read": 7680,
+      "tokens_cache_write": 0,
+      "tokens_total": 18859,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 3,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": false,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": true,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 23,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task6",
+    "seed": 4,
+    "metrics": {
+      "arm": "A0",
+      "task": "task6",
+      "seed": 4,
+      "wall_clock_sec": 104.68,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 7048,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 4574,
+      "tokens_output": 2165,
+      "tokens_reasoning": 8886,
+      "tokens_cache_read": 31104,
+      "tokens_cache_write": 0,
+      "tokens_total": 46729,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 3,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": false,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": false,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 23,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A0",
+    "task": "task6",
+    "seed": 5,
+    "metrics": {
+      "arm": "A0",
+      "task": "task6",
+      "seed": 5,
+      "wall_clock_sec": 294.51,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 10123,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 1,
+      "tokens_output": 2944,
+      "tokens_reasoning": 29056,
+      "tokens_cache_read": 3840,
+      "tokens_cache_write": 0,
+      "tokens_total": 35841,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 5,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": true,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": true,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 25,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task1",
+    "seed": 1,
+    "metrics": {
+      "arm": "A1",
+      "task": "task1",
+      "seed": 1,
+      "wall_clock_sec": 145.84,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 8014,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 15,
+      "tokens_output": 2445,
+      "tokens_reasoning": 15229,
+      "tokens_cache_read": 3840,
+      "tokens_cache_write": 0,
+      "tokens_total": 21529,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 3,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": false,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 5,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": true
+          }
+        }
+      },
+      "total": 23,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task1",
+    "seed": 2,
+    "metrics": {
+      "arm": "A1",
+      "task": "task1",
+      "seed": 2,
+      "wall_clock_sec": 104.85,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 6844,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 15,
+      "tokens_output": 2044,
+      "tokens_reasoning": 9990,
+      "tokens_cache_read": 3840,
+      "tokens_cache_write": 0,
+      "tokens_total": 15889,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 5,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": true,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 1,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": false
+          }
+        }
+      },
+      "total": 21,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task1",
+    "seed": 3,
+    "metrics": {
+      "arm": "A1",
+      "task": "task1",
+      "seed": 3,
+      "wall_clock_sec": 47.44,
+      "return_code": 0,
+      "tool_calls_total": 1,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 5435,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 179,
+      "tokens_output": 1685,
+      "tokens_reasoning": 3533,
+      "tokens_cache_read": 11008,
+      "tokens_cache_write": 0,
+      "tokens_total": 16405,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 5,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": true,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 1,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": false
+          }
+        }
+      },
+      "total": 21,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task1",
+    "seed": 4,
+    "metrics": {
+      "arm": "A1",
+      "task": "task1",
+      "seed": 4,
+      "wall_clock_sec": 108.03,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 1,
+      "search_enabled_for_arm": true,
+      "output_bytes": 5293,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 8445,
+      "tokens_output": 1652,
+      "tokens_reasoning": 10291,
+      "tokens_cache_read": 15104,
+      "tokens_cache_write": 0,
+      "tokens_total": 35492,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 3,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": false,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 1,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": false
+          }
+        }
+      },
+      "total": 19,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task1",
+    "seed": 5,
+    "metrics": {
+      "arm": "A1",
+      "task": "task1",
+      "seed": 5,
+      "wall_clock_sec": 58.12,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 6353,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 15,
+      "tokens_output": 1780,
+      "tokens_reasoning": 4805,
+      "tokens_cache_read": 3840,
+      "tokens_cache_write": 0,
+      "tokens_total": 10440,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 5,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": true,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 1,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": false
+          }
+        }
+      },
+      "total": 21,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task2",
+    "seed": 1,
+    "metrics": {
+      "arm": "A1",
+      "task": "task2",
+      "seed": 1,
+      "wall_clock_sec": 63.05,
+      "return_code": 0,
+      "tool_calls_total": 4,
+      "search_calls": 1,
+      "search_enabled_for_arm": true,
+      "output_bytes": 2906,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 6695,
+      "tokens_output": 1284,
+      "tokens_reasoning": 5708,
+      "tokens_cache_read": 14336,
+      "tokens_cache_write": 0,
+      "tokens_total": 28023,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.01484375,
+      "tokens_per_sec": 1000000
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task2",
+    "seed": 2,
+    "metrics": {
+      "arm": "A1",
+      "task": "task2",
+      "seed": 2,
+      "wall_clock_sec": 57.96,
+      "return_code": 0,
+      "tool_calls_total": 3,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 2225,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 13298,
+      "tokens_output": 1042,
+      "tokens_reasoning": 5261,
+      "tokens_cache_read": 16768,
+      "tokens_cache_write": 0,
+      "tokens_total": 36369,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.040625,
+      "tokens_per_sec": 100000
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task2",
+    "seed": 3,
+    "metrics": {
+      "arm": "A1",
+      "task": "task2",
+      "seed": 3,
+      "wall_clock_sec": 173.33,
+      "return_code": 0,
+      "tool_calls_total": 15,
+      "search_calls": 10,
+      "search_enabled_for_arm": true,
+      "output_bytes": 3796,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 40236,
+      "tokens_output": 2184,
+      "tokens_reasoning": 17146,
+      "tokens_cache_read": 261504,
+      "tokens_cache_write": 0,
+      "tokens_total": 321070,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.01875,
+      "tokens_per_sec": 500000
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task2",
+    "seed": 4,
+    "metrics": {
+      "arm": "A1",
+      "task": "task2",
+      "seed": 4,
+      "wall_clock_sec": 47.73,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 1756,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 40,
+      "tokens_output": 590,
+      "tokens_reasoning": 4591,
+      "tokens_cache_read": 3840,
+      "tokens_cache_write": 0,
+      "tokens_total": 9061,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.05625,
+      "tokens_per_sec": 180000
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task2",
+    "seed": 5,
+    "metrics": {
+      "arm": "A1",
+      "task": "task2",
+      "seed": 5,
+      "wall_clock_sec": 46.07,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 2852,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 465,
+      "tokens_output": 1174,
+      "tokens_reasoning": 3682,
+      "tokens_cache_read": 7680,
+      "tokens_cache_write": 0,
+      "tokens_total": 13001,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.00146484375,
+      "tokens_per_sec": 18000000
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task3",
+    "seed": 1,
+    "metrics": {
+      "arm": "A1",
+      "task": "task3",
+      "seed": 1,
+      "wall_clock_sec": 19.28,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 2349,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 168,
+      "tokens_output": 529,
+      "tokens_reasoning": 1230,
+      "tokens_cache_read": 3712,
+      "tokens_cache_write": 0,
+      "tokens_total": 5639,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.165,
+      "fix_match": 0.146,
+      "evidence_cited": 0.25,
+      "accuracy": 0.424
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task3",
+    "seed": 2,
+    "metrics": {
+      "arm": "A1",
+      "task": "task3",
+      "seed": 2,
+      "wall_clock_sec": 21.54,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 3021,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 40,
+      "tokens_output": 688,
+      "tokens_reasoning": 1340,
+      "tokens_cache_read": 3840,
+      "tokens_cache_write": 0,
+      "tokens_total": 5908,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.147,
+      "fix_match": 0.147,
+      "evidence_cited": 0.25,
+      "accuracy": 0.418
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task3",
+    "seed": 3,
+    "metrics": {
+      "arm": "A1",
+      "task": "task3",
+      "seed": 3,
+      "wall_clock_sec": 16.57,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 2586,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 40,
+      "tokens_output": 561,
+      "tokens_reasoning": 948,
+      "tokens_cache_read": 3840,
+      "tokens_cache_write": 0,
+      "tokens_total": 5389,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.175,
+      "fix_match": 0.136,
+      "evidence_cited": 0.5,
+      "accuracy": 0.462
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task3",
+    "seed": 4,
+    "metrics": {
+      "arm": "A1",
+      "task": "task3",
+      "seed": 4,
+      "wall_clock_sec": 17.33,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 2629,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 40,
+      "tokens_output": 575,
+      "tokens_reasoning": 919,
+      "tokens_cache_read": 3840,
+      "tokens_cache_write": 0,
+      "tokens_total": 5374,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.175,
+      "fix_match": 0.149,
+      "evidence_cited": 0.25,
+      "accuracy": 0.427
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task3",
+    "seed": 5,
+    "metrics": {
+      "arm": "A1",
+      "task": "task3",
+      "seed": 5,
+      "wall_clock_sec": 19.16,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 2026,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 40,
+      "tokens_output": 476,
+      "tokens_reasoning": 1414,
+      "tokens_cache_read": 3840,
+      "tokens_cache_write": 0,
+      "tokens_total": 5770,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.167,
+      "fix_match": 0.183,
+      "evidence_cited": 0.5,
+      "accuracy": 0.471
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task4",
+    "seed": 1,
+    "metrics": {
+      "arm": "A1",
+      "task": "task4",
+      "seed": 1,
+      "wall_clock_sec": 57.5,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 4725,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 474,
+      "tokens_output": 1492,
+      "tokens_reasoning": 4530,
+      "tokens_cache_read": 7552,
+      "tokens_cache_write": 0,
+      "tokens_total": 14048,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 23000.0,
+      "throughput_delta_frac": 0.8548387096774194,
+      "claimed_after_util_pct": 90.0,
+      "util_delta_pct": 28.0
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task4",
+    "seed": 2,
+    "metrics": {
+      "arm": "A1",
+      "task": "task4",
+      "seed": 2,
+      "wall_clock_sec": 33.08,
+      "return_code": 0,
+      "tool_calls_total": 3,
+      "search_calls": 1,
+      "search_enabled_for_arm": true,
+      "output_bytes": 4267,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 10918,
+      "tokens_output": 1329,
+      "tokens_reasoning": 1355,
+      "tokens_cache_read": 22400,
+      "tokens_cache_write": 0,
+      "tokens_total": 36002,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": null,
+      "throughput_delta_frac": null,
+      "claimed_after_util_pct": 85.0,
+      "util_delta_pct": 23.0
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task4",
+    "seed": 3,
+    "metrics": {
+      "arm": "A1",
+      "task": "task4",
+      "seed": 3,
+      "wall_clock_sec": 64.26,
+      "return_code": 0,
+      "tool_calls_total": 6,
+      "search_calls": 2,
+      "search_enabled_for_arm": true,
+      "output_bytes": 5263,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 15281,
+      "tokens_output": 1752,
+      "tokens_reasoning": 4096,
+      "tokens_cache_read": 28160,
+      "tokens_cache_write": 0,
+      "tokens_total": 49289,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 18600.0,
+      "throughput_delta_frac": 0.5,
+      "claimed_after_util_pct": 92.0,
+      "util_delta_pct": 30.0
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task4",
+    "seed": 4,
+    "metrics": {
+      "arm": "A1",
+      "task": "task4",
+      "seed": 4,
+      "wall_clock_sec": 37.91,
+      "return_code": 0,
+      "tool_calls_total": 3,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 3579,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 7702,
+      "tokens_output": 1156,
+      "tokens_reasoning": 2110,
+      "tokens_cache_read": 13440,
+      "tokens_cache_write": 0,
+      "tokens_total": 24408,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 19500.0,
+      "throughput_delta_frac": 0.5725806451612904,
+      "claimed_after_util_pct": 88.0,
+      "util_delta_pct": 26.0
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task4",
+    "seed": 5,
+    "metrics": {
+      "arm": "A1",
+      "task": "task4",
+      "seed": 5,
+      "wall_clock_sec": 56.24,
+      "return_code": 0,
+      "tool_calls_total": 9,
+      "search_calls": 6,
+      "search_enabled_for_arm": true,
+      "output_bytes": 5157,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 15752,
+      "tokens_output": 2015,
+      "tokens_reasoning": 3068,
+      "tokens_cache_read": 91904,
+      "tokens_cache_write": 0,
+      "tokens_total": 112739,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 17000.0,
+      "throughput_delta_frac": 0.3709677419354839,
+      "claimed_after_util_pct": 85.0,
+      "util_delta_pct": 23.0
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task5",
+    "seed": 1,
+    "metrics": {
+      "arm": "A1",
+      "task": "task5",
+      "seed": 1,
+      "wall_clock_sec": 50.71,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 713,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 0,
+      "tokens_output": 0,
+      "tokens_reasoning": 0,
+      "tokens_cache_read": 0,
+      "tokens_cache_write": 0,
+      "tokens_total": 0,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 1,
+      "violations": [],
+      "justification_quality": 0,
+      "revise_condition_present": false
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task5",
+    "seed": 2,
+    "metrics": {
+      "arm": "A1",
+      "task": "task5",
+      "seed": 2,
+      "wall_clock_sec": 89.25,
+      "return_code": 0,
+      "tool_calls_total": 4,
+      "search_calls": 2,
+      "search_enabled_for_arm": true,
+      "output_bytes": 5051,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 10830,
+      "tokens_output": 1721,
+      "tokens_reasoning": 5177,
+      "tokens_cache_read": 14976,
+      "tokens_cache_write": 0,
+      "tokens_total": 32704,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language",
+        "top2_with_top1_capacity_language"
+      ],
+      "justification_quality": 5,
+      "revise_condition_present": true
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task5",
+    "seed": 3,
+    "metrics": {
+      "arm": "A1",
+      "task": "task5",
+      "seed": 3,
+      "wall_clock_sec": 163.47,
+      "return_code": 0,
+      "tool_calls_total": 10,
+      "search_calls": 4,
+      "search_enabled_for_arm": true,
+      "output_bytes": 9476,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 30792,
+      "tokens_output": 3198,
+      "tokens_reasoning": 10285,
+      "tokens_cache_read": 43392,
+      "tokens_cache_write": 0,
+      "tokens_total": 87667,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language",
+        "top2_with_top1_capacity_language"
+      ],
+      "justification_quality": 5,
+      "revise_condition_present": true
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task5",
+    "seed": 4,
+    "metrics": {
+      "arm": "A1",
+      "task": "task5",
+      "seed": 4,
+      "wall_clock_sec": 132.18,
+      "return_code": 0,
+      "tool_calls_total": 7,
+      "search_calls": 1,
+      "search_enabled_for_arm": true,
+      "output_bytes": 8110,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 32117,
+      "tokens_output": 2673,
+      "tokens_reasoning": 8182,
+      "tokens_cache_read": 36608,
+      "tokens_cache_write": 0,
+      "tokens_total": 79580,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language",
+        "top2_with_top1_capacity_language"
+      ],
+      "justification_quality": 5,
+      "revise_condition_present": true
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task5",
+    "seed": 5,
+    "metrics": {
+      "arm": "A1",
+      "task": "task5",
+      "seed": 5,
+      "wall_clock_sec": 122.6,
+      "return_code": 0,
+      "tool_calls_total": 6,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 13630,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 41200,
+      "tokens_output": 4269,
+      "tokens_reasoning": 7020,
+      "tokens_cache_read": 53376,
+      "tokens_cache_write": 0,
+      "tokens_total": 105865,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language"
+      ],
+      "justification_quality": 4,
+      "revise_condition_present": false
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task6",
+    "seed": 1,
+    "metrics": {
+      "arm": "A1",
+      "task": "task6",
+      "seed": 1,
+      "wall_clock_sec": 206.7,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 8563,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 218,
+      "tokens_output": 2476,
+      "tokens_reasoning": 22134,
+      "tokens_cache_read": 3712,
+      "tokens_cache_write": 0,
+      "tokens_total": 28540,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 3,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": false,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": false,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 23,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task6",
+    "seed": 2,
+    "metrics": {
+      "arm": "A1",
+      "task": "task6",
+      "seed": 2,
+      "wall_clock_sec": 144.87,
+      "return_code": 0,
+      "tool_calls_total": 1,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 9974,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 6055,
+      "tokens_output": 2913,
+      "tokens_reasoning": 14009,
+      "tokens_cache_read": 13312,
+      "tokens_cache_write": 0,
+      "tokens_total": 36289,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 3,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": false,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": true,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 23,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task6",
+    "seed": 3,
+    "metrics": {
+      "arm": "A1",
+      "task": "task6",
+      "seed": 3,
+      "wall_clock_sec": 145.61,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 6294,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 90,
+      "tokens_output": 1888,
+      "tokens_reasoning": 16338,
+      "tokens_cache_read": 3840,
+      "tokens_cache_write": 0,
+      "tokens_total": 22156,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 3,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": false,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": true,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 23,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task6",
+    "seed": 4,
+    "metrics": {
+      "arm": "A1",
+      "task": "task6",
+      "seed": 4,
+      "wall_clock_sec": 166.47,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 7577,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 90,
+      "tokens_output": 2342,
+      "tokens_reasoning": 18445,
+      "tokens_cache_read": 3840,
+      "tokens_cache_write": 0,
+      "tokens_total": 24717,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 5,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": true,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": true,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 25,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A1",
+    "task": "task6",
+    "seed": 5,
+    "metrics": {
+      "arm": "A1",
+      "task": "task6",
+      "seed": 5,
+      "wall_clock_sec": 203.79,
+      "return_code": 0,
+      "tool_calls_total": 3,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 12517,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 19877,
+      "tokens_output": 3796,
+      "tokens_reasoning": 20544,
+      "tokens_cache_read": 14208,
+      "tokens_cache_write": 0,
+      "tokens_total": 58425,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 5,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": true,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": false,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 25,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task1",
+    "seed": 1,
+    "metrics": {
+      "arm": "A2",
+      "task": "task1",
+      "seed": 1,
+      "wall_clock_sec": 57.85,
+      "return_code": 0,
+      "tool_calls_total": 4,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 6222,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 12309,
+      "tokens_output": 2545,
+      "tokens_reasoning": 4650,
+      "tokens_cache_read": 48512,
+      "tokens_cache_write": 0,
+      "tokens_total": 68016,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 5,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": true,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 1,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": false
+          }
+        }
+      },
+      "total": 21,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task1",
+    "seed": 2,
+    "metrics": {
+      "arm": "A2",
+      "task": "task1",
+      "seed": 2,
+      "wall_clock_sec": 76.01,
+      "return_code": 0,
+      "tool_calls_total": 5,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 6648,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 1316,
+      "tokens_output": 2909,
+      "tokens_reasoning": 7724,
+      "tokens_cache_read": 88064,
+      "tokens_cache_write": 0,
+      "tokens_total": 100013,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 5,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": true,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 1,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": false
+          }
+        }
+      },
+      "total": 21,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task1",
+    "seed": 3,
+    "metrics": {
+      "arm": "A2",
+      "task": "task1",
+      "seed": 3,
+      "wall_clock_sec": 62.16,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 4878,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 628,
+      "tokens_output": 1742,
+      "tokens_reasoning": 6183,
+      "tokens_cache_read": 26880,
+      "tokens_cache_write": 0,
+      "tokens_total": 35433,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 5,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": true,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 5,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": true
+          }
+        }
+      },
+      "total": 25,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task1",
+    "seed": 4,
+    "metrics": {
+      "arm": "A2",
+      "task": "task1",
+      "seed": 4,
+      "wall_clock_sec": 58.4,
+      "return_code": 0,
+      "tool_calls_total": 1,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 4359,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 240,
+      "tokens_output": 1569,
+      "tokens_reasoning": 6161,
+      "tokens_cache_read": 27136,
+      "tokens_cache_write": 0,
+      "tokens_total": 35106,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 5,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": true,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 5,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": true
+          }
+        }
+      },
+      "total": 25,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task1",
+    "seed": 5,
+    "metrics": {
+      "arm": "A2",
+      "task": "task1",
+      "seed": 5,
+      "wall_clock_sec": 67.41,
+      "return_code": 0,
+      "tool_calls_total": 1,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 4868,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 535,
+      "tokens_output": 1698,
+      "tokens_reasoning": 7275,
+      "tokens_cache_read": 26880,
+      "tokens_cache_write": 0,
+      "tokens_total": 36388,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 5,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": true,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": false
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 1,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": false
+          }
+        }
+      },
+      "total": 21,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task2",
+    "seed": 1,
+    "metrics": {
+      "arm": "A2",
+      "task": "task2",
+      "seed": 1,
+      "wall_clock_sec": 86.56,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 2069,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 624,
+      "tokens_output": 890,
+      "tokens_reasoning": 10446,
+      "tokens_cache_read": 27008,
+      "tokens_cache_write": 0,
+      "tokens_total": 38968,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.0953125,
+      "tokens_per_sec": 64000
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task2",
+    "seed": 2,
+    "metrics": {
+      "arm": "A2",
+      "task": "task2",
+      "seed": 2,
+      "wall_clock_sec": 99.44,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 2921,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 610,
+      "tokens_output": 1211,
+      "tokens_reasoning": 11802,
+      "tokens_cache_read": 27136,
+      "tokens_cache_write": 0,
+      "tokens_total": 40759,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.1015625,
+      "tokens_per_sec": 265000
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task2",
+    "seed": 3,
+    "metrics": {
+      "arm": "A2",
+      "task": "task2",
+      "seed": 3,
+      "wall_clock_sec": 90.93,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 3014,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 399,
+      "tokens_output": 1303,
+      "tokens_reasoning": 10356,
+      "tokens_cache_read": 27136,
+      "tokens_cache_write": 0,
+      "tokens_total": 39194,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.053125,
+      "tokens_per_sec": 235000
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task2",
+    "seed": 4,
+    "metrics": {
+      "arm": "A2",
+      "task": "task2",
+      "seed": 4,
+      "wall_clock_sec": 131.96,
+      "return_code": 0,
+      "tool_calls_total": 4,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 3201,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 7853,
+      "tokens_output": 1589,
+      "tokens_reasoning": 14239,
+      "tokens_cache_read": 62592,
+      "tokens_cache_write": 0,
+      "tokens_total": 86273,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.040625,
+      "tokens_per_sec": 85000
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task2",
+    "seed": 5,
+    "metrics": {
+      "arm": "A2",
+      "task": "task2",
+      "seed": 5,
+      "wall_clock_sec": 122.86,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 2926,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 4393,
+      "tokens_output": 1234,
+      "tokens_reasoning": 14813,
+      "tokens_cache_read": 27264,
+      "tokens_cache_write": 0,
+      "tokens_total": 47704,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.0890625,
+      "tokens_per_sec": 95000
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task3",
+    "seed": 1,
+    "metrics": {
+      "arm": "A2",
+      "task": "task3",
+      "seed": 1,
+      "wall_clock_sec": 17.02,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 2271,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 139,
+      "tokens_output": 518,
+      "tokens_reasoning": 1422,
+      "tokens_cache_read": 13440,
+      "tokens_cache_write": 0,
+      "tokens_total": 15519,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.165,
+      "fix_match": 0.171,
+      "evidence_cited": 0.25,
+      "accuracy": 0.43
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task3",
+    "seed": 2,
+    "metrics": {
+      "arm": "A2",
+      "task": "task3",
+      "seed": 2,
+      "wall_clock_sec": 18.47,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 2959,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 11,
+      "tokens_output": 689,
+      "tokens_reasoning": 1394,
+      "tokens_cache_read": 13568,
+      "tokens_cache_write": 0,
+      "tokens_total": 15662,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.2,
+      "fix_match": 0.103,
+      "evidence_cited": 0.5,
+      "accuracy": 0.461
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task3",
+    "seed": 3,
+    "metrics": {
+      "arm": "A2",
+      "task": "task3",
+      "seed": 3,
+      "wall_clock_sec": 15.38,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 2099,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 11,
+      "tokens_output": 496,
+      "tokens_reasoning": 1272,
+      "tokens_cache_read": 13568,
+      "tokens_cache_write": 0,
+      "tokens_total": 15347,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.232,
+      "fix_match": 0.117,
+      "evidence_cited": 0.25,
+      "accuracy": 0.436
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task3",
+    "seed": 4,
+    "metrics": {
+      "arm": "A2",
+      "task": "task3",
+      "seed": 4,
+      "wall_clock_sec": 14.48,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 3299,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 11,
+      "tokens_output": 763,
+      "tokens_reasoning": 756,
+      "tokens_cache_read": 13568,
+      "tokens_cache_write": 0,
+      "tokens_total": 15098,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.167,
+      "fix_match": 0.136,
+      "evidence_cited": 0.25,
+      "accuracy": 0.422
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task3",
+    "seed": 5,
+    "metrics": {
+      "arm": "A2",
+      "task": "task3",
+      "seed": 5,
+      "wall_clock_sec": 15.43,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 2133,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 11,
+      "tokens_output": 506,
+      "tokens_reasoning": 1246,
+      "tokens_cache_read": 13568,
+      "tokens_cache_write": 0,
+      "tokens_total": 15331,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.257,
+      "fix_match": 0.13,
+      "evidence_cited": 0.25,
+      "accuracy": 0.447
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task4",
+    "seed": 1,
+    "metrics": {
+      "arm": "A2",
+      "task": "task4",
+      "seed": 1,
+      "wall_clock_sec": 55.89,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 2975,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 2174,
+      "tokens_output": 978,
+      "tokens_reasoning": 4707,
+      "tokens_cache_read": 26880,
+      "tokens_cache_write": 0,
+      "tokens_total": 34739,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 21500.0,
+      "throughput_delta_frac": 0.7338709677419355,
+      "claimed_after_util_pct": null,
+      "util_delta_pct": null
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task4",
+    "seed": 2,
+    "metrics": {
+      "arm": "A2",
+      "task": "task4",
+      "seed": 2,
+      "wall_clock_sec": 133.43,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 3821,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 1096,
+      "tokens_output": 1326,
+      "tokens_reasoning": 14891,
+      "tokens_cache_read": 26880,
+      "tokens_cache_write": 0,
+      "tokens_total": 44193,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 17500.0,
+      "throughput_delta_frac": 0.4112903225806452,
+      "claimed_after_util_pct": 85.0,
+      "util_delta_pct": 23.0
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task4",
+    "seed": 3,
+    "metrics": {
+      "arm": "A2",
+      "task": "task4",
+      "seed": 3,
+      "wall_clock_sec": 60.91,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 3767,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 101,
+      "tokens_output": 995,
+      "tokens_reasoning": 6033,
+      "tokens_cache_read": 13440,
+      "tokens_cache_write": 0,
+      "tokens_total": 20569,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 15600.0,
+      "throughput_delta_frac": 0.25806451612903225,
+      "claimed_after_util_pct": 78.0,
+      "util_delta_pct": 16.0
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task4",
+    "seed": 4,
+    "metrics": {
+      "arm": "A2",
+      "task": "task4",
+      "seed": 4,
+      "wall_clock_sec": 109.58,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 3227,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 101,
+      "tokens_output": 908,
+      "tokens_reasoning": 11559,
+      "tokens_cache_read": 13440,
+      "tokens_cache_write": 0,
+      "tokens_total": 26008,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 15900.0,
+      "throughput_delta_frac": 0.28225806451612906,
+      "claimed_after_util_pct": 80.0,
+      "util_delta_pct": 18.0
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task4",
+    "seed": 5,
+    "metrics": {
+      "arm": "A2",
+      "task": "task4",
+      "seed": 5,
+      "wall_clock_sec": 54.12,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 2927,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 101,
+      "tokens_output": 795,
+      "tokens_reasoning": 5158,
+      "tokens_cache_read": 13440,
+      "tokens_cache_write": 0,
+      "tokens_total": 19494,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 17700.0,
+      "throughput_delta_frac": 0.4274193548387097,
+      "claimed_after_util_pct": 85.0,
+      "util_delta_pct": 23.0
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task5",
+    "seed": 1,
+    "metrics": {
+      "arm": "A2",
+      "task": "task5",
+      "seed": 1,
+      "wall_clock_sec": 79.81,
+      "return_code": 0,
+      "tool_calls_total": 5,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 4808,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 20913,
+      "tokens_output": 1606,
+      "tokens_reasoning": 6313,
+      "tokens_cache_read": 44288,
+      "tokens_cache_write": 0,
+      "tokens_total": 73120,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language"
+      ],
+      "justification_quality": 4,
+      "revise_condition_present": false
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task5",
+    "seed": 2,
+    "metrics": {
+      "arm": "A2",
+      "task": "task5",
+      "seed": 2,
+      "wall_clock_sec": 71.51,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 5209,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 565,
+      "tokens_output": 1512,
+      "tokens_reasoning": 5742,
+      "tokens_cache_read": 27136,
+      "tokens_cache_write": 0,
+      "tokens_total": 34955,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language"
+      ],
+      "justification_quality": 5,
+      "revise_condition_present": true
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task5",
+    "seed": 3,
+    "metrics": {
+      "arm": "A2",
+      "task": "task5",
+      "seed": 3,
+      "wall_clock_sec": 51.97,
+      "return_code": 0,
+      "tool_calls_total": 1,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 5847,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 2271,
+      "tokens_output": 1572,
+      "tokens_reasoning": 3694,
+      "tokens_cache_read": 27136,
+      "tokens_cache_write": 0,
+      "tokens_total": 34673,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language"
+      ],
+      "justification_quality": 5,
+      "revise_condition_present": true
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task5",
+    "seed": 4,
+    "metrics": {
+      "arm": "A2",
+      "task": "task5",
+      "seed": 4,
+      "wall_clock_sec": 156.67,
+      "return_code": 0,
+      "tool_calls_total": 7,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 7798,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 30431,
+      "tokens_output": 2647,
+      "tokens_reasoning": 14724,
+      "tokens_cache_read": 100096,
+      "tokens_cache_write": 0,
+      "tokens_total": 147898,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language",
+        "top2_with_top1_capacity_language"
+      ],
+      "justification_quality": 5,
+      "revise_condition_present": true
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task5",
+    "seed": 5,
+    "metrics": {
+      "arm": "A2",
+      "task": "task5",
+      "seed": 5,
+      "wall_clock_sec": 66.75,
+      "return_code": 0,
+      "tool_calls_total": 3,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 8274,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 21553,
+      "tokens_output": 2351,
+      "tokens_reasoning": 4187,
+      "tokens_cache_read": 41472,
+      "tokens_cache_write": 0,
+      "tokens_total": 69563,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language"
+      ],
+      "justification_quality": 5,
+      "revise_condition_present": true
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task6",
+    "seed": 1,
+    "metrics": {
+      "arm": "A2",
+      "task": "task6",
+      "seed": 1,
+      "wall_clock_sec": 155.29,
+      "return_code": 0,
+      "tool_calls_total": 1,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 6117,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 643,
+      "tokens_output": 2038,
+      "tokens_reasoning": 18774,
+      "tokens_cache_read": 27008,
+      "tokens_cache_write": 0,
+      "tokens_total": 48463,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 3,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": false,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": true,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 23,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task6",
+    "seed": 2,
+    "metrics": {
+      "arm": "A2",
+      "task": "task6",
+      "seed": 2,
+      "wall_clock_sec": 247.69,
+      "return_code": 0,
+      "tool_calls_total": 3,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 7570,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 819,
+      "tokens_output": 2920,
+      "tokens_reasoning": 27493,
+      "tokens_cache_read": 83456,
+      "tokens_cache_write": 0,
+      "tokens_total": 114688,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 5,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": true,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": true,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 25,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task6",
+    "seed": 3,
+    "metrics": {
+      "arm": "A2",
+      "task": "task6",
+      "seed": 3,
+      "wall_clock_sec": 253.46,
+      "return_code": 0,
+      "tool_calls_total": 6,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 8829,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 5392,
+      "tokens_output": 3660,
+      "tokens_reasoning": 28951,
+      "tokens_cache_read": 162944,
+      "tokens_cache_write": 0,
+      "tokens_total": 200947,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 5,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": true,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": true,
+              "load_balance": false
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 25,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task6",
+    "seed": 4,
+    "metrics": {
+      "arm": "A2",
+      "task": "task6",
+      "seed": 4,
+      "wall_clock_sec": 158.34,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 7487,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 1312,
+      "tokens_output": 2463,
+      "tokens_reasoning": 19127,
+      "tokens_cache_read": 27136,
+      "tokens_cache_write": 0,
+      "tokens_total": 50038,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 5,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": true,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": true,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 25,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A2",
+    "task": "task6",
+    "seed": 5,
+    "metrics": {
+      "arm": "A2",
+      "task": "task6",
+      "seed": 5,
+      "wall_clock_sec": 119.02,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": false,
+      "output_bytes": 5220,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 520,
+      "tokens_output": 1889,
+      "tokens_reasoning": 14647,
+      "tokens_cache_read": 27136,
+      "tokens_cache_write": 0,
+      "tokens_total": 44192,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 5,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": true,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": true,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 25,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task1",
+    "seed": 1,
+    "metrics": {
+      "arm": "A3",
+      "task": "task1",
+      "seed": 1,
+      "wall_clock_sec": 120.58,
+      "return_code": 0,
+      "tool_calls_total": 4,
+      "search_calls": 3,
+      "search_enabled_for_arm": true,
+      "output_bytes": 5700,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 13020,
+      "tokens_output": 2123,
+      "tokens_reasoning": 12226,
+      "tokens_cache_read": 58880,
+      "tokens_cache_write": 0,
+      "tokens_total": 86249,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 5,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": true,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 1,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": false,
+            "load_balance": false
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 5,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": true
+          }
+        }
+      },
+      "total": 21,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task1",
+    "seed": 2,
+    "metrics": {
+      "arm": "A3",
+      "task": "task1",
+      "seed": 2,
+      "wall_clock_sec": 135.19,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 7636,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 676,
+      "tokens_output": 2688,
+      "tokens_reasoning": 15112,
+      "tokens_cache_read": 27136,
+      "tokens_cache_write": 0,
+      "tokens_total": 45612,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 5,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": true,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 5,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": true
+          }
+        }
+      },
+      "total": 25,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task1",
+    "seed": 3,
+    "metrics": {
+      "arm": "A3",
+      "task": "task1",
+      "seed": 3,
+      "wall_clock_sec": 77.47,
+      "return_code": 0,
+      "tool_calls_total": 4,
+      "search_calls": 2,
+      "search_enabled_for_arm": true,
+      "output_bytes": 6279,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 6047,
+      "tokens_output": 2165,
+      "tokens_reasoning": 7446,
+      "tokens_cache_read": 41600,
+      "tokens_cache_write": 0,
+      "tokens_total": 57258,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 5,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": true,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 1,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": false
+          }
+        }
+      },
+      "total": 21,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task1",
+    "seed": 4,
+    "metrics": {
+      "arm": "A3",
+      "task": "task1",
+      "seed": 4,
+      "wall_clock_sec": 146.83,
+      "return_code": 0,
+      "tool_calls_total": 3,
+      "search_calls": 1,
+      "search_enabled_for_arm": true,
+      "output_bytes": 5688,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 12744,
+      "tokens_output": 2020,
+      "tokens_reasoning": 16689,
+      "tokens_cache_read": 53632,
+      "tokens_cache_write": 0,
+      "tokens_total": 85085,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 3,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": false,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 1,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": false
+          }
+        }
+      },
+      "total": 19,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task1",
+    "seed": 5,
+    "metrics": {
+      "arm": "A3",
+      "task": "task1",
+      "seed": 5,
+      "wall_clock_sec": 123.36,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 6617,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 4762,
+      "tokens_output": 2324,
+      "tokens_reasoning": 12817,
+      "tokens_cache_read": 45184,
+      "tokens_cache_write": 0,
+      "tokens_total": 65087,
+      "cost": 0.0
+    },
+    "score": {
+      "criteria": {
+        "param_math": {
+          "score": 5,
+          "elements": {
+            "table_block": true,
+            "total_params": true,
+            "num_experts": true,
+            "top_k": true,
+            "consistency": true
+          }
+        },
+        "efficiency": {
+          "score": 5,
+          "elements": {
+            "experts_present": true,
+            "experts_in_range": true,
+            "topk_present": true,
+            "topk_in_range": true
+          }
+        },
+        "expert_utilization_awareness": {
+          "score": 5,
+          "elements": {
+            "capacity_factor": true,
+            "aux_loss": true,
+            "load_balance": true
+          }
+        },
+        "completeness": {
+          "score": 5,
+          "elements": {
+            "overview": true,
+            "parameters": true,
+            "routing": true,
+            "training implications": true,
+            "risks": true
+          }
+        },
+        "justification": {
+          "score": 5,
+          "elements": {
+            "routing_keyword": true,
+            "justification_word": true
+          }
+        }
+      },
+      "total": 25,
+      "passed": true,
+      "total_points": 25,
+      "threshold": 15
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task2",
+    "seed": 1,
+    "metrics": {
+      "arm": "A3",
+      "task": "task2",
+      "seed": 1,
+      "wall_clock_sec": 84.42,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 2878,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 99,
+      "tokens_output": 966,
+      "tokens_reasoning": 9191,
+      "tokens_cache_read": 13568,
+      "tokens_cache_write": 0,
+      "tokens_total": 23824,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.034375,
+      "tokens_per_sec": 140000
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task2",
+    "seed": 2,
+    "metrics": {
+      "arm": "A3",
+      "task": "task2",
+      "seed": 2,
+      "wall_clock_sec": 107.29,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 2325,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 6203,
+      "tokens_output": 1055,
+      "tokens_reasoning": 12617,
+      "tokens_cache_read": 32256,
+      "tokens_cache_write": 0,
+      "tokens_total": 52131,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.0875,
+      "tokens_per_sec": 160000
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task2",
+    "seed": 3,
+    "metrics": {
+      "arm": "A3",
+      "task": "task2",
+      "seed": 3,
+      "wall_clock_sec": 65.07,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 2387,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 99,
+      "tokens_output": 967,
+      "tokens_reasoning": 7994,
+      "tokens_cache_read": 13568,
+      "tokens_cache_write": 0,
+      "tokens_total": 22628,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.0875,
+      "tokens_per_sec": 75000
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task2",
+    "seed": 4,
+    "metrics": {
+      "arm": "A3",
+      "task": "task2",
+      "seed": 4,
+      "wall_clock_sec": 90.19,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 2349,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 632,
+      "tokens_output": 1022,
+      "tokens_reasoning": 11189,
+      "tokens_cache_read": 27136,
+      "tokens_cache_write": 0,
+      "tokens_total": 39979,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.0453125,
+      "tokens_per_sec": 95000
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task2",
+    "seed": 5,
+    "metrics": {
+      "arm": "A3",
+      "task": "task2",
+      "seed": 5,
+      "wall_clock_sec": 79.93,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 3520,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 3066,
+      "tokens_output": 1456,
+      "tokens_reasoning": 9297,
+      "tokens_cache_read": 27136,
+      "tokens_cache_write": 0,
+      "tokens_total": 40955,
+      "cost": 0.0
+    },
+    "score": {
+      "successful_launch": 1,
+      "memory_ratio": 0.0640625,
+      "tokens_per_sec": 150000
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task3",
+    "seed": 1,
+    "metrics": {
+      "arm": "A3",
+      "task": "task3",
+      "seed": 1,
+      "wall_clock_sec": 16.38,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 2922,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 228,
+      "tokens_output": 662,
+      "tokens_reasoning": 1014,
+      "tokens_cache_read": 13440,
+      "tokens_cache_write": 0,
+      "tokens_total": 15344,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.178,
+      "fix_match": 0.092,
+      "evidence_cited": 0.5,
+      "accuracy": 0.451
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task3",
+    "seed": 2,
+    "metrics": {
+      "arm": "A3",
+      "task": "task3",
+      "seed": 2,
+      "wall_clock_sec": 11.22,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 1717,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 100,
+      "tokens_output": 404,
+      "tokens_reasoning": 453,
+      "tokens_cache_read": 13568,
+      "tokens_cache_write": 0,
+      "tokens_total": 14525,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.149,
+      "fix_match": 0.164,
+      "evidence_cited": 0.5,
+      "accuracy": 0.461
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task3",
+    "seed": 3,
+    "metrics": {
+      "arm": "A3",
+      "task": "task3",
+      "seed": 3,
+      "wall_clock_sec": 11.86,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 2232,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 100,
+      "tokens_output": 504,
+      "tokens_reasoning": 486,
+      "tokens_cache_read": 13568,
+      "tokens_cache_write": 0,
+      "tokens_total": 14658,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.19,
+      "fix_match": 0.213,
+      "evidence_cited": 0.5,
+      "accuracy": 0.485
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task3",
+    "seed": 4,
+    "metrics": {
+      "arm": "A3",
+      "task": "task3",
+      "seed": 4,
+      "wall_clock_sec": 19.11,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 2281,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 100,
+      "tokens_output": 518,
+      "tokens_reasoning": 1661,
+      "tokens_cache_read": 13568,
+      "tokens_cache_write": 0,
+      "tokens_total": 15847,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.267,
+      "fix_match": 0.152,
+      "evidence_cited": 0.5,
+      "accuracy": 0.493
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task3",
+    "seed": 5,
+    "metrics": {
+      "arm": "A3",
+      "task": "task3",
+      "seed": 5,
+      "wall_clock_sec": 11.65,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 2564,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 100,
+      "tokens_output": 571,
+      "tokens_reasoning": 461,
+      "tokens_cache_read": 13568,
+      "tokens_cache_write": 0,
+      "tokens_total": 14700,
+      "cost": 0.0
+    },
+    "score": {
+      "problem_detected": 1.0,
+      "root_cause_match": 0.212,
+      "fix_match": 0.171,
+      "evidence_cited": 0.5,
+      "accuracy": 0.482
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task4",
+    "seed": 1,
+    "metrics": {
+      "arm": "A3",
+      "task": "task4",
+      "seed": 1,
+      "wall_clock_sec": 105.75,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 3721,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 190,
+      "tokens_output": 1046,
+      "tokens_reasoning": 10561,
+      "tokens_cache_read": 13440,
+      "tokens_cache_write": 0,
+      "tokens_total": 25237,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 17400.0,
+      "throughput_delta_frac": 0.4032258064516129,
+      "claimed_after_util_pct": 80.0,
+      "util_delta_pct": 18.0
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task4",
+    "seed": 2,
+    "metrics": {
+      "arm": "A3",
+      "task": "task4",
+      "seed": 2,
+      "wall_clock_sec": 49.27,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 1,
+      "search_enabled_for_arm": true,
+      "output_bytes": 5619,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 62,
+      "tokens_output": 1484,
+      "tokens_reasoning": 3456,
+      "tokens_cache_read": 13568,
+      "tokens_cache_write": 0,
+      "tokens_total": 18570,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 17000.0,
+      "throughput_delta_frac": 0.3709677419354839,
+      "claimed_after_util_pct": 90.0,
+      "util_delta_pct": 28.0
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task4",
+    "seed": 3,
+    "metrics": {
+      "arm": "A3",
+      "task": "task4",
+      "seed": 3,
+      "wall_clock_sec": 103.26,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 4986,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 4787,
+      "tokens_output": 1601,
+      "tokens_reasoning": 9502,
+      "tokens_cache_read": 27136,
+      "tokens_cache_write": 0,
+      "tokens_total": 43026,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 15600.0,
+      "throughput_delta_frac": 0.25806451612903225,
+      "claimed_after_util_pct": null,
+      "util_delta_pct": null
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task4",
+    "seed": 4,
+    "metrics": {
+      "arm": "A3",
+      "task": "task4",
+      "seed": 4,
+      "wall_clock_sec": 52.12,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 4310,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 62,
+      "tokens_output": 1165,
+      "tokens_reasoning": 4143,
+      "tokens_cache_read": 13568,
+      "tokens_cache_write": 0,
+      "tokens_total": 18938,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 17500.0,
+      "throughput_delta_frac": 0.4112903225806452,
+      "claimed_after_util_pct": null,
+      "util_delta_pct": null
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task4",
+    "seed": 5,
+    "metrics": {
+      "arm": "A3",
+      "task": "task4",
+      "seed": 5,
+      "wall_clock_sec": 80.74,
+      "return_code": 0,
+      "tool_calls_total": 2,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 4211,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 663,
+      "tokens_output": 1405,
+      "tokens_reasoning": 6986,
+      "tokens_cache_read": 27136,
+      "tokens_cache_write": 0,
+      "tokens_total": 36190,
+      "cost": 0.0
+    },
+    "score": {
+      "claimed_after_tok_s": 16800.0,
+      "throughput_delta_frac": 0.3548387096774194,
+      "claimed_after_util_pct": 78.0,
+      "util_delta_pct": 16.0
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task5",
+    "seed": 1,
+    "metrics": {
+      "arm": "A3",
+      "task": "task5",
+      "seed": 1,
+      "wall_clock_sec": 293.23,
+      "return_code": 0,
+      "tool_calls_total": 28,
+      "search_calls": 7,
+      "search_enabled_for_arm": true,
+      "output_bytes": 11535,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 185599,
+      "tokens_output": 5398,
+      "tokens_reasoning": 11629,
+      "tokens_cache_read": 1189504,
+      "tokens_cache_write": 0,
+      "tokens_total": 1392130,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language"
+      ],
+      "justification_quality": 5,
+      "revise_condition_present": true
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task5",
+    "seed": 2,
+    "metrics": {
+      "arm": "A3",
+      "task": "task5",
+      "seed": 2,
+      "wall_clock_sec": 238.97,
+      "return_code": 0,
+      "tool_calls_total": 15,
+      "search_calls": 7,
+      "search_enabled_for_arm": true,
+      "output_bytes": 12536,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 39179,
+      "tokens_output": 4713,
+      "tokens_reasoning": 10441,
+      "tokens_cache_read": 326400,
+      "tokens_cache_write": 0,
+      "tokens_total": 380733,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language"
+      ],
+      "justification_quality": 5,
+      "revise_condition_present": true
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task5",
+    "seed": 3,
+    "metrics": {
+      "arm": "A3",
+      "task": "task5",
+      "seed": 3,
+      "wall_clock_sec": 123.07,
+      "return_code": 0,
+      "tool_calls_total": 4,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 7542,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 30699,
+      "tokens_output": 2164,
+      "tokens_reasoning": 10609,
+      "tokens_cache_read": 66176,
+      "tokens_cache_write": 0,
+      "tokens_total": 109648,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language"
+      ],
+      "justification_quality": 5,
+      "revise_condition_present": true
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task5",
+    "seed": 4,
+    "metrics": {
+      "arm": "A3",
+      "task": "task5",
+      "seed": 4,
+      "wall_clock_sec": 179.59,
+      "return_code": 0,
+      "tool_calls_total": 4,
+      "search_calls": 3,
+      "search_enabled_for_arm": true,
+      "output_bytes": 8508,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 4811,
+      "tokens_output": 2550,
+      "tokens_reasoning": 10936,
+      "tokens_cache_read": 83456,
+      "tokens_cache_write": 0,
+      "tokens_total": 101753,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language"
+      ],
+      "justification_quality": 5,
+      "revise_condition_present": true
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task5",
+    "seed": 5,
+    "metrics": {
+      "arm": "A3",
+      "task": "task5",
+      "seed": 5,
+      "wall_clock_sec": 104.91,
+      "return_code": 0,
+      "tool_calls_total": 7,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 8068,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 30647,
+      "tokens_output": 2685,
+      "tokens_reasoning": 7315,
+      "tokens_cache_read": 162688,
+      "tokens_cache_write": 0,
+      "tokens_total": 203335,
+      "cost": 0.0
+    },
+    "score": {
+      "internal_consistency": 0,
+      "violations": [
+        "top1_with_top2_capacity_language",
+        "top2_with_top1_capacity_language"
+      ],
+      "justification_quality": 5,
+      "revise_condition_present": true
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task6",
+    "seed": 1,
+    "metrics": {
+      "arm": "A3",
+      "task": "task6",
+      "seed": 1,
+      "wall_clock_sec": 139.6,
+      "return_code": 0,
+      "tool_calls_total": 3,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 6466,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 7185,
+      "tokens_output": 2500,
+      "tokens_reasoning": 16217,
+      "tokens_cache_read": 58112,
+      "tokens_cache_write": 0,
+      "tokens_total": 84014,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 5,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": true,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": true,
+              "load_balance": false
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 25,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task6",
+    "seed": 2,
+    "metrics": {
+      "arm": "A3",
+      "task": "task6",
+      "seed": 2,
+      "wall_clock_sec": 140.11,
+      "return_code": 0,
+      "tool_calls_total": 10,
+      "search_calls": 5,
+      "search_enabled_for_arm": true,
+      "output_bytes": 175384,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 29222,
+      "tokens_output": 559,
+      "tokens_reasoning": 489,
+      "tokens_cache_read": 100480,
+      "tokens_cache_write": 0,
+      "tokens_total": 130750,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 5,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": true,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": false,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 3,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": false,
+              "risks": false
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 23,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task6",
+    "seed": 3,
+    "metrics": {
+      "arm": "A3",
+      "task": "task6",
+      "seed": 3,
+      "wall_clock_sec": 173.58,
+      "return_code": 0,
+      "tool_calls_total": 1,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 5822,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 366,
+      "tokens_output": 2018,
+      "tokens_reasoning": 21752,
+      "tokens_cache_read": 27392,
+      "tokens_cache_write": 0,
+      "tokens_total": 51528,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 5,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": true,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": true,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 25,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task6",
+    "seed": 4,
+    "metrics": {
+      "arm": "A3",
+      "task": "task6",
+      "seed": 4,
+      "wall_clock_sec": 234.43,
+      "return_code": 0,
+      "tool_calls_total": 0,
+      "search_calls": 0,
+      "search_enabled_for_arm": true,
+      "output_bytes": 7011,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 21,
+      "tokens_output": 2227,
+      "tokens_reasoning": 29050,
+      "tokens_cache_read": 13696,
+      "tokens_cache_write": 0,
+      "tokens_total": 44994,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 5,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": true,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": true,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 25,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  },
+  {
+    "arm": "A3",
+    "task": "task6",
+    "seed": 5,
+    "metrics": {
+      "arm": "A3",
+      "task": "task6",
+      "seed": 5,
+      "wall_clock_sec": 173.62,
+      "return_code": 0,
+      "tool_calls_total": 3,
+      "search_calls": 1,
+      "search_enabled_for_arm": true,
+      "output_bytes": 7511,
+      "model": "opencode/deepseek-v4-flash-free",
+      "tokens_input": 362,
+      "tokens_output": 2469,
+      "tokens_reasoning": 18849,
+      "tokens_cache_read": 41728,
+      "tokens_cache_write": 0,
+      "tokens_total": 63408,
+      "cost": 0.0
+    },
+    "score": {
+      "architecture": {
+        "criteria": {
+          "param_math": {
+            "score": 5,
+            "elements": {
+              "table_block": true,
+              "total_params": true,
+              "num_experts": true,
+              "top_k": true,
+              "consistency": true
+            }
+          },
+          "efficiency": {
+            "score": 3,
+            "elements": {
+              "experts_present": true,
+              "experts_in_range": false,
+              "topk_present": true,
+              "topk_in_range": true
+            }
+          },
+          "expert_utilization_awareness": {
+            "score": 5,
+            "elements": {
+              "capacity_factor": true,
+              "aux_loss": true,
+              "load_balance": true
+            }
+          },
+          "completeness": {
+            "score": 5,
+            "elements": {
+              "overview": true,
+              "parameters": true,
+              "routing": true,
+              "training implications": true,
+              "risks": true
+            }
+          },
+          "justification": {
+            "score": 5,
+            "elements": {
+              "routing_keyword": true,
+              "justification_word": true
+            }
+          }
+        },
+        "total": 23,
+        "passed": true,
+        "total_points": 25,
+        "threshold": 15
+      },
+      "constraint_fit": 1
+    }
+  }
+]

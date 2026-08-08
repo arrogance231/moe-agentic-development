@@ -1,0 +1,36 @@
+```json
+{
+  "framework": "megatron-deepspeed",
+  "architecture": {
+    "num_experts": 8,
+    "top_k": 2,
+    "hidden_size": 2048,
+    "num_layers": 24,
+    "capacity_factor": 1.25,
+    "ffn_intermediate_size": 2048,
+    "vocab_size": 32000,
+    "seq_len": 2048,
+    "activation": "swiglu",
+    "aux_loss_coef": 0.01,
+    "total_params_b": 2.9,
+    "active_params_b": 1.07
+  },
+  "parallelism": {
+    "data_parallel": 8,
+    "expert_parallel": 4,
+    "tensor_parallel": 1,
+    "pipeline_parallel": 1,
+    "world_size": 32
+  },
+  "batch_size": {
+    "global_batch_tokens": 65536,
+    "micro_batch_tokens": 2048,
+    "gradient_accumulation_steps": 4
+  },
+  "estimated_memory_gb": 40,
+  "estimated_tokens_per_sec": 600000,
+  "launch_notes": "1B dense-equivalent: attention (16.8M/layer) + top_k=2 of 8 SwiGLU experts (12.6M each) gives ~1.07B active params, matching a 1B dense model's FLOPs; total ~2.9B. All layers are MoE; shared/random routing (dropout 0.1) + aux load-balancing loss. capacity_factor=1.25 with token dropping (cap count = ceil(1.25 * (seq_len*tokens_per_expert_rank)/num_experts)) to bound all-to-all comms. 32x A100-80GB (4 nodes): bf16, ZeRO-1 over DP groups, experts sharded across EP=4 (2 experts/GPU/layer). Launch: `deepspeed --num_nodes 4 --num_gpus 8 train.py --config moe_1b.json --deepspeed_config ds_config.json` with `--moe-token-dispatcher=alltoall`, `--load-balanced-layernorm`. Expect ~600K tok/s at MFU~45%; tune micro_batch 2048 tokens (seq 2048 x 1) for activations. Memory: 2.9B params (~46GB unfragmented) sharded to ~2-3GB/GPU, plus ~30GB activations/optimizer headroom on 80GB."
+}
+```
+
+Notes on choices: 8 experts, top_k=2 is the Mixtral-style sweet spot — 8 experts give good sparsity without diminishing routing utility, top_k=2 improves performance vs top_k=1 at modest compute cost. capacity_factor=1.25 balances load-balance loss against token-drop rate for a 1B-scale model on 2048-token sequences.

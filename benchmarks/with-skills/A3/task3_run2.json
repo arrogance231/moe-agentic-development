@@ -1,0 +1,29 @@
+```json
+{
+  "identified_problems": [
+    "Router collapse / severe expert imbalance",
+    "Gradient explosion leading to NaN",
+    "Token dropping from under-loaded experts at capacity_factor=1.0"
+  ],
+  "root_causes": [
+    "Aux load-balancing loss absent or too weak: 3 of 32 experts receiving >80% of routed tokens is textbook collapse, worsened by top-1 routing which concentrates all load on a single expert per token",
+    "Gradient clipping not configured: the sharp gradient-norm spike in the 50 steps before step 4200 is unmitigated and drives the loss to NaN",
+    "Capacity factor 1.0 under imbalance: tokens from under-loaded experts are dropped, starving their gradients and further destabilizing the router",
+    "Learning rate too high or destabilizing the router, contributing to the gradient spike"
+  ],
+  "actions": [
+    "Enable gradient clipping (max norm 1.0)",
+    "Add or increase the auxiliary load-balancing loss from 0.001 to 0.01",
+    "Raise capacity factor from 1.0 to 1.25 so under-loaded experts keep receiving tokens",
+    "Lower the learning rate and/or extend warmup to stabilize the router during the critical pre-NaN window",
+    "Add jitter noise to router logits at train time to reduce deterministic expert skew",
+    "Add gradient-norm and per-expert count logging so the collapse window is captured before the next run"
+  ],
+  "evidence": [
+    "loss went to NaN at step 4200 after several hundred steps of normal decreasing loss",
+    "gradient norm spiked sharply in the 50 steps preceding the NaN",
+    "top-1 routing with capacity_factor=1.0 and no gradient clipping configured",
+    "3 of 32 experts received >80% of routed tokens in the steps before the spike"
+  ]
+}
+```

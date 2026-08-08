@@ -1,0 +1,30 @@
+```json
+{
+  "identified_problems": [
+    "Expert collapse / severe load imbalance: 3 of 32 experts receive >80% of routed tokens",
+    "Capacity overflow and token dropping caused by capacity_factor=1.0 under extreme imbalance",
+    "Gradient explosion (sharp gradient-norm spike in the 50 steps before failure)",
+    "Unbounded loss divergence to NaN at step 4200 (no clipping to contain the spike)"
+  ],
+  "root_causes": [
+    "Rich-get-richer feedback loop: overloaded experts are updated more often, their router logits grow, they attract even more tokens until routing fully collapses",
+    "capacity_factor=1.0 leaves zero slack, so overloaded experts exceed capacity; overflow tokens are dropped, producing discontinuous large-magnitude gradients and unstable loss",
+    "Top-1 routing funnels each token's entire gradient through a single expert, so with imbalance the updates concentrate in a few experts and the optimizer becomes unstable",
+    "Absence of gradient clipping allows the sharp gradient-norm spike to turn into a NaN within ~50 steps"
+  ],
+  "actions": [
+    "Add an auxiliary load-balancing loss (e.g., Switch-style aux loss) or router z-loss to force more uniform routing",
+    "Increase capacity_factor above 1.0 (e.g., 1.25-2.0) or disable token dropping to eliminate capacity overflow",
+    "Enable gradient clipping (e.g., global-norm clip of 1.0) to contain the gradient spike",
+    "Stabilize the router: use a lower learning rate / longer warmup, and add router jitter or noise to break the collapse feedback loop",
+    "Resume from a checkpoint taken before the spike (~step 4100-4150) with the fixes applied"
+  ],
+  "evidence": [
+    "loss went to NaN at step 4200 after several hundred steps of normal decreasing loss",
+    "gradient norm spiked sharply in the 50 steps preceding the NaN",
+    "no gradient clipping configured",
+    "top-1 routing with capacity_factor=1.0",
+    "expert load logs show 3 of 32 experts receiving >80% of routed tokens in the steps before the spike"
+  ]
+}
+```

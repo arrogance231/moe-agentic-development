@@ -1,0 +1,148 @@
+# Run log — run-20260808-0559
+
+2026-08-08T06:00:43Z — Session start. VPS root@165.245.131.18, hostname ubuntu-gpu-mi300x1-192gb-devcloud-atl1.
+2026-08-08T06:00:43Z — Captured environment.md: MI300X VF GPU detected via lspci (Aqua Vanjaram / Instinct MI300X VF), but rocm-smi/rocminfo/amd-smi/torch are NOT installed — no ROCm userspace stack present on this VM image. pip3 also absent.
+2026-08-08T06:00:43Z — DECISION (per user, logged for reproducibility): the agent under test is OpenCode CLI driving DeepSeek V4 Flash via an API provider referred to as "pi" (exact provider/base URL/key to be resolved next). This means the GPU is NOT used to host the model under test — model inference happens via API, not locally on this MI300X. GPU/ROCm absence therefore does not block the benchmark itself, but is recorded because BENCHMARK.md's same-hardware precondition and docs/whitepaper-handoff.md require full environment provenance regardless.
+2026-08-08T06:00:43Z — Retrieval backend decision (per user): no paid search API key available; using a keyless web search (DuckDuckGo HTML) for arms A1/A3. Logged as a stated limitation (rate limits, less reliable structured results than Tavily/Brave).
+2026-08-08T06:16:14Z — arm=A0 task=task1 seed=1 rc=0 wall_clock=161.0s tool_calls=4 search_calls=0 output_bytes=7624
+2026-08-08T06:17:50Z — arm=A1 task=task1 seed=1 rc=0 wall_clock=80.13s tool_calls=0 search_calls=0 output_bytes=5257
+2026-08-08T06:19:25Z — Installed OpenCode 1.18.15 on VPS, authenticated OpenCode Zen provider via ~/.local/share/opencode/auth.json with user-provided key. Model: opencode/deepseek-v4-flash-free. Smoke test "PONG" confirmed working.
+2026-08-08T06:19:25Z — Built benchmarks/harness/: search_mcp_server.py (keyless MCP stdio server, DuckDuckGo lite HTML backend), run_harness.py (per arm/task/seed invocation), task_prompts.py (tasks 1-6 prompts + task5 incompatible-pair list), score_task5.py (deterministic task5 scorer), configs/{A0,A1,A2,A3}/opencode.jsonc (per-arm tool/MCP gating). All on branch benchmark-harness.
+2026-08-08T06:19:25Z — Confound control: A0/A2 configs set mcp.moe-bench-search.enabled=false and tools.bash/webfetch/edit/write/task/patch=false (search disabled at harness level, not by prompt instruction, per BENCHMARK.md). A1/A3 configs set enabled=true with the same MCP server/tool-call budget shared across both.
+2026-08-08T06:19:25Z — html.duckduckgo.com/html/ returned an anomaly/bot-check page from this VPS's IP (no results extractable). Switched to lite.duckduckgo.com/lite/, which returns normal scrapeable results. This is the retrieval backend now in use for A1/A3; logged as a limitation (keyless scraping, not a paid API, subject to future blocking).
+2026-08-08T06:19:25Z — Smoke test A0/task1/seed1: opencode run succeeded (rc=0), 161s wall clock, 0 search calls (expected, search disabled), output scored 23/25 (PASS) by score_architecture.py. File: benchmarks/baseline/A0/task1_run1.md
+2026-08-08T06:19:25Z — Smoke test A1/task1/seed1: opencode run succeeded (rc=0), 80s wall clock, 0 search calls this run (model answered from parametric knowledge without invoking search; task1 does not force retrieval). Separately verified end-to-end that the MCP search tool (moe-bench-search_web_search) IS registered and callable for A1 config via a forced-search probe prompt: tool call succeeded, returned real DuckDuckGo-lite results, and was logged to the run's .queries.jsonl. Confirms retrieval wiring works; task1 not reliably forcing search is expected and will be visible in the search_calls metric per run, not a harness defect.
+2026-08-08T06:19:25Z — Task5/6 prompts authored from BENCHMARK.md spec text (not previously wired). Task5 scoring: incompatible-pair list (4 pre-registered pairs) plus an automated justification-quality proxy in score_task5.py. methodology.md notes justification quality proper needs independent-reviewer judgment; the automated score is a floor/consistency check, not a substitute, and this is stated here for the whitepaper handoff. Task6 reuses score_architecture.py directly (same document shape as task1) plus needs a small deterministic constraint-satisfaction check (expert_parallel=4 stated, bandwidth math) that is NOT YET IMPLEMENTED, tracked as a gap below.
+2026-08-08T06:19:25Z — NOT YET IMPLEMENTED (gaps going into the full wave): task2 (launch/memory/throughput numeric checks) and task4 (throughput delta numeric checks) and task6's constraint-satisfaction deterministic check. These are numeric/formula checks against pre-registered thresholds that were not specified with concrete threshold values anywhere in the docs (BENCHMARK.md says "pre-registered thresholds" without giving numbers). Thresholds need to be fixed before scoring per the pre-registration requirement; logging here rather than inventing arbitrary numbers silently.
+2026-08-08T06:23:36Z — arm=A0 task=task1 seed=1 rc=0 wall_clock=95.28s tool_calls=0 search_calls=0 output_bytes=5779 tokens_in=45 tokens_out=1713 tokens_total=14955 cost=0.0
+2026-08-08T06:24:55Z — arm=A1 task=task1 seed=1 rc=0 wall_clock=71.54s tool_calls=3 search_calls=0 output_bytes=6414 tokens_in=707 tokens_out=1979 tokens_total=23521 cost=0.0
+2026-08-08T06:25:53Z — Added real token/cost telemetry to run_harness.py by parsing step_finish events from opencode --format json (fields: input/output/reasoning/cache.read/cache.write/total tokens, cost). Verified on A0/task1 (14955 total tokens) and A1/task1 (23521 total tokens, search tool available but model chose not to call it) re-runs.
+2026-08-08T06:25:53Z — DECISION: no concrete numeric thresholds exist anywhere in BENCHMARK.md/methodology.md/benchmark-protocol.md for task2 memory-efficiency/throughput or task4 throughput-improvement/GPU-util — confirmed via grep, these are metric-type placeholders, not pre-registered values. Pre-registered defensible thresholds now in benchmarks/harness/thresholds.md: task2 scored on JSON-schema validity + architecture-consistency (pass/fail) with memory-efficiency/throughput reported descriptively (self-reported, no real training run occurs); task4 scored as a claimed delta against the baseline stated in the task4 prompt itself (12,400 tok/s, 62% util), also self-reported and flagged as a validity limitation; task6 = score_architecture.py criteria (0-25) plus a new deterministic constraint-fit check (0/1) for the EP=4 / 25 Gbps requirement, reported as two separate columns rather than summed.
+2026-08-08T06:26:59Z — arm=A1 task=task1 seed=2 rc=0 wall_clock=57.98s tool_calls=2 search_calls=0 output_bytes=7193 tokens_in=453 tokens_out=2078 tokens_total=25437 cost=0.0
+2026-08-08T06:27:55Z — arm=A1 task=task2 seed=1 rc=0 wall_clock=49.04s tool_calls=4 search_calls=0 output_bytes=2868 tokens_in=611 tokens_out=1137 tokens_total=21258 cost=0.0
+2026-08-08T06:32:07Z — arm=A1 task=task2 seed=2 rc=0 wall_clock=244.86s tool_calls=44 search_calls=2 output_bytes=1173 tokens_in=47014 tokens_out=2544 tokens_total=524194 cost=0.0
+2026-08-08T06:34:33Z — arm=A1 task=task2 seed=2 rc=0 wall_clock=31.42s tool_calls=0 search_calls=0 output_bytes=1928 tokens_in=168 tokens_out=626 tokens_total=6999 cost=0.0
+2026-08-08T06:35:35Z — arm=A1 task=task2 seed=1 rc=0 wall_clock=51.8s tool_calls=2 search_calls=0 output_bytes=1779 tokens_in=434 tokens_out=801 tokens_total=13973 cost=0.0
+2026-08-08T06:36:28Z — arm=A1 task=task1 seed=1 rc=0 wall_clock=53.49s tool_calls=0 search_calls=0 output_bytes=5947 tokens_in=143 tokens_out=1714 tokens_total=9489 cost=0.0
+2026-08-08T06:38:01Z — arm=A1 task=task1 seed=2 rc=0 wall_clock=92.68s tool_calls=5 search_calls=2 output_bytes=7490 tokens_in=1718 tokens_out=2794 tokens_total=45803 cost=0.0
+2026-08-08T06:38:54Z — Headroom check (A1, tasks 1-2, n=2) complete post-fix. task1: seed1=21/25 PASS, seed2=25/25 PASS (score_architecture.py). task2: seed1 and seed2 both schema-valid with all required keys present (13973 and 6999 total tokens respectively). VERDICT: ceiling-effect risk confirmed on task1 (scores at/near rubric max with only n=2) — proceeding with full wave per BENCHMARK.md design (tasks 5/6 exist to discriminate skills where 1-4 saturate), but task1/task2 flagged as lower-power endpoints in summary.md per pre-registered methodology.md guidance, not a post-hoc reweighting. Full results in benchmarks/results/run-20260808-0559/headroom-check.md.
+2026-08-08T06:42:09Z — arm=A0 task=task1 seed=1 rc=0 wall_clock=52.19s tool_calls=0 search_calls=0 output_bytes=5236 tokens_in=1846 tokens_out=1594 tokens_total=9752 cost=0.0
+2026-08-08T06:42:57Z — arm=A0 task=task1 seed=2 rc=0 wall_clock=48.45s tool_calls=0 search_calls=0 output_bytes=5563 tokens_in=54 tokens_out=1526 tokens_total=9203 cost=0.0
+2026-08-08T06:43:52Z — arm=A0 task=task1 seed=3 rc=0 wall_clock=54.68s tool_calls=2 search_calls=0 output_bytes=7323 tokens_in=4561 tokens_out=2271 tokens_total=26513 cost=0.0
+2026-08-08T06:44:37Z — arm=A0 task=task1 seed=4 rc=0 wall_clock=44.62s tool_calls=1 search_calls=0 output_bytes=5862 tokens_in=185 tokens_out=1777 tokens_total=15416 cost=0.0
+2026-08-08T06:45:27Z — arm=A0 task=task1 seed=5 rc=0 wall_clock=50.52s tool_calls=0 search_calls=0 output_bytes=5607 tokens_in=54 tokens_out=1635 tokens_total=9620 cost=0.0
+2026-08-08T06:47:53Z — arm=A1 task=task1 seed=1 rc=0 wall_clock=145.84s tool_calls=0 search_calls=0 output_bytes=8014 tokens_in=15 tokens_out=2445 tokens_total=21529 cost=0.0
+2026-08-08T06:49:38Z — arm=A1 task=task1 seed=2 rc=0 wall_clock=104.85s tool_calls=0 search_calls=0 output_bytes=6844 tokens_in=15 tokens_out=2044 tokens_total=15889 cost=0.0
+2026-08-08T06:50:26Z — arm=A1 task=task1 seed=3 rc=0 wall_clock=47.44s tool_calls=1 search_calls=0 output_bytes=5435 tokens_in=179 tokens_out=1685 tokens_total=16405 cost=0.0
+2026-08-08T06:52:14Z — arm=A1 task=task1 seed=4 rc=0 wall_clock=108.03s tool_calls=2 search_calls=1 output_bytes=5293 tokens_in=8445 tokens_out=1652 tokens_total=35492 cost=0.0
+2026-08-08T06:53:12Z — arm=A1 task=task1 seed=5 rc=0 wall_clock=58.12s tool_calls=0 search_calls=0 output_bytes=6353 tokens_in=15 tokens_out=1780 tokens_total=10440 cost=0.0
+2026-08-08T06:54:10Z — arm=A2 task=task1 seed=1 rc=0 wall_clock=57.85s tool_calls=4 search_calls=0 output_bytes=6222 tokens_in=12309 tokens_out=2545 tokens_total=68016 cost=0.0
+2026-08-08T06:55:26Z — arm=A2 task=task1 seed=2 rc=0 wall_clock=76.01s tool_calls=5 search_calls=0 output_bytes=6648 tokens_in=1316 tokens_out=2909 tokens_total=100013 cost=0.0
+2026-08-08T06:56:28Z — arm=A2 task=task1 seed=3 rc=0 wall_clock=62.16s tool_calls=2 search_calls=0 output_bytes=4878 tokens_in=628 tokens_out=1742 tokens_total=35433 cost=0.0
+2026-08-08T06:57:27Z — arm=A2 task=task1 seed=4 rc=0 wall_clock=58.4s tool_calls=1 search_calls=0 output_bytes=4359 tokens_in=240 tokens_out=1569 tokens_total=35106 cost=0.0
+2026-08-08T06:58:34Z — arm=A2 task=task1 seed=5 rc=0 wall_clock=67.41s tool_calls=1 search_calls=0 output_bytes=4868 tokens_in=535 tokens_out=1698 tokens_total=36388 cost=0.0
+2026-08-08T07:00:35Z — arm=A3 task=task1 seed=1 rc=0 wall_clock=120.58s tool_calls=4 search_calls=3 output_bytes=5700 tokens_in=13020 tokens_out=2123 tokens_total=86249 cost=0.0
+2026-08-08T07:02:50Z — arm=A3 task=task1 seed=2 rc=0 wall_clock=135.19s tool_calls=2 search_calls=0 output_bytes=7636 tokens_in=676 tokens_out=2688 tokens_total=45612 cost=0.0
+2026-08-08T07:04:07Z — arm=A3 task=task1 seed=3 rc=0 wall_clock=77.47s tool_calls=4 search_calls=2 output_bytes=6279 tokens_in=6047 tokens_out=2165 tokens_total=57258 cost=0.0
+2026-08-08T07:06:34Z — arm=A3 task=task1 seed=4 rc=0 wall_clock=146.83s tool_calls=3 search_calls=1 output_bytes=5688 tokens_in=12744 tokens_out=2020 tokens_total=85085 cost=0.0
+2026-08-08T07:08:38Z — arm=A3 task=task1 seed=5 rc=0 wall_clock=123.36s tool_calls=2 search_calls=0 output_bytes=6617 tokens_in=4762 tokens_out=2324 tokens_total=65087 cost=0.0
+2026-08-08T07:09:11Z — arm=A0 task=task2 seed=1 rc=0 wall_clock=33.63s tool_calls=2 search_calls=0 output_bytes=1840 tokens_in=5872 tokens_out=727 tokens_total=15551 cost=0.0
+2026-08-08T07:10:04Z — arm=A0 task=task2 seed=2 rc=0 wall_clock=52.74s tool_calls=2 search_calls=0 output_bytes=2253 tokens_in=464 tokens_out=899 tokens_total=13770 cost=0.0
+2026-08-08T07:10:27Z — arm=A0 task=task2 seed=3 rc=0 wall_clock=23.05s tool_calls=2 search_calls=0 output_bytes=1992 tokens_in=463 tokens_out=855 tokens_total=10045 cost=0.0
+2026-08-08T07:11:03Z — arm=A0 task=task2 seed=4 rc=0 wall_clock=35.91s tool_calls=1 search_calls=0 output_bytes=1943 tokens_in=359 tokens_out=776 tokens_total=11667 cost=0.0
+2026-08-08T07:11:31Z — arm=A0 task=task2 seed=5 rc=0 wall_clock=27.34s tool_calls=1 search_calls=0 output_bytes=2238 tokens_in=202 tokens_out=830 tokens_total=10498 cost=0.0
+2026-08-08T07:12:34Z — arm=A1 task=task2 seed=1 rc=0 wall_clock=63.05s tool_calls=4 search_calls=1 output_bytes=2906 tokens_in=6695 tokens_out=1284 tokens_total=28023 cost=0.0
+2026-08-08T07:13:32Z — arm=A1 task=task2 seed=2 rc=0 wall_clock=57.96s tool_calls=3 search_calls=0 output_bytes=2225 tokens_in=13298 tokens_out=1042 tokens_total=36369 cost=0.0
+2026-08-08T07:16:25Z — arm=A1 task=task2 seed=3 rc=0 wall_clock=173.33s tool_calls=15 search_calls=10 output_bytes=3796 tokens_in=40236 tokens_out=2184 tokens_total=321070 cost=0.0
+2026-08-08T07:17:13Z — arm=A1 task=task2 seed=4 rc=0 wall_clock=47.73s tool_calls=0 search_calls=0 output_bytes=1756 tokens_in=40 tokens_out=590 tokens_total=9061 cost=0.0
+2026-08-08T07:17:59Z — arm=A1 task=task2 seed=5 rc=0 wall_clock=46.07s tool_calls=2 search_calls=0 output_bytes=2852 tokens_in=465 tokens_out=1174 tokens_total=13001 cost=0.0
+2026-08-08T07:19:25Z — arm=A2 task=task2 seed=1 rc=0 wall_clock=86.56s tool_calls=2 search_calls=0 output_bytes=2069 tokens_in=624 tokens_out=890 tokens_total=38968 cost=0.0
+2026-08-08T07:21:05Z — arm=A2 task=task2 seed=2 rc=0 wall_clock=99.44s tool_calls=2 search_calls=0 output_bytes=2921 tokens_in=610 tokens_out=1211 tokens_total=40759 cost=0.0
+2026-08-08T07:22:36Z — arm=A2 task=task2 seed=3 rc=0 wall_clock=90.93s tool_calls=2 search_calls=0 output_bytes=3014 tokens_in=399 tokens_out=1303 tokens_total=39194 cost=0.0
+2026-08-08T07:24:48Z — arm=A2 task=task2 seed=4 rc=0 wall_clock=131.96s tool_calls=4 search_calls=0 output_bytes=3201 tokens_in=7853 tokens_out=1589 tokens_total=86273 cost=0.0
+2026-08-08T07:26:51Z — arm=A2 task=task2 seed=5 rc=0 wall_clock=122.86s tool_calls=2 search_calls=0 output_bytes=2926 tokens_in=4393 tokens_out=1234 tokens_total=47704 cost=0.0
+2026-08-08T07:33:15Z — arm=A3 task=task2 seed=1 rc=0 wall_clock=84.42s tool_calls=0 search_calls=0 output_bytes=2878 tokens_in=99 tokens_out=966 tokens_total=23824 cost=0.0
+2026-08-08T07:35:03Z — arm=A3 task=task2 seed=2 rc=0 wall_clock=107.29s tool_calls=2 search_calls=0 output_bytes=2325 tokens_in=6203 tokens_out=1055 tokens_total=52131 cost=0.0
+2026-08-08T07:36:08Z — arm=A3 task=task2 seed=3 rc=0 wall_clock=65.07s tool_calls=0 search_calls=0 output_bytes=2387 tokens_in=99 tokens_out=967 tokens_total=22628 cost=0.0
+2026-08-08T07:37:38Z — arm=A3 task=task2 seed=4 rc=0 wall_clock=90.19s tool_calls=2 search_calls=0 output_bytes=2349 tokens_in=632 tokens_out=1022 tokens_total=39979 cost=0.0
+2026-08-08T07:38:58Z — arm=A3 task=task2 seed=5 rc=0 wall_clock=79.93s tool_calls=2 search_calls=0 output_bytes=3520 tokens_in=3066 tokens_out=1456 tokens_total=40955 cost=0.0
+2026-08-08T07:39:15Z — arm=A0 task=task3 seed=1 rc=0 wall_clock=16.44s tool_calls=0 search_calls=0 output_bytes=3187 tokens_in=207 tokens_out=693 tokens_total=5228 cost=0.0
+2026-08-08T07:39:29Z — arm=A0 task=task3 seed=2 rc=0 wall_clock=13.9s tool_calls=0 search_calls=0 output_bytes=2849 tokens_in=79 tokens_out=624 tokens_total=4914 cost=0.0
+2026-08-08T07:39:42Z — arm=A0 task=task3 seed=3 rc=0 wall_clock=13.64s tool_calls=0 search_calls=0 output_bytes=2699 tokens_in=79 tokens_out=586 tokens_total=4979 cost=0.0
+2026-08-08T07:39:54Z — arm=A0 task=task3 seed=4 rc=0 wall_clock=11.46s tool_calls=0 search_calls=0 output_bytes=2294 tokens_in=79 tokens_out=523 tokens_total=4831 cost=0.0
+2026-08-08T07:40:06Z — arm=A0 task=task3 seed=5 rc=0 wall_clock=11.81s tool_calls=0 search_calls=0 output_bytes=2199 tokens_in=79 tokens_out=507 tokens_total=4795 cost=0.0
+2026-08-08T07:40:25Z — arm=A1 task=task3 seed=1 rc=0 wall_clock=19.28s tool_calls=0 search_calls=0 output_bytes=2349 tokens_in=168 tokens_out=529 tokens_total=5639 cost=0.0
+2026-08-08T07:40:46Z — arm=A1 task=task3 seed=2 rc=0 wall_clock=21.54s tool_calls=0 search_calls=0 output_bytes=3021 tokens_in=40 tokens_out=688 tokens_total=5908 cost=0.0
+2026-08-08T07:41:03Z — arm=A1 task=task3 seed=3 rc=0 wall_clock=16.57s tool_calls=0 search_calls=0 output_bytes=2586 tokens_in=40 tokens_out=561 tokens_total=5389 cost=0.0
+2026-08-08T07:41:20Z — arm=A1 task=task3 seed=4 rc=0 wall_clock=17.33s tool_calls=0 search_calls=0 output_bytes=2629 tokens_in=40 tokens_out=575 tokens_total=5374 cost=0.0
+2026-08-08T07:46:40Z — arm=A1 task=task3 seed=5 rc=0 wall_clock=19.16s tool_calls=0 search_calls=0 output_bytes=2026 tokens_in=40 tokens_out=476 tokens_total=5770 cost=0.0
+2026-08-08T07:46:57Z — arm=A2 task=task3 seed=1 rc=0 wall_clock=17.02s tool_calls=0 search_calls=0 output_bytes=2271 tokens_in=139 tokens_out=518 tokens_total=15519 cost=0.0
+2026-08-08T07:47:15Z — arm=A2 task=task3 seed=2 rc=0 wall_clock=18.47s tool_calls=0 search_calls=0 output_bytes=2959 tokens_in=11 tokens_out=689 tokens_total=15662 cost=0.0
+2026-08-08T07:47:31Z — arm=A2 task=task3 seed=3 rc=0 wall_clock=15.38s tool_calls=0 search_calls=0 output_bytes=2099 tokens_in=11 tokens_out=496 tokens_total=15347 cost=0.0
+2026-08-08T07:47:45Z — arm=A2 task=task3 seed=4 rc=0 wall_clock=14.48s tool_calls=0 search_calls=0 output_bytes=3299 tokens_in=11 tokens_out=763 tokens_total=15098 cost=0.0
+2026-08-08T07:48:01Z — arm=A2 task=task3 seed=5 rc=0 wall_clock=15.43s tool_calls=0 search_calls=0 output_bytes=2133 tokens_in=11 tokens_out=506 tokens_total=15331 cost=0.0
+2026-08-08T07:48:17Z — arm=A3 task=task3 seed=1 rc=0 wall_clock=16.38s tool_calls=0 search_calls=0 output_bytes=2922 tokens_in=228 tokens_out=662 tokens_total=15344 cost=0.0
+2026-08-08T07:48:28Z — arm=A3 task=task3 seed=2 rc=0 wall_clock=11.22s tool_calls=0 search_calls=0 output_bytes=1717 tokens_in=100 tokens_out=404 tokens_total=14525 cost=0.0
+2026-08-08T07:48:40Z — arm=A3 task=task3 seed=3 rc=0 wall_clock=11.86s tool_calls=0 search_calls=0 output_bytes=2232 tokens_in=100 tokens_out=504 tokens_total=14658 cost=0.0
+2026-08-08T07:49:00Z — arm=A3 task=task3 seed=4 rc=0 wall_clock=19.11s tool_calls=0 search_calls=0 output_bytes=2281 tokens_in=100 tokens_out=518 tokens_total=15847 cost=0.0
+2026-08-08T07:49:11Z — arm=A3 task=task3 seed=5 rc=0 wall_clock=11.65s tool_calls=0 search_calls=0 output_bytes=2564 tokens_in=100 tokens_out=571 tokens_total=14700 cost=0.0
+2026-08-08T07:49:59Z — arm=A0 task=task4 seed=1 rc=0 wall_clock=47.96s tool_calls=3 search_calls=0 output_bytes=6000 tokens_in=9400 tokens_out=1759 tokens_total=27401 cost=0.0
+2026-08-08T07:50:33Z — arm=A0 task=task4 seed=2 rc=0 wall_clock=33.83s tool_calls=2 search_calls=0 output_bytes=4057 tokens_in=371 tokens_out=1185 tokens_total=11236 cost=0.0
+2026-08-08T07:51:05Z — arm=A0 task=task4 seed=3 rc=0 wall_clock=32.36s tool_calls=2 search_calls=0 output_bytes=3254 tokens_in=366 tokens_out=987 tokens_total=10718 cost=0.0
+2026-08-08T07:51:40Z — arm=A0 task=task4 seed=4 rc=0 wall_clock=34.24s tool_calls=2 search_calls=0 output_bytes=4115 tokens_in=414 tokens_out=1125 tokens_total=10991 cost=0.0
+2026-08-08T07:52:16Z — arm=A0 task=task4 seed=5 rc=0 wall_clock=35.91s tool_calls=2 search_calls=0 output_bytes=3192 tokens_in=414 tokens_out=983 tokens_total=11357 cost=0.0
+2026-08-08T07:53:13Z — arm=A1 task=task4 seed=1 rc=0 wall_clock=57.5s tool_calls=2 search_calls=0 output_bytes=4725 tokens_in=474 tokens_out=1492 tokens_total=14048 cost=0.0
+2026-08-08T07:53:46Z — arm=A1 task=task4 seed=2 rc=0 wall_clock=33.08s tool_calls=3 search_calls=1 output_bytes=4267 tokens_in=10918 tokens_out=1329 tokens_total=36002 cost=0.0
+2026-08-08T07:54:51Z — arm=A1 task=task4 seed=3 rc=0 wall_clock=64.26s tool_calls=6 search_calls=2 output_bytes=5263 tokens_in=15281 tokens_out=1752 tokens_total=49289 cost=0.0
+2026-08-08T07:55:29Z — arm=A1 task=task4 seed=4 rc=0 wall_clock=37.91s tool_calls=3 search_calls=0 output_bytes=3579 tokens_in=7702 tokens_out=1156 tokens_total=24408 cost=0.0
+2026-08-08T07:56:25Z — arm=A1 task=task4 seed=5 rc=0 wall_clock=56.24s tool_calls=9 search_calls=6 output_bytes=5157 tokens_in=15752 tokens_out=2015 tokens_total=112739 cost=0.0
+2026-08-08T07:57:21Z — arm=A2 task=task4 seed=1 rc=0 wall_clock=55.89s tool_calls=2 search_calls=0 output_bytes=2975 tokens_in=2174 tokens_out=978 tokens_total=34739 cost=0.0
+2026-08-08T07:59:34Z — arm=A2 task=task4 seed=2 rc=0 wall_clock=133.43s tool_calls=2 search_calls=0 output_bytes=3821 tokens_in=1096 tokens_out=1326 tokens_total=44193 cost=0.0
+2026-08-08T08:00:35Z — arm=A2 task=task4 seed=3 rc=0 wall_clock=60.91s tool_calls=0 search_calls=0 output_bytes=3767 tokens_in=101 tokens_out=995 tokens_total=20569 cost=0.0
+2026-08-08T08:02:25Z — arm=A2 task=task4 seed=4 rc=0 wall_clock=109.58s tool_calls=0 search_calls=0 output_bytes=3227 tokens_in=101 tokens_out=908 tokens_total=26008 cost=0.0
+2026-08-08T08:03:19Z — arm=A2 task=task4 seed=5 rc=0 wall_clock=54.12s tool_calls=0 search_calls=0 output_bytes=2927 tokens_in=101 tokens_out=795 tokens_total=19494 cost=0.0
+2026-08-08T08:05:05Z — arm=A3 task=task4 seed=1 rc=0 wall_clock=105.75s tool_calls=0 search_calls=0 output_bytes=3721 tokens_in=190 tokens_out=1046 tokens_total=25237 cost=0.0
+2026-08-08T08:10:54Z — arm=A3 task=task4 seed=2 rc=0 wall_clock=49.27s tool_calls=0 search_calls=1 output_bytes=5619 tokens_in=62 tokens_out=1484 tokens_total=18570 cost=0.0
+2026-08-08T08:12:38Z — arm=A3 task=task4 seed=3 rc=0 wall_clock=103.26s tool_calls=2 search_calls=0 output_bytes=4986 tokens_in=4787 tokens_out=1601 tokens_total=43026 cost=0.0
+2026-08-08T08:13:30Z — arm=A3 task=task4 seed=4 rc=0 wall_clock=52.12s tool_calls=0 search_calls=0 output_bytes=4310 tokens_in=62 tokens_out=1165 tokens_total=18938 cost=0.0
+2026-08-08T08:14:51Z — arm=A3 task=task4 seed=5 rc=0 wall_clock=80.74s tool_calls=2 search_calls=0 output_bytes=4211 tokens_in=663 tokens_out=1405 tokens_total=36190 cost=0.0
+2026-08-08T08:16:30Z — arm=A0 task=task5 seed=1 rc=0 wall_clock=99.22s tool_calls=4 search_calls=0 output_bytes=6197 tokens_in=21156 tokens_out=2052 tokens_total=47523 cost=0.0
+2026-08-08T08:19:26Z — arm=A0 task=task5 seed=2 rc=0 wall_clock=176.24s tool_calls=6 search_calls=0 output_bytes=11374 tokens_in=18368 tokens_out=3610 tokens_total=151745 cost=0.0
+2026-08-08T08:22:49Z — arm=A0 task=task5 seed=3 rc=0 wall_clock=202.43s tool_calls=6 search_calls=0 output_bytes=9652 tokens_in=16065 tokens_out=3163 tokens_total=92172 cost=0.0
+2026-08-08T08:24:58Z — arm=A0 task=task5 seed=4 rc=0 wall_clock=129.77s tool_calls=4 search_calls=0 output_bytes=8567 tokens_in=20261 tokens_out=2693 tokens_total=49756 cost=0.0
+2026-08-08T08:27:20Z — arm=A0 task=task5 seed=5 rc=0 wall_clock=141.68s tool_calls=5 search_calls=0 output_bytes=7240 tokens_in=25918 tokens_out=2303 tokens_total=81792 cost=0.0
+2026-08-08T08:28:11Z — arm=A1 task=task5 seed=1 rc=0 wall_clock=50.71s tool_calls=0 search_calls=0 output_bytes=713 tokens_in=0 tokens_out=0 tokens_total=0 cost=0.0
+2026-08-08T08:29:40Z — arm=A1 task=task5 seed=2 rc=0 wall_clock=89.25s tool_calls=4 search_calls=2 output_bytes=5051 tokens_in=10830 tokens_out=1721 tokens_total=32704 cost=0.0
+2026-08-08T08:37:24Z — arm=A1 task=task5 seed=3 rc=0 wall_clock=163.47s tool_calls=10 search_calls=4 output_bytes=9476 tokens_in=30792 tokens_out=3198 tokens_total=87667 cost=0.0
+2026-08-08T08:39:36Z — arm=A1 task=task5 seed=4 rc=0 wall_clock=132.18s tool_calls=7 search_calls=1 output_bytes=8110 tokens_in=32117 tokens_out=2673 tokens_total=79580 cost=0.0
+2026-08-08T08:41:39Z — arm=A1 task=task5 seed=5 rc=0 wall_clock=122.6s tool_calls=6 search_calls=0 output_bytes=13630 tokens_in=41200 tokens_out=4269 tokens_total=105865 cost=0.0
+2026-08-08T08:42:59Z — arm=A2 task=task5 seed=1 rc=0 wall_clock=79.81s tool_calls=5 search_calls=0 output_bytes=4808 tokens_in=20913 tokens_out=1606 tokens_total=73120 cost=0.0
+2026-08-08T08:44:10Z — arm=A2 task=task5 seed=2 rc=0 wall_clock=71.51s tool_calls=2 search_calls=0 output_bytes=5209 tokens_in=565 tokens_out=1512 tokens_total=34955 cost=0.0
+2026-08-08T08:45:02Z — arm=A2 task=task5 seed=3 rc=0 wall_clock=51.97s tool_calls=1 search_calls=0 output_bytes=5847 tokens_in=2271 tokens_out=1572 tokens_total=34673 cost=0.0
+2026-08-08T08:47:39Z — arm=A2 task=task5 seed=4 rc=0 wall_clock=156.67s tool_calls=7 search_calls=0 output_bytes=7798 tokens_in=30431 tokens_out=2647 tokens_total=147898 cost=0.0
+2026-08-08T08:48:46Z — arm=A2 task=task5 seed=5 rc=0 wall_clock=66.75s tool_calls=3 search_calls=0 output_bytes=8274 tokens_in=21553 tokens_out=2351 tokens_total=69563 cost=0.0
+2026-08-08T08:53:39Z — arm=A3 task=task5 seed=1 rc=0 wall_clock=293.23s tool_calls=28 search_calls=7 output_bytes=11535 tokens_in=185599 tokens_out=5398 tokens_total=1392130 cost=0.0
+2026-08-08T08:57:38Z — arm=A3 task=task5 seed=2 rc=0 wall_clock=238.97s tool_calls=15 search_calls=7 output_bytes=12536 tokens_in=39179 tokens_out=4713 tokens_total=380733 cost=0.0
+2026-08-08T08:59:41Z — arm=A3 task=task5 seed=3 rc=0 wall_clock=123.07s tool_calls=4 search_calls=0 output_bytes=7542 tokens_in=30699 tokens_out=2164 tokens_total=109648 cost=0.0
+2026-08-08T09:02:41Z — arm=A3 task=task5 seed=4 rc=0 wall_clock=179.59s tool_calls=4 search_calls=3 output_bytes=8508 tokens_in=4811 tokens_out=2550 tokens_total=101753 cost=0.0
+2026-08-08T09:04:26Z — arm=A3 task=task5 seed=5 rc=0 wall_clock=104.91s tool_calls=7 search_calls=0 output_bytes=8068 tokens_in=30647 tokens_out=2685 tokens_total=203335 cost=0.0
+2026-08-08T09:06:50Z — arm=A0 task=task6 seed=1 rc=0 wall_clock=143.85s tool_calls=1 search_calls=0 output_bytes=5820 tokens_in=590 tokens_out=1795 tokens_total=22820 cost=0.0
+2026-08-08T09:09:25Z — arm=A0 task=task6 seed=2 rc=0 wall_clock=154.92s tool_calls=2 search_calls=0 output_bytes=11567 tokens_in=13750 tokens_out=3438 tokens_total=48055 cost=0.0
+2026-08-08T09:11:09Z — arm=A0 task=task6 seed=3 rc=0 wall_clock=104.12s tool_calls=1 search_calls=0 output_bytes=6981 tokens_in=327 tokens_out=2028 tokens_total=18859 cost=0.0
+2026-08-08T09:12:53Z — arm=A0 task=task6 seed=4 rc=0 wall_clock=104.68s tool_calls=2 search_calls=0 output_bytes=7048 tokens_in=4574 tokens_out=2165 tokens_total=46729 cost=0.0
+2026-08-08T09:17:48Z — arm=A0 task=task6 seed=5 rc=0 wall_clock=294.51s tool_calls=0 search_calls=0 output_bytes=10123 tokens_in=1 tokens_out=2944 tokens_total=35841 cost=0.0
+2026-08-08T09:21:15Z — arm=A1 task=task6 seed=1 rc=0 wall_clock=206.7s tool_calls=0 search_calls=0 output_bytes=8563 tokens_in=218 tokens_out=2476 tokens_total=28540 cost=0.0
+2026-08-08T09:23:40Z — arm=A1 task=task6 seed=2 rc=0 wall_clock=144.87s tool_calls=1 search_calls=0 output_bytes=9974 tokens_in=6055 tokens_out=2913 tokens_total=36289 cost=0.0
+2026-08-08T09:26:05Z — arm=A1 task=task6 seed=3 rc=0 wall_clock=145.61s tool_calls=0 search_calls=0 output_bytes=6294 tokens_in=90 tokens_out=1888 tokens_total=22156 cost=0.0
+2026-08-08T09:28:52Z — arm=A1 task=task6 seed=4 rc=0 wall_clock=166.47s tool_calls=0 search_calls=0 output_bytes=7577 tokens_in=90 tokens_out=2342 tokens_total=24717 cost=0.0
+2026-08-08T09:32:16Z — arm=A1 task=task6 seed=5 rc=0 wall_clock=203.79s tool_calls=3 search_calls=0 output_bytes=12517 tokens_in=19877 tokens_out=3796 tokens_total=58425 cost=0.0
+2026-08-08T09:34:51Z — arm=A2 task=task6 seed=1 rc=0 wall_clock=155.29s tool_calls=1 search_calls=0 output_bytes=6117 tokens_in=643 tokens_out=2038 tokens_total=48463 cost=0.0
+2026-08-08T09:38:59Z — arm=A2 task=task6 seed=2 rc=0 wall_clock=247.69s tool_calls=3 search_calls=0 output_bytes=7570 tokens_in=819 tokens_out=2920 tokens_total=114688 cost=0.0
+2026-08-08T09:43:12Z — arm=A2 task=task6 seed=3 rc=0 wall_clock=253.46s tool_calls=6 search_calls=0 output_bytes=8829 tokens_in=5392 tokens_out=3660 tokens_total=200947 cost=0.0
+2026-08-08T09:45:51Z — arm=A2 task=task6 seed=4 rc=0 wall_clock=158.34s tool_calls=2 search_calls=0 output_bytes=7487 tokens_in=1312 tokens_out=2463 tokens_total=50038 cost=0.0
+2026-08-08T09:47:50Z — arm=A2 task=task6 seed=5 rc=0 wall_clock=119.02s tool_calls=2 search_calls=0 output_bytes=5220 tokens_in=520 tokens_out=1889 tokens_total=44192 cost=0.0
+2026-08-08T09:50:09Z — arm=A3 task=task6 seed=1 rc=0 wall_clock=139.6s tool_calls=3 search_calls=0 output_bytes=6466 tokens_in=7185 tokens_out=2500 tokens_total=84014 cost=0.0
+2026-08-08T09:52:29Z — arm=A3 task=task6 seed=2 rc=0 wall_clock=140.11s tool_calls=10 search_calls=5 output_bytes=175384 tokens_in=29222 tokens_out=559 tokens_total=130750 cost=0.0
+2026-08-08T09:55:23Z — arm=A3 task=task6 seed=3 rc=0 wall_clock=173.58s tool_calls=1 search_calls=0 output_bytes=5822 tokens_in=366 tokens_out=2018 tokens_total=51528 cost=0.0
+2026-08-08T10:04:18Z — arm=A3 task=task6 seed=4 rc=0 wall_clock=234.43s tool_calls=0 search_calls=0 output_bytes=7011 tokens_in=21 tokens_out=2227 tokens_total=44994 cost=0.0
+2026-08-08T10:07:11Z — arm=A3 task=task6 seed=5 rc=0 wall_clock=173.62s tool_calls=3 search_calls=1 output_bytes=7511 tokens_in=362 tokens_out=2469 tokens_total=63408 cost=0.0

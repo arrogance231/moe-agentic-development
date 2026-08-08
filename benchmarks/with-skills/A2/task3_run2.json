@@ -1,0 +1,33 @@
+```json
+{
+  "identified_problems": [
+    "Router collapse / extreme expert imbalance: 3 of 32 experts receive >80% of routed tokens, so the effective expert count is ~3 and 29 experts are idle — the collapse matches the moe-debugging 'router collapse' and 'few experts active' symptoms.",
+    "Gradient explosion: gradient norm spiked sharply over the 50 steps before the NaN, a classic pre-divergence signal with no gradient clipping to bound it.",
+    "Training diverged to NaN at step 4200 after a normal decreasing-loss phase, correlating the gradient spike with the collapse window.",
+    "Missing gradient clipping leaves gradients unbounded, so the spike is free to grow into Inf/NaN.",
+    "Top-1 routing with capacity_factor=1.0 and weak/absent load-balancing loss starves under-loaded experts of tokens and gradients, reinforcing collapse."
+  ],
+  "root_causes": [
+    "Router collapse driven by an aux load-balancing loss that is too low or absent, made worse by top-1 routing (each token touches only one expert, so collapsed experts get all updates).",
+    "Capacity factor 1.0 drops tokens from under-loaded experts, starving their gradients and deepening the imbalance.",
+    "Gradient explosion from the few over-loaded experts: they accumulate large gradient norms, spike over ~50 steps, and with no gradient clipping the loss diverges to NaN at step 4200.",
+    "Potential precision overflow: if the run uses FP16, the large gradient norms can overflow to Inf/NaN (secondary; precision not stated)."
+  ],
+  "actions": [
+    "Add gradient clipping (max norm 1.0) — the direct fix for the spike-to-NaN path; verify a short run with clipping on vs off at fixed seed stays finite.",
+    "Increase the aux load-balancing loss scale to ~0.01 (within the 0.001–0.01 band) to restore balance; confirm via router distribution that effective experts >= 0.5*n (>=16 of 32).",
+    "Raise capacity factor to >= 1.25 (or use dynamic capacity) so under-loaded experts keep receiving tokens and gradients instead of being dropped.",
+    "Consider top-2 routing as an ablation, since top-1 halves activated expert capacity and is more prone to collapse.",
+    "Lower the learning rate or extend warmup to stabilize the router once rebalanced.",
+    "Switch to BF16 or FP32 master weights if training in FP16 to prevent overflow.",
+    "Run the confirming ablations at fixed seed: aux loss 0.01 vs 0 (collapse confirmed if the 0.01 run holds effective experts while the 0 run collapses), and gradient clipping on vs off for 100 steps (clipped run stays finite)."
+  ],
+  "evidence": [
+    "Loss went to NaN at step 4200 after several hundred steps of normal decreasing loss.",
+    "Gradient norm spiked sharply in the 50 steps preceding the NaN.",
+    "Run uses top-1 routing with capacity_factor=1.0.",
+    "No gradient clipping configured.",
+    "Expert load logs show 3 of 32 experts receiving >80% of routed tokens in the steps before the spike."
+  ]
+}
+```

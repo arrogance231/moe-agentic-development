@@ -1,0 +1,47 @@
+```json
+{
+  "framework": "Megatron-LM",
+  "architecture": {
+    "num_experts": 8,
+    "top_k": 2,
+    "hidden_size": 2048,
+    "num_layers": 16,
+    "capacity_factor": 1.25,
+    "expert_ffn_hidden": 4096,
+    "vocab_size": 50272,
+    "sequence_length": 2048,
+    "activation": "swiglu",
+    "router_aux_loss_coef": 0.01,
+    "dense_equivalent_params_b": 1.0,
+    "total_params_b": 2.6
+  },
+  "parallelism": {
+    "data_parallel": 4,
+    "expert_parallel": 8,
+    "tensor_parallel": 1,
+    "pipeline_parallel": 1,
+    "total_gpus": 32,
+    "zero_optimization": "shard_optimizer_states_per_ep_group"
+  },
+  "batch_size": {
+    "micro_batch": 2,
+    "global_batch": 64,
+    "tokens_per_batch_m": 0.13
+  },
+  "optimizer": {
+    "type": "AdamW",
+    "lr": 1.5e-4,
+    "min_lr": 1.5e-5,
+    "lr_decay_style": "cosine",
+    "warmup_steps": 500,
+    "weight_decay": 0.1,
+    "bf16": true,
+    "clip_grad": 1.0
+  },
+  "estimated_memory_gb": 21,
+  "estimated_tokens_per_sec": 52000,
+  "launch_notes": "Launch on 32x H100/A100-80G (4 nodes x 8 GPU) with: --num-experts 8 --moe-token-dispatcher all-gather --moe-router-topk 2 --moe-aux-loss-coeff 0.01 --swiglu --bf16 --recompute-granularity full --recompute-method uniform. EP=8 keeps one expert replica per rank group (DP=4), so the 8-expert layer spans 8 GPUs and attention is replicated across the group; no TP needed at this size, keeping all-to-all expert traffic to a single node boundary if EP group is placed on one node. Total params ~2.6B (active ~1B). Set --num-layers-per-virtual-pipeline-stage for memory headroom only if micro-batch 2 overflows; activation recomputation is assumed in the memory figure. Throughput assumes ~60% MFU on H100 with top-2 all-gather dispatch."
+}
+```
+
+Design rationale: 16 layers × hidden 2048 with 8 experts, top-2, and expert FFN of 4096 gives ~1B active params (top-2 × 2·H·d_ff per layer ≈ 50M/layer → ~0.9B plus embeddings), with ~2.6B total. Capacity factor 1.25 absorbs token-skew before dropping tokens.

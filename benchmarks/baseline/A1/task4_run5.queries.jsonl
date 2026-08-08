@@ -1,0 +1,6 @@
+{"query": "MoE training throughput optimization expert parallelism micro batch size activation checkpointing", "results": [], "ts": "2026-08-08T07:55:33Z"}
+{"query": "Megatron MoE expert parallel low GPU utilization communication overhead fixes", "results": [], "ts": "2026-08-08T07:55:34Z"}
+{"query": "Mixture of Experts training throughput optimization GPU utilization expert parallel communication", "results": [], "ts": "2026-08-08T07:55:35Z"}
+{"query": "MoE expert parallel 8 GPUs tokens per second GPU utilization low 62 percent improve throughput micro batch size", "results": [], "ts": "2026-08-08T07:55:42Z"}
+{"query": "moe config expert_parallel micro_batch_size benchmark report harness", "results": [], "ts": "2026-08-08T07:55:47Z"}
+{"query": "site:opencode.ai report", "results": [], "ts": "2026-08-08T07:55:48Z"}

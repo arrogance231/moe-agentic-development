@@ -1,0 +1,31 @@
+```json
+{
+  "identified_problems": [
+    "NaN loss at step 4200 after a long stretch of stable, decreasing loss",
+    "Gradient explosion — gradient norm spiked sharply over the 50 steps before the NaN",
+    "Router collapse / expert imbalance — 3 of 32 experts absorbed >80% of routed tokens in the steps before the spike",
+    "Unbounded gradients — no gradient clipping configured"
+  ],
+  "root_causes": [
+    "Router collapse with no load-balancing auxiliary loss: the top-1 router funnels >80% of tokens into 3 of 32 experts, starving the other 29 of gradients and concentrating huge token volume (and gradient magnitude) on a few expert FFNs",
+    "Missing gradient clipping: with no max-norm clip, the spiking gradient norm from the collapsed router propagates unchecked, driving loss to NaN",
+    "capacity_factor=1.0 with top-1 routing: at exact capacity under severe imbalance, tokens are dropped from under-loaded experts, worsening the imbalance feedback loop and adding a routing burst right before the spike",
+    "Possible over-stressed LR on the router (secondary): a high LR or short warmup destabilizes router logits once collapse begins — not directly evidenced, but consistent with the 50-step spike run-up"
+  ],
+  "actions": [
+    "Add gradient clipping — max norm 1.0 — as an immediate guard against NaN (per moe-debugging exploding-loss workflow, fix #1)",
+    "Add a load-balancing auxiliary loss with router_aux_loss_coef in 0.001–0.01 to counteract the router collapse and raise the effective number of experts toward 32",
+    "Raise capacity factor to 1.25 (or use dynamic capacity) so under-loaded experts keep receiving tokens instead of dropping them at capacity_factor=1.0",
+    "Add jitter noise to router logits at train time to reduce deterministic favoritism toward the 3 dominant experts",
+    "Lower the LR or extend warmup to stabilize router updates during the early collapse phase",
+    "Confirm with two fixed-seed ablations: (a) aux loss 0.01 vs 0 — pass if the 0.01 run keeps effective experts >= 16 while the 0 run collapses; (b) gradient clipping on vs off for 100 steps — pass if the clipped run stays finite while the unclipped run spikes/NaNs"
+  ],
+  "evidence": [
+    "Loss went to NaN at step 4200 after several hundred steps of normal decreasing loss — abrupt numerical divergence, not a gradual plateau",
+    "Gradient norm spiked sharply in the 50 steps preceding the NaN — gradient explosion preceding the NaN, consistent with missing gradient clipping",
+    "No gradient clipping configured — removes the standard safeguard against the observed spike",
+    "3 of 32 experts receiving >80% of routed tokens in the steps before the spike — router collapse / severe expert imbalance feeding the gradient spike",
+    "top-1 routing with capacity_factor=1.0 — exact capacity with no overflow buffer amplifies token drops and imbalance under the collapsed router"
+  ]
+}
+```

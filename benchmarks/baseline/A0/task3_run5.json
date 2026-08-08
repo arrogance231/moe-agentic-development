@@ -1,0 +1,31 @@
+```json
+{
+  "identified_problems": [
+    "Catastrophic loss divergence to NaN (gradient/weight overflow)",
+    "Catastrophic load imbalance: 3/32 experts absorb >80% of routed tokens",
+    "Router collapse under top-1 routing with no balancing mechanism",
+    "Unmitigated gradient explosion due to absent gradient clipping"
+  ],
+  "root_causes": [
+    "Unbalanced expert load concentrates gradients on 3 experts, inflating their update magnitude until weights overflow (NaN)",
+    "top-1 routing with capacity_factor=1.0 provides no redundancy or slack, so the over-loaded experts have no fallback when saturated",
+    "No auxiliary load-balancing loss (e.g., Switch/ST-MoE aux loss or router z-loss) permits the router to collapse onto a few experts",
+    "No global-norm gradient clipping allows the pre-NaN gradient spike to propagate unchecked into the optimizer step"
+  ],
+  "actions": [
+    "Enable global gradient norm clipping (e.g., clip_grad_norm=max_norm=1.0)",
+    "Add an auxiliary load-balancing loss to the router (Switch aux loss, weight ~0.01) and/or router z-loss for stability",
+    "Switch to top-2 routing or raise capacity_factor (e.g., 1.25) to add redundancy for over-loaded experts",
+    "Add explicit capacity dropout or expert jitter in routing to prevent the router from collapsing onto a few experts",
+    "Upcast router softmax/logits to fp32 and add epsilon to LayerNorm to avoid overflow in fp16/bf16 training",
+    "Optionally reduce the learning rate or extend warmup; consider a small max-norm-based expert-specific LR or adapter to rebalance loads"
+  ],
+  "evidence": [
+    "loss went to NaN at step 4200 after several hundred steps of normal decreasing loss (sudden divergence, not gradual)",
+    "gradient norm spiked sharply in the 50 steps preceding the NaN (gradient explosion immediately before overflow)",
+    "3 of 32 experts receiving >80% of routed tokens in the steps before the spike (extreme load imbalance concentrating gradients)",
+    "run uses top-1 routing with capacity_factor=1.0 (no balancing loss and no capacity slack to absorb the imbalance)",
+    "no gradient clipping configured (no mechanism to damp the spike once it began)"
+  ]
+}
+```

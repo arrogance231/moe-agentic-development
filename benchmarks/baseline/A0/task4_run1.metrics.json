@@ -1,0 +1,19 @@
+{
+  "arm": "A0",
+  "task": "task4",
+  "seed": 1,
+  "wall_clock_sec": 47.96,
+  "return_code": 0,
+  "tool_calls_total": 3,
+  "search_calls": 0,
+  "search_enabled_for_arm": false,
+  "output_bytes": 6000,
+  "model": "opencode/deepseek-v4-flash-free",
+  "tokens_input": 9400,
+  "tokens_output": 1759,
+  "tokens_reasoning": 2674,
+  "tokens_cache_read": 13568,
+  "tokens_cache_write": 0,
+  "tokens_total": 27401,
+  "cost": 0.0
+}

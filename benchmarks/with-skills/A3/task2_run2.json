@@ -1,0 +1,31 @@
+Design (computed with the skill's `tools/moe_calculator.py` formulas — d_model=2048, ffn_mult=4 → ffn_dim=8192, vocab=32000, seq_len=2048, 14 layers):
+
+- **Dense baseline**: 14 × (4·2048² + 3·2048·8192 + 2·2048) + 32000·2048 = **1.005B**
+- **16 experts / top-2**: total **11.57B**, activated **1.71B** (param ratio 11.5×, consistent with Mixtral-style proportions). 64 experts would blow past the 8×80GB budget (45B total), so 16 keeps expert parallelism feasible at this scale.
+- **FLOPs/token**: 6·1.71B + 4·14·2048·2048 ≈ **10.49 GFLOPs/token**
+- **Memory/GPU** (DP=2, EP=4, 8×H100-80GB, BF16, checkpointing on): params 5.9 + grads 5.9 + AdamW-mixed optimizer 35.6 + activations ~2.4 + overhead ~6 ≈ **56 GB** (~30% headroom).
+- **Throughput**: ~25% MFU of 8×H100 → **~160K tokens/sec** (rough estimate, all-to-all overhead included).
+
+```json
+{
+  "framework": "deepspeed_moe",
+  "architecture": {
+    "num_experts": 16,
+    "top_k": 2,
+    "hidden_size": 2048,
+    "num_layers": 14,
+    "capacity_factor": 1.25
+  },
+  "parallelism": {
+    "data_parallel": 2,
+    "expert_parallel": 4,
+    "tensor_parallel": 1
+  },
+  "batch_size": 64,
+  "estimated_memory_gb": 56,
+  "estimated_tokens_per_sec": 160000,
+  "launch_notes": "DeepSpeed MoE on 8x H100 80GB (NVLink/InfiniBand). PP=1, so DP*EP*TP*PP = 2*4*1*1 = 8 GPUs; EP=4 divides num_experts=16 (16 experts/rank=4). One all-to-all per MoE layer per step (14 layers). Geometry: micro_batch=2, seq_len=2048, grad_accum=16 -> global_batch=2*16*2=64 sequences = 131072 tokens/step; 2048 tokens/expert/GPU/micro-batch (>= 8-64 floor). BF16 (fp32 master), gradient checkpointing ON, router_aux_loss_coef=0.01, AdamW LR 3e-4 with cosine schedule. vocab=32000, ffn_dim=8192. Verify EP divides num_experts, DP*EP*TP*PP equals GPU count, and capacity_factor matches the architecture doc (1.25) before launch. Launch: deepspeed --num_gpus 8 train.py --deepspeed_config ds_moe_1b.json. Checkpoints in DeepSpeed 'ckpt' format (steps=500, resume via --resume). Dense-equivalent 1.005B; total 11.57B; activated 1.71B."
+}
+```
+
+**Key choices**: top-2 (training-quality default), capacity factor 1.25 (absorbs routing imbalance, avoids token drops at 16 experts), aux loss 0.01 (prevents router collapse), EP=4 with DP=2 (bounds all-to-all while keeping batch geometry valid and fitting 80GB).

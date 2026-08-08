@@ -1,0 +1,11 @@
+{
+  "problem": "expert collapse leading to gradient spike and NaN loss",
+  "root_cause": "auxiliary loss coefficient too low combined with no gradient clipping, allowing a collapsed top-1 routing distribution (few experts absorbing most tokens) to produce a gradient spike that overflows into NaN",
+  "fix": "increase the auxiliary load-balancing loss coefficient to rebalance routing and add gradient clipping to bound the spike",
+  "key_evidence": [
+    "3 of 32 experts receiving over 80 percent of routed tokens",
+    "gradient norm spiked sharply in the 50 steps preceding the NaN",
+    "no gradient clipping configured",
+    "top-1 routing with capacity_factor 1.0"
+  ]
+}

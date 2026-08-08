@@ -1,0 +1,30 @@
+```json
+{
+  "identified_problems": [
+    "Severe expert load imbalance (router collapse): 3 of 32 experts receive >80% of tokens while the other 29 are starved",
+    "Training instability culminating in gradient explosion and NaN loss at step 4200",
+    "Unbounded optimization dynamics: no gradient clipping and no load-balancing regularization to stabilize the router"
+  ],
+  "root_causes": [
+    "Top-1 routing creates a rich-get-richer feedback loop: overloaded experts are trained more, become more useful, and attract even more tokens, until the gating network collapses onto a few experts",
+    "capacity_factor=1.0 leaves no spare expert capacity, so when the router over-concentrates, routing decisions (and their gradients) become discontinuous and highly sensitive, amplifying gradient variance",
+    "The 3 overloaded experts absorb gradients from >80% of tokens, and the router's softmax logits receive large, correlated gradients, driving the gradient-norm spike over the 50 steps before the NaN",
+    "Without gradient clipping, the exploding gradients compound across steps and push weights/activations (or router logits) into regimes that produce NaN (e.g., overflow in softmax/exp, or exploding internal activations)"
+  ],
+  "actions": [
+    "Add a load-balancing auxiliary loss (e.g., Switch/GShard-style loss = alpha * N * sum(probabilities * fraction_of_tokens)) and tune alpha to keep expert utilization near-uniform",
+    "Enable global-norm gradient clipping (e.g., clip_norm ~1.0) as a safety net so transient router spikes cannot cascade into NaN",
+    "Add router z-loss to regularize router logit magnitudes and prevent logit explosion",
+    "Increase capacity_factor above 1.0 (or switch to top-2 routing) so experts retain slack and routing gradients are smoother",
+    "Reduce the learning rate and/or add warmup + cosine schedule to limit initial router oscillations",
+    "Consider EMA/fixed-noise or temperature control on router logits to discourage hard concentration onto few experts"
+  ],
+  "evidence": [
+    "Loss went to NaN at step 4200 after a long period of normal decreasing loss, indicating a sudden instability rather than a cold-start failure",
+    "Gradient norm spiked sharply in the 50 steps preceding the NaN, consistent with an impending divergence caused by exploding gradients",
+    "Top-1 routing with capacity_factor=1.0 is the known configuration that permits and amplifies expert-collapse dynamics",
+    "Expert load logs showing 3 of 32 experts receiving >80% of routed tokens directly confirms router collapse before the spike",
+    "No gradient clipping configured, so no mechanism existed to contain the pre-NaN gradient spike"
+  ]
+}
+```

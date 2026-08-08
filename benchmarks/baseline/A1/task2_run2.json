@@ -1,0 +1,38 @@
+Below is the design and a launchable config.
+
+**Design rationale:** A 1B dense-equivalent MoE using the Mixtral-style recipe scaled down (hidden 2048, 24 layers, 8 experts, top-2). Active params ≈ 1.31B (attention 403M + active-expert FFN 806M + embeddings 102M), total ≈ 3.7B. Capacity factor 1.25 with top-2 and one expert per GPU is the recommended sweet spot for quality/communication. Runs on 8×H100 (EP=8 → one expert per device, TP=1 since experts are small).
+
+```json
+{
+  "framework": "Megatron-LM (Megatron-Core, bf16 mixed precision, AdamW, distributed optimizer)",
+  "architecture": {
+    "num_experts": 8,
+    "top_k": 2,
+    "hidden_size": 2048,
+    "num_layers": 24,
+    "num_attention_heads": 16,
+    "num_query_groups": 8,
+    "expert_intermediate_size": 4096,
+    "capacity_factor": 1.25,
+    "seq_len": 4096,
+    "vocab_size": 50000,
+    "active_params_estimate": 1310000000,
+    "total_params_estimate": 3700000000
+  },
+  "parallelism": {
+    "data_parallel": 1,
+    "expert_parallel": 8,
+    "tensor_parallel": 1,
+    "gpus_total": 8
+  },
+  "batch_size": {
+    "micro_batch_sequences": 16,
+    "grad_accum_steps": 16,
+    "global_batch_sequences": 256,
+    "global_batch_tokens": 1048576
+  },
+  "estimated_memory_gb": 26,
+  "estimated_tokens_per_sec": 100000,
+  "launch_notes": "8x H100-80GB, bf16. Use --num-experts 8 --expert-model-parallel-size 8 --moe-router-topk 2 --moe-expert-capacity-factor 1.25 --moe-pad-expert-input-to-capacity --moe-router-load-balancing-type aux_loss --moe-aux-loss-coeff 1e-2 --moe-grouped-gemm --moe-permute-fusion --moe-token-dispatcher-type alltoall. Model: --hidden-size 2048 --num-layers 24 --num-attention-heads 16 --group-query-attention --num-query-groups 8 --moe-ffn-hidden-size 4096 --swiglu --normalization RMSNorm --position-embedding-type rope --untie-embeddings-and-output-weights --bf16 --use-distributed-optimizer --recompute-activations --micro-batch-size 16 --global-batch-size 256 --tensor-model-parallel-size 1 --expert-model-parallel-size 8. Launch: torchrun --nproc_per_node=8. Memory 26GB/GPU leaves headroom; if OOM in first ~200 steps (router imbalance), drop --moe-expert-capacity-factor to 1.0 or enable --moe-layer-recompute, then restore."
+}
+```
